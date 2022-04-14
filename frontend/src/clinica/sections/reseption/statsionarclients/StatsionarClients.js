@@ -551,11 +551,11 @@ export const StatsionarClients = () => {
             return notify(checkClientData(client))
         }
 
-        if (checkConnectorData(connector)) {
+        if (checkConnectorData(connector, client)) {
             return notify(checkConnectorData(connector))
         }
 
-        if (checkRoomData(room)) {
+        if (checkRoomData(room, client)) {
             return notify(checkRoomData(room))
         }
 
@@ -690,13 +690,14 @@ export const StatsionarClients = () => {
                     products: [...newproducts],
                     counteragent: {...counteragent, clinica: auth.clinica._id},
                     adver: {...adver, clinica: auth.clinica._id},
+                    room: {...room}
                 },
                 {
                     Authorization: `Bearer ${auth.token}`,
                 },
             )
-            console.log(data)
-            getConnectors()
+            localStorage.setItem("data", data)
+            getConnectors(beginDay, endDay)
             notify({
                 title: `${
                     client.lastname + ' ' + client.firstname
@@ -725,6 +726,9 @@ export const StatsionarClients = () => {
         connector,
         adver,
         counteragent,
+        room,
+        beginDay,
+        endDay
     ])
 
     //====================================================================

@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react'
-import {Check} from '../offlineclients/clientComponents/Check'
 import QRCode from 'qrcode'
 import {useReactToPrint} from 'react-to-print'
+import CheckStatsionarClient from "../statsionarclients/clientComponents/CheckStatsionarClient";
 
 export const CheckModalStatsionar = ({modal, connector, setModal, baseUrl}) => {
     const [qr, setQr] = useState()
@@ -43,7 +43,7 @@ export const CheckModalStatsionar = ({modal, connector, setModal, baseUrl}) => {
                     </div>
                     <div className="modal-body overflow-scroll">
                         <div ref={componentRef}>
-                            <Check connector={connector} qr={qr}/>
+                            <CheckStatsionarClient connector={connector} qr={qr}/>
                         </div>
                     </div>
                     <div className="modal-footer custom">
