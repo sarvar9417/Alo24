@@ -1,14 +1,14 @@
-import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faAngleUp,
   faAngleDown,
   faPenAlt,
   faPrint,
-} from '@fortawesome/free-solid-svg-icons'
-import { Sort } from './Sort'
-import { Pagination } from '../../components/Pagination'
-import { DatePickers } from './DatePickers'
+} from "@fortawesome/free-solid-svg-icons";
+import { Sort } from "./Sort";
+import { Pagination } from "../../components/Pagination";
+import { DatePickers } from "./DatePickers";
 
 export const TableClients = ({
   baseUrl,
@@ -32,6 +32,8 @@ export const TableClients = ({
   currentPage,
   setPageSize,
   loading,
+  setModal2,
+  setPostConnector,
 }) => {
   return (
     <div className="table-container">
@@ -45,7 +47,7 @@ export const TableClients = ({
                     className="form-control form-control-sm selectpicker"
                     placeholder="Bo'limni tanlang"
                     onChange={setPageSize}
-                    style={{ minWidth: '50px' }}
+                    style={{ minWidth: "50px" }}
                   >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
@@ -56,7 +58,7 @@ export const TableClients = ({
                 <th>
                   <input
                     onChange={searchFullname}
-                    style={{ maxWidth: '100px', minWidth: '100px' }}
+                    style={{ maxWidth: "100px", minWidth: "100px" }}
                     type="search"
                     className="w-100 form-control form-control-sm selectpicker"
                     placeholder="F.I.O"
@@ -65,7 +67,7 @@ export const TableClients = ({
                 <th>
                   <input
                     onChange={searchPhone}
-                    style={{ maxWidth: '100px', minWidth: '100px' }}
+                    style={{ maxWidth: "100px", minWidth: "100px" }}
                     type="search"
                     className="w-100 form-control form-control-sm selectpicker"
                     placeholder="Tel"
@@ -74,7 +76,7 @@ export const TableClients = ({
                 <th>
                   <input
                     onChange={searchId}
-                    style={{ maxWidth: '60px' }}
+                    style={{ maxWidth: "60px" }}
                     type="search"
                     className="form-control form-control-sm selectpicker"
                     placeholder="ID"
@@ -83,7 +85,7 @@ export const TableClients = ({
                 <th>
                   <input
                     onChange={searchProbirka}
-                    style={{ maxWidth: '50px' }}
+                    style={{ maxWidth: "50px" }}
                     type="search"
                     className="form-control form-control-sm selectpicker"
                     placeholder="Probirka"
@@ -100,13 +102,13 @@ export const TableClients = ({
                 </th>
                 <th
                   className="text-center"
-                  style={{ maxWidth: '120px', overflow: 'hidden' }}
+                  style={{ maxWidth: "120px", overflow: "hidden" }}
                 >
                   <DatePickers changeDate={changeStart} />
                 </th>
                 <th
                   className="text-center"
-                  style={{ maxWidth: '120px', overflow: 'hidden' }}
+                  style={{ maxWidth: "120px", overflow: "hidden" }}
                 >
                   <DatePickers changeDate={changeEnd} />
                 </th>
@@ -122,21 +124,21 @@ export const TableClients = ({
                       onClick={() =>
                         setCurrentConnectors(
                           [...currentConnectors].sort((a, b) =>
-                            a.client.fullname > b.client.fullname ? 1 : -1,
-                          ),
+                            a.client.fullname > b.client.fullname ? 1 : -1
+                          )
                         )
                       }
                       icon={faAngleUp}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: "pointer" }}
                     />
                     <FontAwesomeIcon
                       icon={faAngleDown}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: "pointer" }}
                       onClick={() =>
                         setCurrentConnectors(
                           [...currentConnectors].sort((a, b) =>
-                            b.client.fullname > a.client.fullname ? 1 : -1,
-                          ),
+                            b.client.fullname > a.client.fullname ? 1 : -1
+                          )
                         )
                       }
                     />
@@ -150,21 +152,21 @@ export const TableClients = ({
                       onClick={() =>
                         setCurrentConnectors(
                           [...currentConnectors].sort((a, b) =>
-                            a.client.id > b.client.id ? 1 : -1,
-                          ),
+                            a.client.id > b.client.id ? 1 : -1
+                          )
                         )
                       }
                       icon={faAngleUp}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: "pointer" }}
                     />
                     <FontAwesomeIcon
                       icon={faAngleDown}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: "pointer" }}
                       onClick={() =>
                         setCurrentConnectors(
                           [...currentConnectors].sort((a, b) =>
-                            b.client.id > a.client.id ? 1 : -1,
-                          ),
+                            b.client.id > a.client.id ? 1 : -1
+                          )
                         )
                       }
                     />
@@ -175,7 +177,7 @@ export const TableClients = ({
                   <Sort
                     data={currentConnectors}
                     setData={setCurrentConnectors}
-                    property={'probirka'}
+                    property={"probirka"}
                   />
                 </th>
                 <th className="border py-1">
@@ -183,7 +185,7 @@ export const TableClients = ({
                   <Sort
                     data={currentConnectors}
                     setData={setCurrentConnectors}
-                    property={'totalprice'}
+                    property={"totalprice"}
                   />
                 </th>
                 <th className="border py-1">
@@ -193,21 +195,21 @@ export const TableClients = ({
                       onClick={() =>
                         setCurrentConnectors(
                           [...currentConnectors].sort((a, b) =>
-                            a.services.length > b.services.length ? 1 : -1,
-                          ),
+                            a.services.length > b.services.length ? 1 : -1
+                          )
                         )
                       }
                       icon={faAngleUp}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: "pointer" }}
                     />
                     <FontAwesomeIcon
                       icon={faAngleDown}
-                      style={{ cursor: 'pointer' }}
+                      style={{ cursor: "pointer" }}
                       onClick={() =>
                         setCurrentConnectors(
                           [...currentConnectors].sort((a, b) =>
-                            b.services.length > a.services.length ? 1 : -1,
-                          ),
+                            b.services.length > a.services.length ? 1 : -1
+                          )
                         )
                       }
                     />
@@ -218,7 +220,7 @@ export const TableClients = ({
                   <Sort
                     data={currentConnectors}
                     setData={setCurrentConnectors}
-                    property={'createdAt'}
+                    property={"createdAt"}
                   />
                 </th>
                 <th className="border py-1">
@@ -227,17 +229,17 @@ export const TableClients = ({
                     <Sort
                       data={currentConnectors}
                       setData={setCurrentConnectors}
-                      property={'counterAgentProcient'}
+                      property={"counterAgentProcient"}
                     />
                   </div>
                 </th>
                 <th className="border py-1">
-                  Chop etish
+                  Qabul qilish
                   <div className="btn-group-vertical ml-2">
                     <Sort
                       data={currentConnectors}
                       setData={setCurrentConnectors}
-                      property={'counterAgentProcient'}
+                      property={"counterAgentProcient"}
                     />
                   </div>
                 </th>
@@ -249,13 +251,13 @@ export const TableClients = ({
                   <tr key={key}>
                     <td
                       className="border py-1 font-weight-bold text-right"
-                      style={{ maxWidth: '30px !important' }}
+                      style={{ maxWidth: "30px !important" }}
                     >
                       {currentPage * countPage + key + 1}
                     </td>
                     <td className="border py-1 font-weight-bold">
                       {connector.client.lastname +
-                        ' ' +
+                        " " +
                         connector.client.firstname}
                     </td>
                     <td className="border py-1 text-right">
@@ -287,13 +289,13 @@ export const TableClients = ({
                         <button
                           className="btn btn-success py-0"
                           onClick={() => {
-                            setClient(connector.client)
+                            setClient(connector.client);
                             setConnector({
                               ...connector,
                               _id: connector._id,
                               services: [...connector.services],
-                            })
-                            setVisible(true)
+                            });
+                            setVisible(true);
                           }}
                         >
                           <FontAwesomeIcon icon={faPenAlt} />
@@ -310,8 +312,8 @@ export const TableClients = ({
                         <button
                           className="btn btn-primary py-0"
                           onClick={() => {
-                            setCheck(connector)
-                            setModal1(true)
+                            setModal2(true);
+                            setPostConnector(connector);
                           }}
                         >
                           <FontAwesomeIcon icon={faPrint} />
@@ -319,12 +321,12 @@ export const TableClients = ({
                       )}
                     </td>
                   </tr>
-                )
+                );
               })}
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

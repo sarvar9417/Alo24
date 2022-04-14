@@ -3,6 +3,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../context/AuthContext";
 import { useHttp } from "../../../hooks/http.hook";
 import { Modal } from "../components/Modal";
+import { Modal as Modal2 } from "../components/Modal";
 import { RegisterClient } from "./clientComponents/RegisterClient";
 import { TableClients } from "./clientComponents/TableClients";
 import {
@@ -24,6 +25,7 @@ export const OnlineClients = () => {
   // MODAL
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
+  const [modal2, setModal2] = useState(false);
   //====================================================================
   //====================================================================
 
@@ -649,6 +651,51 @@ export const OnlineClients = () => {
     getConnectors(beginDay, date);
   };
 
+  const changeBronDay = (date, indx) => {
+    const arr = [...services].map((item, index) => {
+      if (index === indx) {
+        item.bronday = date;
+        return item;
+      }
+      return item;
+    });
+    setServices(arr);
+  };
+
+  //====================================================================
+  //====================================================================
+  //Post To Offline
+
+  const [postConnector, setPostConnecter] = useState({});
+
+  const PostToOffline = async () => {
+    try {
+      const data = await request(
+        `/api/offlineclient/client/registeronline`,
+        "POST",
+        { ...postConnector },
+        {
+          Authorization: `Bearer ${auth.token}`,
+        }
+      );
+      localStorage.setItem("data", data);
+      notify({
+        title: "Mijoz muvaffaqqiyatli yaratildi.",
+        description: "",
+        status: "success",
+      });
+    } catch (error) {
+      notify({
+        title: error,
+        description: "",
+        status: "error",
+      });
+    }
+  };
+
+  //====================================================================
+  //====================================================================
+
   //====================================================================
   //====================================================================
   // useEffect
@@ -728,6 +775,7 @@ export const OnlineClients = () => {
                 advers={advers}
                 products={products}
                 loading={loading}
+                changeBronDay={changeBronDay}
               />
             </div>
             <TableClients
@@ -756,6 +804,8 @@ export const OnlineClients = () => {
               setPageSize={setPageSize}
               // setModal2={setModal2}
               loading={loading}
+              setModal2={setModal2}
+              setPostConnector={setPostConnecter}
             />
           </div>
         </div>
@@ -774,6 +824,16 @@ export const OnlineClients = () => {
         setModal={setModal}
         handler={client._id ? addHandler : createHandler}
         basic={client.lastname + " " + client.firstname}
+      />
+
+      <Modal2
+        modal={modal2}
+        text={" malumotlarni qabul qilishni tasdiqlaysizmi?"}
+        setModal2={setModal2}
+        handler={PostToOffline}
+        basic={
+          postConnector.client.lastname + " " + postConnector.client.firstname
+        }
       />
     </div>
   );

@@ -1,36 +1,35 @@
-import React, { useState } from 'react'
-import DatePicker from 'react-datepicker'
+import React, { useState } from "react";
+import DatePicker from "react-datepicker";
 
-export const DatePickers = ({ changeDate }) => {
-  const [startDate, setStartDate] = useState(new Date())
+export const DatePickers = ({ changeDate, ...props }) => {
+  const [startDate, setStartDate] = useState(new Date());
   const years = Array.from(
     { length: 80 },
-    (v, k) => k + new Date().getFullYear() - 80,
-  )
+    (v, k) => k + new Date().getFullYear() - 80
+  );
   const months = [
-    'Yanvar',
-    'Fevral',
-    'Mart',
-    'Aprel',
-    'May',
-    'Iyun',
-    'Iyul',
-    'Avgust',
-    'Sentabr',
-    'Oktabr',
-    'Noyabr',
-    'Dekabr',
-  ]
+    "Yanvar",
+    "Fevral",
+    "Mart",
+    "Aprel",
+    "May",
+    "Iyun",
+    "Iyul",
+    "Avgust",
+    "Sentabr",
+    "Oktabr",
+    "Noyabr",
+    "Dekabr",
+  ];
   return (
     <div
       className="form-control form-control-sm"
-      style={{ maxWidth: '120px', overflow: 'hidden' }}
+      style={{ overflow: "hidden" }}
     >
       <DatePicker
         onSelect={(e) => {
-          changeDate(e)
+          changeDate(e);
         }}
-        dateFormat="dd/MM/yyyy"
         renderCustomHeader={({
           date,
           changeYear,
@@ -43,12 +42,12 @@ export const DatePickers = ({ changeDate }) => {
           <div
             style={{
               margin: 10,
-              display: 'flex',
-              justifyContent: 'center',
+              display: "flex",
+              justifyContent: "center",
             }}
           >
             <button onClick={decreaseMonth} disabled={prevMonthButtonDisabled}>
-              {'<'}
+              {"<"}
             </button>
             <select
               value={new Date(date).getFullYear()}
@@ -80,13 +79,14 @@ export const DatePickers = ({ changeDate }) => {
             </select>
 
             <button onClick={increaseMonth} disabled={nextMonthButtonDisabled}>
-              {'>'}
+              {">"}
             </button>
           </div>
         )}
         selected={startDate}
         onChange={(date) => setStartDate(date)}
+        {...props}
       />
     </div>
-  )
-}
+  );
+};

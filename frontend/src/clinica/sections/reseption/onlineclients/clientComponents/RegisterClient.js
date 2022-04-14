@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { DatePickers } from './DatePickers'
-import 'react-datepicker/dist/react-datepicker.css'
-import Select from 'react-select'
-import makeAnimated from 'react-select/animated'
-const animatedComponents = makeAnimated()
+import React, { useCallback, useEffect, useState } from "react";
+import { DatePickers } from "./DatePickers";
+import "react-datepicker/dist/react-datepicker.css";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
+const animatedComponents = makeAnimated();
 
 export const RegisterClient = ({
   selectedServices,
@@ -27,12 +27,13 @@ export const RegisterClient = ({
   advers,
   products,
   loading,
+  changeBronDay,
 }) => {
-  const [services, setServices] = useState([])
+  const [services, setServices] = useState([]);
   const getServices = useCallback(
     (e) => {
-      var s = []
-      if (e === 'all') {
+      var s = [];
+      if (e === "all") {
         departments.map((department) => {
           return department.services.map((service) => {
             return s.push({
@@ -40,9 +41,9 @@ export const RegisterClient = ({
               value: service._id,
               service: service,
               department: department,
-            })
-          })
-        })
+            });
+          });
+        });
       } else {
         departments.map((department) => {
           if (e === department._id) {
@@ -52,23 +53,23 @@ export const RegisterClient = ({
                 value: service._id,
                 service: service,
                 department: department,
-              })
-              return ''
-            })
-          } 
-          return ''
-        })
+              });
+              return "";
+            });
+          }
+          return "";
+        });
       }
-      setServices(s)
+      setServices(s);
     },
-    [departments],
-  )
+    [departments]
+  );
 
   useEffect(() => {
     if (departments) {
-      getServices('all')
+      getServices("all");
     }
-  }, [departments, getServices])
+  }, [departments, getServices]);
   return (
     <>
       {/* Row start */}
@@ -106,7 +107,7 @@ export const RegisterClient = ({
                       name="firstname"
                       placeholder="Ismi"
                     />
-                  </div> 
+                  </div>
                 </div>
                 <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                   <div className="form-group">
@@ -124,7 +125,10 @@ export const RegisterClient = ({
                 </div>
                 <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                   <label htmlFor="education">Tug'ilgan sanasi</label>
-                  <DatePickers changeDate={changeClientBorn} />
+                  <DatePickers
+                    dateFormat="dd/MM/yyyy"
+                    changeDate={changeClientBorn}
+                  />
                 </div>
                 <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                   <div className="form-group">
@@ -155,12 +159,12 @@ export const RegisterClient = ({
                       <div className="custom-control custom-radio custom-control-inline">
                         <input
                           checked={
-                            client.gender && client.gender === 'man'
+                            client.gender && client.gender === "man"
                               ? true
                               : false
                           }
                           onChange={(e) => {
-                            setClient({ ...client, gender: 'man' })
+                            setClient({ ...client, gender: "man" });
                           }}
                           type="radio"
                           id="customRadioInline1"
@@ -177,10 +181,10 @@ export const RegisterClient = ({
                       <div className="custom-control custom-radio custom-control-inline">
                         <input
                           defaultChecked={
-                            client.gender === 'woman' ? true : false
+                            client.gender === "woman" ? true : false
                           }
                           onChange={(e) => {
-                            setClient({ ...client, gender: 'woman' })
+                            setClient({ ...client, gender: "woman" });
                           }}
                           type="radio"
                           id="customRadioInline2"
@@ -227,10 +231,10 @@ export const RegisterClient = ({
                             id={counterdoctor.user}
                           >
                             {counterdoctor.lastname +
-                              ' ' +
+                              " " +
                               counterdoctor.firstname}
                           </option>
-                        )
+                        );
                       })}
                     </select>
                   </div>
@@ -249,7 +253,7 @@ export const RegisterClient = ({
                           <option key={index} value={adver._id}>
                             {adver.name}
                           </option>
-                        )
+                        );
                       })}
                     </select>
                   </div>
@@ -268,7 +272,7 @@ export const RegisterClient = ({
                     )}
                   </div>
                 ) : (
-                  ''
+                  ""
                 )}
               </div>
             </div>
@@ -295,7 +299,7 @@ export const RegisterClient = ({
                           <option key={index} value={department._id}>
                             {department.name}
                           </option>
-                        )
+                        );
                       })}
                     </select>
                   </div>
@@ -346,6 +350,7 @@ export const RegisterClient = ({
                         <th className="border py-1">Nomi</th>
                         <th className="border py-1">Narxi</th>
                         <th className="border py-1">Soni</th>
+                        <th className="border py-1">Xizmat vaqti</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -368,17 +373,29 @@ export const RegisterClient = ({
                                           ...newservices[index],
                                           pieces: e.target.value,
                                         },
-                                      }),
+                                      })
                                     )
                                   }
                                   className="text-right outline-none"
-                                  style={{ maxWidth: '50px', outline: 'none' }}
+                                  style={{ maxWidth: "50px", outline: "none" }}
                                   defaultValue={service.pieces}
                                   type="number"
                                 />
                               </td>
+                              <td className=" text-right py-1">
+                                <div>
+                                  <DatePickers
+                                    timeInputLabel="Time:"
+                                    dateFormat="MM/dd/yyyy hh:mm"
+                                    showTimeInput
+                                    changeDate={(date) =>
+                                      changeBronDay(date, index)
+                                    }
+                                  />
+                                </div>
+                              </td>
                             </tr>
-                          )
+                          );
                         })}
                       <tr className="border"></tr>
                       {newproducts &&
@@ -400,17 +417,17 @@ export const RegisterClient = ({
                                           ...newproducts[index],
                                           pieces: e.target.value,
                                         },
-                                      }),
+                                      })
                                     )
                                   }
                                   className="text-right outline-none"
-                                  style={{ maxWidth: '50px', outline: 'none' }}
+                                  style={{ maxWidth: "50px", outline: "none" }}
                                   defaultValue={product.pieces}
                                   type="number"
                                 />
                               </td>
                             </tr>
-                          )
+                          );
                         })}
                     </tbody>
                     <tfoot>
@@ -423,13 +440,13 @@ export const RegisterClient = ({
                             return (
                               summa +
                               service.service.price * parseInt(service.pieces)
-                            )
+                            );
                           }, 0) +
                             newproducts.reduce((summa, product) => {
                               return (
                                 summa +
                                 product.product.price * parseInt(product.pieces)
-                              )
+                              );
                             }, 0)}
                         </th>
                       </tr>
@@ -457,5 +474,5 @@ export const RegisterClient = ({
       </div>
       {/* Row end */}
     </>
-  )
-}
+  );
+};
