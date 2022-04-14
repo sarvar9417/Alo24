@@ -538,6 +538,7 @@ module.exports.getAll = async (req, res) => {
       .populate('client', '-createdAt -updatedAt -isArchive -__v')
       .populate('services')
       .populate('products')
+      .populate("doctor")
       .sort({ _id: -1 })
 
     res.status(200).send(connectors)
