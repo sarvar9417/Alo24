@@ -831,9 +831,7 @@ export const OnlineClients = () => {
         text={" malumotlarni qabul qilishni tasdiqlaysizmi?"}
         setModal2={setModal2}
         handler={PostToOffline}
-        basic={
-          postConnector.client.lastname + " " + postConnector.client.firstname
-        }
+        basic={postConnector.client && postConnector.client.fullname}
       />
     </div>
   );
