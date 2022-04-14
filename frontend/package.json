@@ -46,7 +46,6 @@
     "plugins": [
       "react-hooks"
     ]
-
   },
   "proxy": "http://localhost:9900",
   "browserslist": {

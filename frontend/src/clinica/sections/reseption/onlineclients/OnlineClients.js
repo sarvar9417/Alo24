@@ -3,37 +3,36 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../context/AuthContext";
 import { useHttp } from "../../../hooks/http.hook";
 import { Modal } from "../components/Modal";
+import { Modal as Modal2 } from "../components/Modal";
 import { RegisterClient } from "./clientComponents/RegisterClient";
 import { TableClients } from "./clientComponents/TableClients";
 import {
   checkClientData,
-  checkConnectorData,
   checkProductsData,
-  checkRoomData,
   checkServicesData,
 } from "./checkData/checkData";
-import { CheckModalStatsionar } from "../components/ModalCheckStatsionar";
+import { CheckModal } from "../components/ModalCheck";
 
-export const StatsionarClients = () => {
+export const OnlineClients = () => {
   const [beginDay, setBeginDay] = useState(
     new Date(new Date().setUTCHours(0, 0, 0, 0))
   );
   const [endDay, setEndDay] = useState(
     new Date(new Date().setDate(new Date().getDate() + 1))
   );
-
   //====================================================================
   //====================================================================
   // MODAL
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
+  const [modal2, setModal2] = useState(false);
   //====================================================================
   //====================================================================
 
   //====================================================================
   //====================================================================
   // RegisterPage
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   const changeVisible = () => setVisible(!visible);
 
@@ -91,7 +90,7 @@ export const StatsionarClients = () => {
     async (beginDay, endDay) => {
       try {
         const data = await request(
-          `/api/statsionarclient/client/getall`,
+          `/api/onlineclient/client/getall`,
           "POST",
           { clinica: auth && auth.clinica._id, beginDay, endDay },
           {
@@ -135,10 +134,7 @@ export const StatsionarClients = () => {
   const searchId = useCallback(
     (e) => {
       const searching = searchStorage.filter((item) =>
-        item.client.id
-          .toLoverCase()
-          .toString()
-          .includes(e.target.value.toLoverCase())
+        item.client.id.toString().includes(e.target.value)
       );
       setConnectors(searching);
       setCurrentConnectors(searching.slice(0, countPage));
@@ -211,7 +207,6 @@ export const StatsionarClients = () => {
   const [connector, setConnector] = useState({
     clinica: auth.clinica && auth.clinica._id,
     probirka: 0,
-    reseption: auth.user && auth.user._id,
   });
 
   const [check, setCheck] = useState({});
@@ -221,11 +216,9 @@ export const StatsionarClients = () => {
 
   const changeService = (services) => {
     let s = [];
-    let counter = 0;
     services.map((service) => {
       if (service.department.probirka) {
-        counter++;
-        setConnector({ ...connector, probirka: 1 });
+        setConnector({ ...connector, probirka: 1, clinica: auth.clinica._id });
       }
       return s.push({
         clinica: auth.clinica._id,
@@ -236,9 +229,6 @@ export const StatsionarClients = () => {
         pieces: 1,
       });
     });
-    if (!counter) {
-      setConnector({ ...connector, probirka: 0 });
-    }
     setServices(s);
     setSelectedServices(services);
   };
@@ -394,94 +384,6 @@ export const StatsionarClients = () => {
   //====================================================================
   //====================================================================
 
-  // ===================================================================
-  // ===================================================================
-  // Get Doctors
-  const [doctors, setDoctors] = useState([]);
-
-  const getDoctors = useCallback(async () => {
-    try {
-      const data = await request(
-        "/api/user/gettype",
-        "POST",
-        { clinica: auth.clinica._id, type: "Doctor" },
-        {
-          Authorization: `Bearer ${auth.token}`,
-        }
-      );
-      setDoctors(data);
-    } catch (error) {
-      notify({
-        title: error,
-        description: "",
-        status: "error",
-      });
-    }
-  }, [request, auth, notify]);
-
-  const changeDoctor = (e) => {
-    if (e.target.value === "delete") {
-      let s = { ...connector };
-      delete s.doctor;
-      setConnector(s);
-    } else {
-      setConnector({
-        ...connector,
-        doctor: e.target.value,
-      });
-    }
-  };
-
-  //====================================================================
-  //====================================================================
-
-  // ===================================================================
-  // ===================================================================
-  // Get Rooms
-  const [rooms, setRooms] = useState([]);
-
-  const getRooms = useCallback(async () => {
-    try {
-      const data = await request(
-        "/api/services/room/notbusy",
-        "POST",
-        { clinica: auth.clinica._id },
-        {
-          Authorization: `Bearer ${auth.token}`,
-        }
-      );
-      setRooms(data);
-    } catch (error) {
-      notify({
-        title: error,
-        description: "",
-        status: "error",
-      });
-    }
-  }, [request, auth, notify]);
-
-  const [room, setRoom] = useState({
-    clinica: auth.clinica && auth.clinica._id,
-    reseption: auth.user._id,
-  });
-
-  const changeRoom = (e) => {
-    if (e.target.value === "delete") {
-      let s = { ...room };
-      delete s.room;
-      delete s.roomid;
-      setRoom(s);
-    } else {
-      setRoom({
-        ...room,
-        room: JSON.parse(e.target.value),
-        roomid: JSON.parse(e.target.value)._id,
-      });
-    }
-  };
-  // ===================================================================
-  // ===================================================================
-
   //====================================================================
   //====================================================================
   // BASEURL
@@ -554,14 +456,6 @@ export const StatsionarClients = () => {
       return notify(checkClientData(client));
     }
 
-    if (checkConnectorData(connector, client)) {
-      return notify(checkConnectorData(connector));
-    }
-
-    if (checkRoomData(room, client)) {
-      return notify(checkRoomData(room));
-    }
-
     if (checkServicesData(services && services)) {
       return notify(checkServicesData(services));
     }
@@ -581,7 +475,7 @@ export const StatsionarClients = () => {
   const createHandler = useCallback(async () => {
     try {
       const data = await request(
-        `/api/statsionarclient/client/register`,
+        `/api/onlineclient/client/register`,
         "POST",
         {
           client: { ...client, clinica: auth.clinica._id },
@@ -590,7 +484,6 @@ export const StatsionarClients = () => {
           products: [...newproducts],
           counteragent: { ...counteragent, clinica: auth.clinica._id },
           adver: { ...adver, clinica: auth.clinica._id },
-          room: { ...room },
         },
         {
           Authorization: `Bearer ${auth.token}`,
@@ -607,6 +500,7 @@ export const StatsionarClients = () => {
       setCurrentConnectors(s.slice(indexFirstConnector, indexLastConnector));
       setModal(false);
       clearDatas();
+      setVisible(false);
     } catch (error) {
       notify({
         title: error,
@@ -618,17 +512,16 @@ export const StatsionarClients = () => {
     auth,
     client,
     connector,
+    notify,
     services,
     newproducts,
+    request,
     indexLastConnector,
     indexFirstConnector,
     connectors,
+    clearDatas,
     adver,
     counteragent,
-    room,
-    request,
-    notify,
-    clearDatas,
   ]);
 
   const updateHandler = useCallback(async () => {
@@ -637,14 +530,13 @@ export const StatsionarClients = () => {
     }
     try {
       const data = await request(
-        `/api/statsionarclient/client/update`,
+        `/api/onlineclient/client/update`,
         "PUT",
         {
           client: { ...client, clinica: auth.clinica._id },
           connector: { ...connector, clinica: auth.clinica._id },
           counteragent: { ...counteragent, clinica: auth.clinica._id },
           adver: { ...adver, clinica: auth.clinica._id },
-          room: { ...room },
         },
         {
           Authorization: `Bearer ${auth.token}`,
@@ -659,6 +551,7 @@ export const StatsionarClients = () => {
         status: "success",
       });
       clearDatas();
+      setVisible(false);
     } catch (error) {
       notify({
         title: error,
@@ -672,7 +565,6 @@ export const StatsionarClients = () => {
     adver,
     counteragent,
     connector,
-    room,
     notify,
     request,
     clearDatas,
@@ -684,7 +576,7 @@ export const StatsionarClients = () => {
   const addHandler = useCallback(async () => {
     try {
       const data = await request(
-        `/api/statsionarclient/client/add`,
+        `/api/onlineclient/client/add`,
         "POST",
         {
           client: { ...client, clinica: auth.clinica._id },
@@ -693,7 +585,6 @@ export const StatsionarClients = () => {
           products: [...newproducts],
           counteragent: { ...counteragent, clinica: auth.clinica._id },
           adver: { ...adver, clinica: auth.clinica._id },
-          room: { ...room },
         },
         {
           Authorization: `Bearer ${auth.token}`,
@@ -710,6 +601,7 @@ export const StatsionarClients = () => {
       });
       clearDatas();
       setModal(false);
+      setVisible(false);
     } catch (error) {
       notify({
         title: error,
@@ -720,18 +612,17 @@ export const StatsionarClients = () => {
   }, [
     auth,
     client,
-    notify,
-    request,
-    clearDatas,
-    getConnectors,
     services,
     newproducts,
     connector,
     adver,
     counteragent,
-    room,
     beginDay,
     endDay,
+    notify,
+    request,
+    clearDatas,
+    getConnectors,
   ]);
 
   //====================================================================
@@ -759,6 +650,52 @@ export const StatsionarClients = () => {
     setEndDay(date);
     getConnectors(beginDay, date);
   };
+
+  const changeBronDay = (date, indx) => {
+    const arr = [...services].map((item, index) => {
+      if (index === indx) {
+        item.bronday = date;
+        return item;
+      }
+      return item;
+    });
+    setServices(arr);
+  };
+
+  //====================================================================
+  //====================================================================
+  //Post To Offline
+
+  const [postConnector, setPostConnecter] = useState({});
+
+  const PostToOffline = async () => {
+    try {
+      const data = await request(
+        `/api/offlineclient/client/registeronline`,
+        "POST",
+        { ...postConnector },
+        {
+          Authorization: `Bearer ${auth.token}`,
+        }
+      );
+      localStorage.setItem("data", data);
+      notify({
+        title: "Mijoz muvaffaqqiyatli yaratildi.",
+        description: "",
+        status: "success",
+      });
+    } catch (error) {
+      notify({
+        title: error,
+        description: "",
+        status: "error",
+      });
+    }
+  };
+
+  //====================================================================
+  //====================================================================
+
   //====================================================================
   //====================================================================
   // useEffect
@@ -774,24 +711,20 @@ export const StatsionarClients = () => {
       getAdvers();
       getProducts();
       getBaseUrl();
-      getRooms();
-      getDoctors();
     }
   }, [
+    auth,
     getConnectors,
     getAdvers,
+    t,
     getProducts,
     getCounterDoctors,
     getDepartments,
     getBaseUrl,
-    getDoctors,
-    getRooms,
-    auth,
-    t,
     beginDay,
     endDay,
   ]);
-  console.log(connector);
+
   //====================================================================
   //====================================================================
   return (
@@ -821,8 +754,6 @@ export const StatsionarClients = () => {
             </div>
             <div className={` ${visible ? "" : "d-none"}`}>
               <RegisterClient
-                changeRoom={changeRoom}
-                changeDoctor={changeDoctor}
                 selectedServices={selectedServices}
                 selectedProducts={selectedProducts}
                 updateData={updateHandler}
@@ -844,15 +775,13 @@ export const StatsionarClients = () => {
                 advers={advers}
                 products={products}
                 loading={loading}
-                doctors={doctors}
-                rooms={rooms}
-                room={room}
-                setRoom={setRoom}
-                connector={connector}
-                setConnector={setConnector}
+                changeBronDay={changeBronDay}
               />
             </div>
             <TableClients
+              setVisible={setVisible}
+              modal1={modal1}
+              setModal1={setModal1}
               setCheck={setCheck}
               changeStart={changeStart}
               changeEnd={changeEnd}
@@ -873,15 +802,16 @@ export const StatsionarClients = () => {
               setCurrentConnectors={setCurrentConnectors}
               currentPage={currentPage}
               setPageSize={setPageSize}
-              setModal1={setModal1}
               // setModal2={setModal2}
               loading={loading}
+              setModal2={setModal2}
+              setPostConnector={setPostConnecter}
             />
           </div>
         </div>
       </div>
 
-      <CheckModalStatsionar
+      <CheckModal
         baseUrl={baseUrl}
         connector={check}
         modal={modal1}
@@ -894,6 +824,16 @@ export const StatsionarClients = () => {
         setModal={setModal}
         handler={client._id ? addHandler : createHandler}
         basic={client.lastname + " " + client.firstname}
+      />
+
+      <Modal2
+        modal={modal2}
+        text={" malumotlarni qabul qilishni tasdiqlaysizmi?"}
+        setModal2={setModal2}
+        handler={PostToOffline}
+        basic={
+          postConnector.client.lastname + " " + postConnector.client.firstname
+        }
       />
     </div>
   );
