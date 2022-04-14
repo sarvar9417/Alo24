@@ -7,12 +7,12 @@ const service = new Schema(
         isArchive: {type: Boolean, default: false},
         client: {
             type: Schema.Types.ObjectId,
-            ref: 'OfflineClient',
+            ref: 'OnlineClient',
             required: true,
         },
         connector: {
             type: Schema.Types.ObjectId,
-            ref: 'OfflineConnector',
+            ref: 'OnlineConnector',
             required: true,
         },
         serviceid: {type: Schema.Types.ObjectId, ref: 'Service', required: true},
@@ -29,7 +29,6 @@ const service = new Schema(
         accept: {type: Boolean, default: false},
         reseption: {type: Schema.Types.ObjectId, ref: 'User', required: true},
         doctor: {type: Schema.Types.ObjectId, ref: 'User'},
-        turn: Number,
         bronday: {type: Date},
     },
     {
@@ -37,7 +36,7 @@ const service = new Schema(
     },
 )
 
-function validateOfflineService(clientservice) {
+function validateOnlineService(clientservice) {
     const schema = Joi.object({
         clinica: Joi.string().required(),
         client: Joi.string(),
@@ -52,12 +51,11 @@ function validateOfflineService(clientservice) {
         accept: Joi.string(),
         reseption: Joi.string().required(),
         doctor: Joi.string(),
-        turn: Joi.number(),
-        bronday: Joi.date()
+        bronday: Joi.date(),
     })
 
     return schema.validate(clientservice)
 }
 
-module.exports.validateOfflineService = validateOfflineService
-module.exports.OfflineService = model('OfflineService', service)
+module.exports.validateOnlineService = validateOnlineService
+module.exports.OnlineService = model('OnlineService', service)

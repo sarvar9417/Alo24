@@ -3,25 +3,25 @@ const {Clinica} = require('../../models/DirectorAndClinica/Clinica')
 const {Service} = require('../../models/Services/Service')
 const {ProductConnector} = require('../../models/Warehouse/ProductConnector')
 const {
-    OfflineClient,
-    validateOfflineClient,
-} = require('../../models/OfflineClientt/OfflineClient')
+    OnlineClient,
+    validateOnlineClient,
+} = require('../../models/OnlineClient/OnlineClient')
 const {
-    OfflineProduct,
-    validateOfflineProduct,
-} = require('../../models/OfflineClientt/OfflineProduct')
+    OnlineProduct,
+    validateOnlineProduct,
+} = require('../../models/OnlineClient/OnlineProduct')
 const {
-    OfflineService,
-    validateOfflineService,
-} = require('../../models/OfflineClientt/OfflineService')
+    OnlineService,
+    validateOnlineService,
+} = require('../../models/OnlineClient/OnlineService')
 const {
-    OfflineConnector,
-    validateOfflineConnector,
-} = require('../../models/OfflineClientt/OfflineConnector')
+    OnlineConnector,
+    validateOnlineConnector,
+} = require('../../models/OnlineClient/OnlineConnector')
 const {
-    OfflineCounteragent,
-} = require('../../models/OfflineClientt/OfflineCounteragent')
-const {OfflineAdver} = require('../../models/OfflineClientt/OfflineAdver')
+    OnlineCounteragent,
+} = require('../../models/OnlineClient/OnlineCounteragent')
+const {OnlineAdver} = require('../../models/OnlineClient/OnlineAdver')
 
 // Register
 module.exports.register = async (req, res) => {
@@ -36,16 +36,16 @@ module.exports.register = async (req, res) => {
         } = req.body
         //=========================================================
         // CheckData
-        const checkClient = validateOfflineClient(client).error
+        const checkClient = validateOnlineClient(client).error
         if (checkClient) {
             return res.status(400).json({
                 error: error.message,
             })
         }
 
-        const checkOfflineConnector = validateOfflineConnector(connector).error
+        const checkOnlineConnector = validateOnlineConnector(connector).error
 
-        if (checkOfflineConnector) {
+        if (checkOnlineConnector) {
             return res.status(400).json({
                 error: error.message,
             })
@@ -53,21 +53,19 @@ module.exports.register = async (req, res) => {
 
         //=========================================================
         // CreateClient
-        const id =
-            (await OfflineClient.find({clinica: client.clinica})).length + 1000001
 
         const fullname = client.lastname + ' ' + client.firstname
 
-        const newclient = new OfflineClient({...client, id, fullname})
+        const newclient = new OnlineClient({...client, fullname})
         await newclient.save()
 
         //=========================================================
-        // CreateOfflineConnector
+        // CreateOnlineConnector
         let probirka = 0
         if (connector.probirka) {
             probirka =
                 (
-                    await OfflineConnector.find({
+                    await OnlineConnector.find({
                         clinica: connector.clinica,
                         probirka: {$ne: 0},
                         createdAt: {
@@ -77,7 +75,7 @@ module.exports.register = async (req, res) => {
                 ).length + 1
         }
 
-        const newconnector = new OfflineConnector({
+        const newconnector = new OnlineConnector({
             ...connector,
             client: newclient._id,
             probirka,
@@ -91,7 +89,7 @@ module.exports.register = async (req, res) => {
         // CreateServices
         let totalprice = 0
         for (const service of services) {
-            const {error} = validateOfflineService(service)
+            const {error} = validateOnlineService(service)
 
             if (error) {
                 return res.status(400).json({
@@ -100,63 +98,11 @@ module.exports.register = async (req, res) => {
             }
 
             //=========================================================
-            // Product decrement
-            const productconnectors = await ProductConnector.find({
-                clinica: client.clinica,
-                service: service.serviceid,
-            })
-
-            for (const productconnector of productconnectors) {
-                const product = await Product.findById(productconnector.product)
-                product.total = product.total - productconnector.pieces * service.pieces
-                await product.save()
-            }
-
-            //=========================================================
-            // TURN
-            var turn = 0
-            const clientservice = await OfflineService.findOne({
-                clinica: service.clinica,
-                client: newclient._id,
-                department: service.department,
-                createdAt: {
-                    $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-                },
-            })
-
-            if (clientservice) {
-                turn = clientservice.turn
-            } else {
-                let turns = await OfflineService.find({
-                    clinica: service.clinica,
-                    department: service.department,
-                    createdAt: {
-                        $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-                    },
-                })
-                    .sort({client: 1})
-                    .select('client')
-
-                turns.map((t, i) => {
-                    if (i === 0) {
-                        turn++
-                    } else {
-                        if (turns[i - 1].client.toString() !== t.client.toString()) {
-                            turn++
-                        }
-                    }
-                })
-
-                turn++
-            }
-
-            //=========================================================
             // Create Service
-            const newservice = new OfflineService({
+            const newservice = new OnlineService({
                 ...service,
                 client: newclient._id,
                 connector: newconnector._id,
-                turn,
             })
 
             await newservice.save()
@@ -169,7 +115,7 @@ module.exports.register = async (req, res) => {
 
         // CreateProducts
         for (const product of products) {
-            const {error} = validateOfflineProduct(product)
+            const {error} = validateOnlineProduct(product)
 
             if (error) {
                 return res.status(400).json({
@@ -177,11 +123,7 @@ module.exports.register = async (req, res) => {
                 })
             }
 
-            const produc = await Product.findById(product.productid)
-            produc.total = produc.total - product.pieces
-            await produc.save()
-
-            const newproduct = new OfflineProduct({
+            const newproduct = new OnlineProduct({
                 ...product,
                 client: newclient._id,
                 connector: newconnector._id,
@@ -198,7 +140,7 @@ module.exports.register = async (req, res) => {
         await newconnector.save()
 
         if (counteragent.counterdoctor) {
-            const newcounteragent = new OfflineCounteragent({
+            const newcounteragent = new OnlineCounteragent({
                 client: newclient._id.toString(),
                 connector: newconnector._id.toString(),
                 services: [...newconnector.services],
@@ -208,7 +150,7 @@ module.exports.register = async (req, res) => {
         }
 
         if (adver.adver) {
-            const newadver = new OfflineAdver({
+            const newadver = new OnlineAdver({
                 client: newclient._id,
                 connector: newconnector._id,
                 ...adver,
@@ -217,7 +159,7 @@ module.exports.register = async (req, res) => {
             await newadver.save()
         }
 
-        const response = await OfflineConnector.findById(newconnector._id)
+        const response = await OnlineConnector.findById(newconnector._id)
             .populate('client')
             .populate('services')
             .populate('products')
@@ -239,22 +181,22 @@ module.exports.add = async (req, res) => {
             adver,
         } = req.body
 
-        const updateClient = await OfflineClient.findByIdAndUpdate(
+        const updateClient = await OnlineClient.findByIdAndUpdate(
             client._id,
             client,
         )
 
-        const updateOfflineConnector = await OfflineConnector.findById(
+        const updateOnlineConnector = await OnlineConnector.findById(
             connector._id,
         )
 
         //=========================================================
-        // CreateOfflineConnector
+        // CreateOnlineConnector
         let probirka = 0
-        if (connector.probirka && !updateOfflineConnector.probirka) {
+        if (connector.probirka && !updateOnlineConnector.probirka) {
             probirka =
                 (
-                    await OfflineConnector.find({
+                    await OnlineConnector.find({
                         clinica: client.clinica,
                         probirka: {$ne: 0},
                         createdAt: {
@@ -263,15 +205,15 @@ module.exports.add = async (req, res) => {
                     })
                 ).length + 1
 
-            updateOfflineConnector.probirka = probirka
-            await updateOfflineConnector.save()
+            updateOnlineConnector.probirka = probirka
+            await updateOnlineConnector.save()
         }
 
         //=========================================================
         // CreateServices
         let totalprice = 0
         for (const service of services) {
-            const {error} = validateOfflineService(service)
+            const {error} = validateOnlineService(service)
 
             if (error) {
                 return res.status(400).json({
@@ -280,75 +222,23 @@ module.exports.add = async (req, res) => {
             }
 
             //=========================================================
-            // Product decrement
-            const productconnectors = await ProductConnector.find({
-                clinica: client.clinica,
-                service: service.serviceid,
-            })
-
-            for (const productconnector of productconnectors) {
-                const product = await Product.findById(productconnector.product)
-                product.total = product.total - productconnector.pieces * service.pieces
-                await product.save()
-            }
-
-            //=========================================================
-            // TURN
-            var turn = 0
-            const clientservice = await OfflineService.findOne({
-                clinica: service.clinica,
-                client: client._id,
-                department: service.department,
-                createdAt: {
-                    $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-                },
-            })
-
-            if (clientservice) {
-                turn = clientservice.turn
-            } else {
-                let turns = await OfflineService.find({
-                    clinica: service.clinica,
-                    department: service.department,
-                    createdAt: {
-                        $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-                    },
-                })
-                    .sort({client: 1})
-                    .select('client')
-
-                turns.map((t, i) => {
-                    if (i === 0) {
-                        turn++
-                    } else {
-                        if (turns[i - 1].client.toString() !== t.client.toString()) {
-                            turn++
-                        }
-                    }
-                })
-
-                turn++
-            }
-
-            //=========================================================
             // Create Service
-            const newservice = new OfflineService({
+            const newservice = new OnlineService({
                 ...service,
                 client: client._id,
-                connector: updateOfflineConnector._id,
-                turn: turn,
+                connector: updateOnlineConnector._id,
             })
 
             await newservice.save()
 
             totalprice += service.service.price
 
-            updateOfflineConnector.services.push(newservice._id)
+            updateOnlineConnector.services.push(newservice._id)
         }
 
         // CreateProducts
         for (const product of products) {
-            const {error} = validateOfflineProduct(product)
+            const {error} = validateOnlineProduct(product)
 
             if (error) {
                 return res.status(400).json({
@@ -356,37 +246,33 @@ module.exports.add = async (req, res) => {
                 })
             }
 
-            const produc = await Product.findById(product.productid)
-            produc.total = produc.total - product.pieces
-            await produc.save()
-
-            const newproduct = new OfflineProduct({
+            const newproduct = new OnlineProduct({
                 ...product,
                 client: client._id,
-                connector: updateOfflineConnector._id,
+                connector: updateOnlineConnector._id,
             })
 
             await newproduct.save()
             totalprice += product.product.price * product.pieces
 
-            updateOfflineConnector.products.push(newproduct._id)
+            updateOnlineConnector.products.push(newproduct._id)
         }
 
         if (counteragent.counterdoctor) {
-            const oldcounteragent = await OfflineCounteragent.findOne({
+            const oldcounteragent = await OnlineCounteragent.findOne({
                 connector: connector._id,
             })
 
             if (oldcounteragent) {
                 oldcounteragent.counteragent = counteragent.counteragent
                 oldcounteragent.counterdoctor = counteragent.counterdoctor
-                oldcounteragent.services = [...updateOfflineConnector.services]
+                oldcounteragent.services = [...updateOnlineConnector.services]
                 await oldcounteragent.save()
             } else {
-                const newcounteragent = new OfflineCounteragent({
+                const newcounteragent = new OnlineCounteragent({
                     client: client._id.toString(),
-                    connector: updateOfflineConnector._id.toString(),
-                    services: [...updateOfflineConnector.services],
+                    connector: updateOnlineConnector._id.toString(),
+                    services: [...updateOnlineConnector.services],
                     ...counteragent,
                 })
                 await newcounteragent.save()
@@ -394,7 +280,7 @@ module.exports.add = async (req, res) => {
         }
 
         if (adver.adver) {
-            const oldadver = await OfflineAdver.findOne({
+            const oldadver = await OnlineAdver.findOne({
                 connector: connector._id,
             })
 
@@ -402,18 +288,18 @@ module.exports.add = async (req, res) => {
                 oldadver.adver = adver.adver
                 await oldadver.save()
             } else {
-                const newadver = new OfflineAdver({
+                const newadver = new OnlineAdver({
                     client: client._id,
-                    connector: updateOfflineConnector._id,
+                    connector: updateOnlineConnector._id,
                     ...adver,
                 })
                 await newadver.save()
             }
         }
 
-        updateOfflineConnector.totalprice =
-            updateOfflineConnector.totalprice + totalprice
-        await updateOfflineConnector.save()
+        updateOnlineConnector.totalprice =
+            updateOnlineConnector.totalprice + totalprice
+        await updateOnlineConnector.save()
 
         res.status(201).send({message: "Xizmatlar ro'yxatga olindi"})
     } catch (error) {
@@ -434,7 +320,7 @@ module.exports.getAll = async (req, res) => {
             })
         }
 
-        const connectors = await OfflineConnector.find({
+        const connectors = await OnlineConnector.find({
             clinica,
             createdAt: {
                 $gte: beginDay,
@@ -462,12 +348,12 @@ module.exports.update = async (req, res) => {
                 .status(404)
                 .send({message: "Foydalanuvchi ma'lumotlari topilmadi"})
         }
-        const update = await OfflineClient.findByIdAndUpdate(client._id, client)
+        const update = await OnlineClient.findByIdAndUpdate(client._id, client)
 
-        const oldconnector = await OfflineConnector.findById(connector._id)
+        const oldconnector = await OnlineConnector.findById(connector._id)
 
         if (counteragent.counterdoctor) {
-            const oldcounteragent = await OfflineCounteragent.findOne({
+            const oldcounteragent = await OnlineCounteragent.findOne({
                 client: client._id,
                 connector: connector._id,
             })
@@ -478,7 +364,7 @@ module.exports.update = async (req, res) => {
                 oldcounteragent.services = [...oldconnector.services]
                 await oldcounteragent.save()
             } else {
-                const newcounteragent = new OfflineCounteragent({
+                const newcounteragent = new OnlineCounteragent({
                     client: client._id.toString(),
                     connector: connector._id,
                     services: [...oldconnector.services],
@@ -489,7 +375,7 @@ module.exports.update = async (req, res) => {
         }
 
         if (adver.adver) {
-            const oldadver = await OfflineAdver.findOne({
+            const oldadver = await OnlineAdver.findOne({
                 client: client._id,
             })
 
@@ -497,7 +383,7 @@ module.exports.update = async (req, res) => {
                 oldadver.adver = adver.adver
                 await oldadver.save()
             } else {
-                const newadver = new OfflineAdver({
+                const newadver = new OnlineAdver({
                     client: client._id,
                     connector: connector._id,
                     ...adver,
