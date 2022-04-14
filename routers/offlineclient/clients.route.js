@@ -5,23 +5,23 @@ const {ProductConnector} = require('../../models/Warehouse/ProductConnector')
 const {
     OfflineClient,
     validateOfflineClient,
-} = require('../../models/OfflineClientt/OfflineClient')
+} = require('../../models/OfflineClient/OfflineClient')
 const {
     OfflineProduct,
     validateOfflineProduct,
-} = require('../../models/OfflineClientt/OfflineProduct')
+} = require('../../models/OfflineClient/OfflineProduct')
 const {
     OfflineService,
     validateOfflineService,
-} = require('../../models/OfflineClientt/OfflineService')
+} = require('../../models/OfflineClient/OfflineService')
 const {
     OfflineConnector,
     validateOfflineConnector,
-} = require('../../models/OfflineClientt/OfflineConnector')
+} = require('../../models/OfflineClient/OfflineConnector')
 const {
     OfflineCounteragent,
-} = require('../../models/OfflineClientt/OfflineCounteragent')
-const {OfflineAdver} = require('../../models/OfflineClientt/OfflineAdver')
+} = require('../../models/OfflineClient/OfflineCounteragent')
+const {OfflineAdver} = require('../../models/OfflineClient/OfflineAdver')
 
 // Register
 module.exports.register = async (req, res) => {
