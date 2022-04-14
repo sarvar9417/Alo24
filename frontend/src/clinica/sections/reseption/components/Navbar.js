@@ -1,14 +1,14 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
-import { AuthContext } from '../../../context/AuthContext'
-import { useHttp } from '../../../hooks/http.hook'
-import { useToast } from '@chakra-ui/react'
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { Link, useHistory } from "react-router-dom";
+import { AuthContext } from "../../../context/AuthContext";
+import { useHttp } from "../../../hooks/http.hook";
+import { useToast } from "@chakra-ui/react";
 
 export const Navbar = () => {
-  const history = useHistory()
+  const history = useHistory();
   //====================================================================
   //====================================================================
-  const toast = useToast()
+  const toast = useToast();
 
   const notify = useCallback(
     (data) => {
@@ -18,52 +18,52 @@ export const Navbar = () => {
         status: data.status && data.status,
         duration: 5000,
         isClosable: true,
-        position: 'top-right',
-      })
+        position: "top-right",
+      });
     },
-    [toast],
-  )
+    [toast]
+  );
   //====================================================================
   //====================================================================
 
   //====================================================================
   //====================================================================
 
-  const { request } = useHttp()
-  const auth = useContext(AuthContext)
+  const { request } = useHttp();
+  const auth = useContext(AuthContext);
 
-  const user = auth.user
+  const user = auth.user;
   //====================================================================
   //====================================================================
 
   //====================================================================
   //====================================================================
-  const [baseUrl, setBaseUrl] = useState()
+  const [baseUrl, setBaseUrl] = useState();
 
   const getBaseUrl = useCallback(async () => {
     try {
-      const data = await request('/api/baseurl', 'GET', null)
-      setBaseUrl(data.baseUrl)
+      const data = await request("/api/baseurl", "GET", null);
+      setBaseUrl(data.baseUrl);
     } catch (error) {
       notify({
         title: error,
-        description: '',
-        status: 'error',
-      })
+        description: "",
+        status: "error",
+      });
     }
-  }, [request, notify])
+  }, [request, notify]);
   //====================================================================
   //====================================================================
 
   //====================================================================
   //====================================================================
-  const [t, setT] = useState()
+  const [t, setT] = useState();
   useEffect(() => {
     if (!t) {
-      setT(1)
-      getBaseUrl()
+      setT(1);
+      getBaseUrl();
     }
-  }, [getBaseUrl, t])
+  }, [getBaseUrl, t]);
   //====================================================================
   //====================================================================
 
@@ -92,14 +92,14 @@ export const Navbar = () => {
           >
             <ul className="navbar-nav">
               <li className="nav-item mr-4 px-2">
-                <span className="logo" style={{ fontSize: '26pt' }}>
+                <span className="logo" style={{ fontSize: "26pt" }}>
                   Alo24
                 </span>
               </li>
               <li className="nav-item">
                 <Link
                   className={`nav-link ${
-                    window.location.pathname === '/alo24' ? 'active-page' : ''
+                    window.location.pathname === "/alo24" ? "active-page" : ""
                   }`}
                   to="/"
                 >
@@ -110,9 +110,11 @@ export const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className={`nav-link ${
-                    window.location.pathname === '/alo24/statsionar' ? 'active-page' : ''
+                    window.location.pathname === "/alo24/statsionar"
+                      ? "active-page"
+                      : ""
                   }`}
-                  to="/alo24/statsionar" 
+                  to="/alo24/statsionar"
                 >
                   <i className="icon-devices_other nav-icon" />
                   Statsionar
@@ -121,11 +123,11 @@ export const Navbar = () => {
               <li className="nav-item">
                 <Link
                   className={`nav-link ${
-                    window.location.pathname === '/alo24/online'
-                      ? 'active-page'
-                      : ''
+                    window.location.pathname === "/alo24/online"
+                      ? "active-page"
+                      : ""
                   }`}
-                  to="/online"
+                  to="/alo24/online"
                 >
                   <i className="icon-devices_other nav-icon" />
                   Online
@@ -179,8 +181,8 @@ export const Navbar = () => {
                     </div>
                     <button
                       onClick={() => {
-                        auth.logout()
-                        history.push('/')
+                        auth.logout();
+                        history.push("/");
                       }}
                     >
                       <i className="icon-log-out1" /> Chiqish
@@ -200,5 +202,5 @@ export const Navbar = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
