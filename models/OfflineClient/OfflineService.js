@@ -31,6 +31,8 @@ const service = new Schema(
         doctor: {type: Schema.Types.ObjectId, ref: 'User'},
         turn: Number,
         bronday: {type: Date},
+        payment: {type: Boolean, default: false},
+        comment: {type: String}
     },
     {
         timestamps: true,
@@ -53,7 +55,9 @@ function validateOfflineService(clientservice) {
         reseption: Joi.string().required(),
         doctor: Joi.string(),
         turn: Joi.number(),
-        bronday: Joi.date()
+        bronday: Joi.date(),
+        payment: Joi.boolean(),
+        comment: Joi.string()
     })
 
     return schema.validate(clientservice)

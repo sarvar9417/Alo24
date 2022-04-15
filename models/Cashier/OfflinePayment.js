@@ -1,7 +1,7 @@
 const {Schema, model, Types} = require('mongoose')
 const Joi = require('joi')
 
-const payment = new Schema(
+const offlinePayment = new Schema(
     {
         total: {type: Number, required: true},
         payment: {type: Number, required: true},
@@ -9,8 +9,8 @@ const payment = new Schema(
         cash: {type: Number},
         card: {type: Number},
         transfer: {type: Number},
-        services: {type: Schema.Types.ObjectId, ref: 'Service', required: true},
-        products: {type: Schema.Types.ObjectId, ref: 'Product', required: true},
+        services: [{type: Schema.Types.ObjectId, ref: 'Service', required: true}],
+        products: [{type: Schema.Types.ObjectId, ref: 'Product', required: true}],
         discount: {type: Schema.Types.ObjectId, ref: 'Discount'},
         clinica: {type: Schema.Types.ObjectId, ref: 'Clinica', required: true},
         client: {type: Schema.Types.ObjectId, ref: 'Client', required: true},
@@ -42,4 +42,4 @@ function validatePayment(payment) {
 }
 
 module.exports.validatePayment = validatePayment
-module.exports.Payment = model('Payment', payment)
+module.exports.OfflinePayment = model('OfflinePayment', offlinePayment)

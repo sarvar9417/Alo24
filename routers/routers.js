@@ -29,4 +29,8 @@ module.exports.routers = (app) => {
         "/api/adver",
         require("./adver/adver.route")
     );
+    app.use(
+        "/api/cashier",
+        require("./cashier/cashier.route")
+    );
 };

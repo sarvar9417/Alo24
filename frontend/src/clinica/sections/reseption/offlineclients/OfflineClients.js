@@ -91,6 +91,8 @@ export const OfflineClients = () => {
                         Authorization: `Bearer ${auth.token}`,
                     },
                 )
+                console.log(JSON.parse(JSON.stringify(data)))
+
                 setConnectors(data)
                 setSearchStrorage(data)
                 setCurrentConnectors(
