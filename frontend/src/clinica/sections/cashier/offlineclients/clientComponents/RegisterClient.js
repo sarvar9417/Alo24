@@ -96,7 +96,7 @@ export const RegisterClient = ({
                   </tr>
                   <tr className="border">
                     <td className="py-1">Telefon raqami</td>
-                    <td className="py-1">{client.phone}</td>
+                    <td className="py-1">+998{client.phone}</td>
                   </tr>
                   <tr className="border">
                     <td className="py-1">ID</td>
@@ -161,6 +161,22 @@ export const RegisterClient = ({
                                   type="number"
                                 />
                               </td>
+                              <td className="py-1">
+                                <div className="d-flex justify-content-center align-items-center">
+                                  <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id="checkboxNoLabel"
+                                    value=""
+                                    aria-label="..."
+                                  />
+                                </div>
+                              </td>
+                              <td className="py-1 text-center">
+                                <button className="btn btn-success py-0">
+                                  <FontAwesomeIcon icon={faPenAlt} />
+                                </button>
+                              </td>
                             </tr>
                           );
                         })}
@@ -193,16 +209,18 @@ export const RegisterClient = ({
                                   type="number"
                                 />
                               </td>
-                              <td className="text-right py-1">
-                                <input
-                                  className="form-check-input"
-                                  type="checkbox"
-                                  id="checkboxNoLabel"
-                                  value=""
-                                  aria-label="..."
-                                />
+                              <td className="py-1">
+                                <div className="d-flex justify-content-center align-items-center">
+                                  <input
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    id="checkboxNoLabel"
+                                    value=""
+                                    aria-label="..."
+                                  />
+                                </div>
                               </td>
-                              <td className="text-right py-1">
+                              <td className="py-1 text-center">
                                 <button className="btn btn-success py-0">
                                   <FontAwesomeIcon icon={faPenAlt} />
                                 </button>
@@ -210,13 +228,12 @@ export const RegisterClient = ({
                             </tr>
                           );
                         })}
+                      <tr className="border"></tr>
                     </tbody>
                     <tfoot>
-                      <tr>
-                        <th className="text-right" colSpan={2}>
-                          Jami:
-                        </th>
-                        <th colSpan={2}>
+                      <tr className="border">
+                        <td>Jami to'lov:</td>
+                        <td>
                           {newservices.reduce((summa, service) => {
                             return (
                               summa +
@@ -229,7 +246,22 @@ export const RegisterClient = ({
                                 product.product.price * parseInt(product.pieces)
                               );
                             }, 0)}
-                        </th>
+                        </td>
+                      </tr>
+                      <tr className="border">
+                        <td>To'langan:</td>
+                        <td>{connector.payments}</td>
+                      </tr>
+                      <tr className="border">
+                        <td>Chegirma:</td>
+                        <td>{connector.discount}</td>
+                      </tr>
+                      <tr className="border">
+                        <td>Qarz:</td>
+                        <td>
+                          {connector.discount &&
+                            connector.payments + connector.discount}
+                        </td>
                       </tr>
                     </tfoot>
                   </table>
