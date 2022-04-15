@@ -270,14 +270,13 @@ export const TableClients = ({
                       {connector.probirka}
                     </td>
                     <td className="border py-1 text-right">
+                      {connector.totalprice}
+                    </td>
+                    <td className="border py-1 text-right">
                       {connector.payments}
                     </td>
                     <td className="border py-1 text-right">
                       {connector.discount}
-                    </td>
-                    <td className="border py-1 text-right">
-                      {new Date(connector.createdAt).toLocaleDateString()}
-                      {new Date(connector.createdAt).toLocaleTimeString()}
                     </td>
                     <td className="border py-1 text-center">
                       {loading ? (
