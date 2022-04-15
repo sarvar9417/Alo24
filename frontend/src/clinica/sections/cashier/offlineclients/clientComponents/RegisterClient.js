@@ -79,47 +79,31 @@ export const RegisterClient = ({
                 </thead>
                 <tbody>
                   <tr className="border">
-                    <td scope="row" className="py-1">
-                      Familiyasi
-                    </td>
-                    <td scope="row" className="py-1">
-                      {client.lastname}
-                    </td>
+                    <td className="py-1">Familiyasi</td>
+                    <td className="py-1">{client.lastname}</td>
                   </tr>
                   <tr className="border">
-                    <td scope="row" className=" py-1">
-                      Ismi
-                    </td>
+                    <td className=" py-1">Ismi</td>
                     <td className="py-1">{client.firstname}</td>
                   </tr>
                   <tr className="border">
-                    <td scope="row" className="py-1">
-                      Otasining ismi
-                    </td>
+                    <td className="py-1">Otasining ismi</td>
                     <td className="py-1">{client.fathername}</td>
                   </tr>
                   <tr className="border">
-                    <td scope="row" className="py-1">
-                      Tugilgan sanasi
-                    </td>
+                    <td className="py-1">Tugilgan sanasi</td>
                     <td className="py-1">{client.born}</td>
                   </tr>
                   <tr className="border">
-                    <td scope="row" className="py-1">
-                      Telefon raqami
-                    </td>
+                    <td className="py-1">Telefon raqami</td>
                     <td className="py-1">{client.phone}</td>
                   </tr>
                   <tr className="border">
-                    <td scope="row" className="py-1">
-                      ID
-                    </td>
+                    <td className="py-1">ID</td>
                     <td className="py-1">{client.id}</td>
                   </tr>
                   <tr className="border">
-                    <td scope="row" className="py-1">
-                      Probirka
-                    </td>
+                    <td className="py-1">Probirka</td>
                     <td className="py-1">{connector.probirka}</td>
                   </tr>
                 </tbody>
