@@ -104,46 +104,46 @@ export const Navbar = () => {
                   to="/"
                 >
                   <i className="icon-devices_other nav-icon" />
-                  Kunduzgi
+                  Mijozlar
                 </Link>
               </li>
               <li className="nav-item">
                 <Link
                   className={`nav-link ${
-                    window.location.pathname === "/alo24/statsionar"
+                    window.location.pathname === "/alo24/samples"
                       ? "active-page"
                       : ""
                   }`}
-                  to="/alo24/statsionar"
+                  to="/alo24/samples"
                 >
                   <i className="icon-devices_other nav-icon" />
-                  Statsionar
+                  Shablonlar
                 </Link>
               </li>
               <li className="nav-item">
                 <Link
                   className={`nav-link ${
-                    window.location.pathname === "/alo24/discount"
+                    window.location.pathname === "/alo24/tables"
                       ? "active-page"
                       : ""
                   }`}
-                  to="/alo24/discount"
+                  to="/alo24/tables"
                 >
                   <i className="icon-devices_other nav-icon" />
-                  Chegirmalar
+                  Jadvallar
                 </Link>
               </li>
               <li className="nav-item">
                 <Link
                   className={`nav-link ${
-                    window.location.pathname === "/alo24/debt"
+                    window.location.pathname === "/alo24/conclusion"
                       ? "active-page"
                       : ""
                   }`}
-                  to="/alo24/debt"
+                  to="/alo24/conclusion"
                 >
                   <i className="icon-devices_other nav-icon" />
-                  Qarizlar
+                  Xulosa berish
                 </Link>
               </li>
             </ul>
