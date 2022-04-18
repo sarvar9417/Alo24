@@ -1,23 +1,10 @@
 import React from "react";
-<<<<<<< Updated upstream
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faAngleDown, faAngleUp, faMoneyBill, faPrint} from "@fortawesome/free-solid-svg-icons";
 import {Sort} from "./Sort";
 import {Pagination} from "../../components/Pagination";
 import {DatePickers} from "./DatePickers";
-=======
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAngleUp,
-  faAngleDown,
-  faPenAlt,
-  faPrint,
-} from "@fortawesome/free-solid-svg-icons";
-import { Sort } from "./Sort";
-import { Pagination } from "../../components/Pagination";
-import { DatePickers } from "./DatePickers";
-import { useParams } from "react-router-dom";
->>>>>>> Stashed changes
+
 
 export const TableClients = ({
                                  changeClient,
