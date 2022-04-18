@@ -5,6 +5,7 @@ import {useHttp} from "../../../hooks/http.hook";
 // import { Modal } from "../components/Modal";
 import {RegisterClient} from "./clientComponents/RegisterClient";
 import {TableClients} from "./clientComponents/TableClients";
+import {checkData} from "./checkData/checkData";
 // import {
 //   checkClientData,
 //   checkProductsData,
@@ -232,6 +233,7 @@ export const OfflineClients = () => {
         transfer: 0,
         debt: 0
     })
+    const [totalpayment, setTotalPayment] = useState(0)
     const [discount, setDiscount] = useState({
         discount: 0
     })
@@ -296,6 +298,7 @@ export const OfflineClients = () => {
             transfer: 0,
             debt: 0
         })
+        setTotalPayment(payment)
         setDiscount({
             total: s,
             discount: 0,
@@ -386,14 +389,31 @@ export const OfflineClients = () => {
 
     const changeDiscount = (e) => {
         let disc = parseInt(e.target.value)
+
+        if (disc > totalpayment - (payments + discounts + payment.debt)) {
+            e.target.value = parseInt(parseInt(e.target.value) / 10)
+            return notify({
+                title: "Diqqat! Chegirma summasi umumiy to'lov summasidan oshmasligi kerak!",
+                description: "",
+                status: "error",
+            });
+        }
+
         if (disc <= 100) {
             setDiscount({
-                ...discount, procient: disc, discount: payment.payment * disc / 100
+                ...discount, procient: disc, discount: totalpayment * disc / 100
             })
-
+            setPayment({
+                ...payment,
+                payment: totalpayment - payments - discounts - totalpayment * disc / 100 - parseInt(payment.debt)
+            })
         } else {
             setDiscount({
                 ...discount, procient: 0, discount: disc
+            })
+            setPayment({
+                ...payment,
+                payment: totalpayment - payments - discounts - parseInt(disc) - parseInt(payment.debt)
             })
         }
     }
@@ -409,9 +429,21 @@ export const OfflineClients = () => {
     }
 
     const changeDebt = (e) => {
+        let debt = parseInt(e.target.value)
+        if (debt > totalpayment - (payments + discounts + discount.discount)) {
+            e.target.value = parseInt(parseInt(e.target.value) / 10)
+            return notify({
+                title: "Diqqat! Qarz summasi umumiy to'lov summasidan oshmasligi kerak!",
+                description: "",
+                status: "error",
+            });
+        }
         setPayment({
-            ...payment, debt: e.target.value
+            ...payment,
+            debt: parseInt(e.target.value),
+            payment: totalpayment - payments - discounts - parseInt(e.target.value) - parseInt(discount.discount)
         })
+
     }
 
     const debtComment = (e) => {
@@ -426,7 +458,17 @@ export const OfflineClients = () => {
     //====================================================================
     // CreatePayment
 
+    const checkPayment = () => {
+        if (checkData(payment, payments, discount, discounts, services, products)) {
+            return toast(checkData(payment, payments, discount, discounts, services, products))
+
+        } else {
+            return alert("Xatosiz")
+        }
+    }
+
     const createHandler = useCallback(async () => {
+
         try {
             const data = await request(
                 `/api/cashier/offline/payment`,
@@ -516,6 +558,7 @@ export const OfflineClients = () => {
                         </div>
                         <div className={` ${visible ? "" : "d-none"}`}>
                             <RegisterClient
+                                checkPayment={checkPayment}
                                 debtComment={debtComment}
                                 changeDebt={changeDebt}
                                 serviceComment={serviceComment}

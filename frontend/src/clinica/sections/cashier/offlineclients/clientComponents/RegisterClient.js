@@ -3,6 +3,7 @@ import React from "react";
 import "react-datepicker/dist/react-datepicker.css";
 
 export const RegisterClient = ({
+                                   checkPayment,
                                    debtComment,
                                    changeDebt,
                                    serviceComment,
@@ -237,7 +238,7 @@ export const RegisterClient = ({
                                         To'lanayotgan:
                                     </th>
                                     <th className="text-left" colSpan={4}>
-                                        {payment.payment - payment.debt - discount.discount}
+                                        {payment.payment}
                                     </th>
                                 </tr>
                                 </tfoot>
@@ -463,7 +464,7 @@ export const RegisterClient = ({
                                         Loading...
                                     </button>
                                 ) : (
-                                    <button className="btn btn-warning w-100">
+                                    <button onClick={checkPayment} className="btn btn-warning w-100">
                                         Qabul qilish
                                     </button>
                                 )}
