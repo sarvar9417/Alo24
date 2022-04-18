@@ -9,12 +9,12 @@ const offlinePayment = new Schema(
         cash: {type: Number},
         card: {type: Number},
         transfer: {type: Number},
-        services: [{type: Schema.Types.ObjectId, ref: 'Service', required: true}],
-        products: [{type: Schema.Types.ObjectId, ref: 'Product', required: true}],
         discount: {type: Schema.Types.ObjectId, ref: 'Discount'},
         clinica: {type: Schema.Types.ObjectId, ref: 'Clinica', required: true},
         client: {type: Schema.Types.ObjectId, ref: 'Client', required: true},
         connector: {type: Schema.Types.ObjectId, ref: 'Connector', required: true},
+        comment: {type: String},
+        debt: {type: Number},
         isArchive: {type: Boolean, default: false},
     },
     {
@@ -33,9 +33,9 @@ function validatePayment(payment) {
         clinica: Joi.string().required(),
         connector: Joi.string().required(),
         client: Joi.string().required(),
-        services: Joi.array(),
-        products: Joi.array(),
         discount: Joi.string(),
+        debt: Joi.number,
+        comment: Joi.string()
     })
 
     return schema.validate(payment)

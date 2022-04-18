@@ -175,12 +175,6 @@ export const OfflineClients = () => {
         [countPage, connectors]
     );
 
-    const [connector, setConnector] = useState({
-        clinica: auth.clinica && auth.clinica._id,
-        probirka: 0,
-    });
-
-
     //====================================================================
     //====================================================================
     // CLIENT
@@ -188,6 +182,10 @@ export const OfflineClients = () => {
     const [client, setClient] = useState({
         clinica: auth.clinica && auth.clinica._id,
         reseption: auth.user && auth.user._id,
+    });
+    const [connector, setConnector] = useState({
+        clinica: auth.clinica && auth.clinica._id,
+        probirka: 0,
     });
 
     //====================================================================
@@ -218,19 +216,254 @@ export const OfflineClients = () => {
 
     //====================================================================
     //====================================================================
-    // changeClient
+    // Payment
 
     const [services, setServices] = useState([])
     const [products, setProducts] = useState([])
     const [index, setIndex] = useState()
 
+    const [allprice, setAllPrice] = useState(0)
+    const [payments, setPayments] = useState(0)
+    const [discounts, setDiscounts] = useState(0)
+    const [payment, setPayment] = useState({
+        payment: 0,
+        card: 0,
+        cash: 0,
+        transfer: 0,
+        debt: 0
+    })
+    const [discount, setDiscount] = useState({
+        discount: 0
+    })
 
     const changeClient = useCallback((connector, index) => {
         setIndex(index)
-        setServices(connector.services)
-        setProducts(connector.products)
 
+        let servs = JSON.parse(JSON.stringify(connector.services))
+        for (const serv of servs) {
+            if (!serv.payment && !serv.refuse) {
+                serv.payment = true
+            }
+        }
+        let prods = JSON.parse(JSON.stringify(connector.products))
+        for (const prod of prods) {
+            if (!prod.payment && !prod.refuse) {
+                prod.payment = true
+            }
+        }
+        setServices(servs)
+        setProducts(prods)
+        setClient(JSON.parse(JSON.stringify(connector.client)))
+        let s = connector.services.reduce((summa, service) => {
+                return (
+                    summa +
+                    service.service.price * parseInt(service.pieces)
+                );
+            }, 0) +
+            connector.products.reduce((summa, product) => {
+                return (
+                    summa +
+                    product.product.price * parseInt(product.pieces)
+                );
+            }, 0)
+        setAllPrice(s)
+        setConnector({...connector})
+        setPayments(connector.payments.reduce((summa, payment) => {
+            return (summa + payment.payment)
+        }, 0))
+        setDiscounts(connector.discounts.reduce((summa, discount) => {
+            return (summa + discount.discount)
+        }, 0))
+        let payment = 0
+        for (const service of connector.services) {
+            if (!service.payment && !service.refuse) {
+                payment += service.service.price * service.pieces
+            }
+        }
+        for (const product of connector.products) {
+            if (!product.payment && !product.refuse) {
+                payment += product.product.price * product.pieces
+            }
+        }
+        setPayment({
+            total: s,
+            payment: payment,
+            clinica: connector.clinica,
+            client: connector.client,
+            connector: connector._id,
+            card: 0,
+            cash: 0,
+            transfer: 0,
+            debt: 0
+        })
+        setDiscount({
+            total: s,
+            discount: 0,
+            clinica: connector.clinica,
+            client: connector.client,
+            connector: connector._id
+        })
     }, [])
+
+    const changeService = (e, index) => {
+        let servs = [...services]
+        let prods = [...products]
+        if (e.target.checked) {
+            servs[index].payment = true
+            servs[index].refuse = false
+            delete servs[index].comment
+        } else {
+            servs[index].payment = false
+            servs[index].refuse = true
+        }
+
+        let pays = 0
+        for (const i in servs) {
+            if (connector.services[i].payment && !servs[i].payment) {
+                pays -= servs[i].service.price * servs[i].pieces
+            }
+            if (!connector.services[i].payment && servs[i].payment) {
+                pays += servs[i].service.price * servs[i].pieces
+            }
+        }
+        for (const i in prods) {
+            if (connector.products[i].payment && !prods[i].payment) {
+                pays -= prods[i].product.price * prods[i].pieces
+            }
+            if (!connector.products[i].payment && prods[i].payment) {
+                pays += prods[i].product.price * prods[i].pieces
+            }
+        }
+
+        setServices(servs)
+        setPayment({...payment, payment: pays})
+    }
+
+    const changeProduct = (e, index) => {
+        let servs = [...services]
+        let prods = [...products]
+        if (e.target.checked) {
+            prods[index].payment = true
+            prods[index].refuse = false
+            delete prods[index].comment
+        } else {
+            prods[index].payment = false
+            prods[index].refuse = true
+        }
+
+        let pays = 0
+        for (const i in servs) {
+            if (connector.services[i].payment && !servs[i].payment) {
+                pays -= servs[i].service.price * servs[i].pieces
+            }
+            if (!connector.services[i].payment && servs[i].payment) {
+                pays += servs[i].service.price * servs[i].pieces
+            }
+        }
+        for (const i in prods) {
+            if (connector.products[i].payment && !prods[i].payment) {
+                pays -= prods[i].product.price * prods[i].pieces
+            }
+            if (!connector.products[i].payment && prods[i].payment) {
+                pays += prods[i].product.price * prods[i].pieces
+            }
+        }
+
+        setProducts(prods)
+        setPayment({...payment, payment: pays})
+    }
+
+    const serviceComment = (e, index) => {
+        let servs = [...services]
+        servs[index].comment = e.target.value
+        setServices(servs)
+    }
+    const productComment = (e, index) => {
+        let prods = [...products]
+        prods[index].comment = e.target.value
+        setProducts(prods)
+    }
+
+    const changeDiscount = (e) => {
+        let disc = parseInt(e.target.value)
+        if (disc <= 100) {
+            setDiscount({
+                ...discount, procient: disc, discount: payment.payment * disc / 100
+            })
+
+        } else {
+            setDiscount({
+                ...discount, procient: 0, discount: disc
+            })
+        }
+    }
+
+    const discountComment = (e) => {
+        if (e.target.value === "delete") {
+            let s = discount
+            delete s.comment
+            setDiscount(s)
+        } else {
+            setDiscount({...discount, comment: e.target.value})
+        }
+    }
+
+    const changeDebt = (e) => {
+        setPayment({
+            ...payment, debt: e.target.value
+        })
+    }
+
+    const debtComment = (e) => {
+        setPayment({
+            ...payment, comment: e.target.value
+        })
+    }
+    //====================================================================
+    //====================================================================
+
+    //====================================================================
+    //====================================================================
+    // CreatePayment
+
+    const createHandler = useCallback(async () => {
+        try {
+            const data = await request(
+                `/api/cashier/offline/payment`,
+                'POST',
+                {
+                    payment: {...payment},
+                    discount: {...discount},
+                    services: {...services},
+                    products: {...products}
+                },
+                {
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            )
+            console.log(data)
+            notify({
+                title: "To'lov muvaffaqqiyatli amalga oshirildi.",
+                description: '',
+                status: 'success',
+            })
+
+        } catch (error) {
+            notify({
+                title: error,
+                description: '',
+                status: 'error',
+            })
+        }
+    }, [
+        auth,
+        payment,
+        discount,
+        request,
+        services,
+        products,
+        notify
+    ])
 
     //====================================================================
     //====================================================================
@@ -283,6 +516,20 @@ export const OfflineClients = () => {
                         </div>
                         <div className={` ${visible ? "" : "d-none"}`}>
                             <RegisterClient
+                                debtComment={debtComment}
+                                changeDebt={changeDebt}
+                                serviceComment={serviceComment}
+                                productComment={productComment}
+                                discountComment={discountComment}
+                                discount={discount}
+                                changeDiscount={changeDiscount}
+                                setPayment={setPayment}
+                                changeProduct={changeProduct}
+                                changeService={changeService}
+                                allprice={allprice}
+                                discounts={discounts}
+                                payments={payments}
+                                payment={payment}
                                 client={client}
                                 index={index}
                                 services={services}
@@ -301,15 +548,13 @@ export const OfflineClients = () => {
                             changeStart={changeStart}
                             changeEnd={changeEnd}
                             searchPhone={searchPhone}
-                            setClient={setClient}
+                            changeClient={changeClient}
                             setConnector={setConnector}
                             searchFullname={searchFullname}
                             searchId={searchId}
                             connectors={connectors}
                             searchProbirka={searchProbirka}
-                            // setModal={setModal}
                             setConnectors={setConnectors}
-                            // setConnector={setConnector}
                             setCurrentPage={setCurrentPage}
                             countPage={countPage}
                             setCountPage={setCountPage}
@@ -319,8 +564,6 @@ export const OfflineClients = () => {
                             setPageSize={setPageSize}
                             // setModal2={setModal2}
                             loading={loading}
-                            setServices={setServices}
-                            setProducts={setProducts}
                         />
                     </div>
                 </div>
