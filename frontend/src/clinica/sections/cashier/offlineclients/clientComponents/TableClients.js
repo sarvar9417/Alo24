@@ -267,13 +267,13 @@ export const TableClients = ({
                                         {connector.probirka}
                                     </td>
                                     <td className="border py-1 text-right">
-                                        {connector.totalprice}
+                                        {/*{connector.totalprice}*/}
                                     </td>
                                     <td className="border py-1 text-right">
-                                        {connector.payments}
+                                        {/*{connector.payments}*/}
                                     </td>
                                     <td className="border py-1 text-right">
-                                        {connector.discount}
+                                        {/*{connector.discount}*/}
                                     </td>
                                     <td className="border py-1 text-center">
                                         {loading ? (

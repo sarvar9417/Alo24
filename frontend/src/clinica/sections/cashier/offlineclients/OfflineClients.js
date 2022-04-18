@@ -2,7 +2,7 @@ import {useToast} from '@chakra-ui/react'
 import React, {useCallback, useContext, useEffect, useState} from 'react'
 import {AuthContext} from '../../../context/AuthContext'
 import {useHttp} from '../../../hooks/http.hook'
-// import { Modal } from "../components/Modal";
+import {Modal} from "../components/Modal";
 import {RegisterClient} from './clientComponents/RegisterClient'
 import {TableClients} from './clientComponents/TableClients'
 import {checkData} from './checkData/checkData'
@@ -23,7 +23,7 @@ export const OfflineClients = () => {
     //====================================================================
     //====================================================================
     // MODAL
-    // const [modal, setModal] = useState(false);
+    const [modal, setModal] = useState(false);
     const [modal1, setModal1] = useState(false)
     //====================================================================
     //====================================================================
@@ -240,7 +240,6 @@ export const OfflineClients = () => {
 
     const changeClient = useCallback((connector, index) => {
         setIndex(index)
-
         let total = 0
         let servs = JSON.parse(JSON.stringify(connector.services))
         for (const serv of servs) {
@@ -279,7 +278,7 @@ export const OfflineClients = () => {
             total: total - (payments + discounts),
             payment: total - (payments + discounts),
             clinica: connector.clinica,
-            client: connector.client,
+            client: connector.client._id,
             connector: connector._id,
             card: 0,
             cash: 0,
@@ -291,16 +290,12 @@ export const OfflineClients = () => {
             total: total - (payments + discounts),
             discount: 0,
             clinica: connector.clinica,
-            client: connector.client,
+            client: connector.client._id,
             connector: connector._id,
         })
     }, [])
 
     const changeService = (e, index) => {
-        setDiscount({
-            discount: 0,
-        })
-
         let servs = [...services]
         let prods = [...products]
         if (e.target.checked) {
@@ -311,7 +306,7 @@ export const OfflineClients = () => {
             servs[index].payment = false
             servs[index].refuse = true
         }
-
+        console.log(servs[index])
         let total = 0
         for (const serv of servs) {
             if (serv.payment) {
@@ -326,17 +321,29 @@ export const OfflineClients = () => {
 
         setServices(servs)
         setPayment({
+            total: total - (payments + discounts),
             payment: total - (payments + discounts),
             debt: 0,
             card: 0,
             cash: 0,
             transfer: 0,
             type: '',
+            clinica: connector.clinica,
+            client: connector.client._id,
+            connector: connector._id,
         })
         setTotalPayment(total - (payments + discounts))
+        setDiscount({
+            total: total - (payments + discounts),
+            discount: 0,
+            clinica: connector.clinica,
+            client: connector.client._id,
+            connector: connector._id,
+        })
     }
 
     const changeProduct = (e, index) => {
+
         let servs = [...services]
         let prods = [...products]
         if (e.target.checked) {
@@ -362,14 +369,25 @@ export const OfflineClients = () => {
 
         setProducts(prods)
         setPayment({
+            total: total - (payments + discounts),
             payment: total - (payments + discounts),
             debt: 0,
             card: 0,
             cash: 0,
             transfer: 0,
             type: '',
+            clinica: connector.clinica,
+            client: connector.client._id,
+            connector: connector._id,
         })
         setTotalPayment(total - (payments + discounts))
+        setDiscount({
+            total: total - (payments + discounts),
+            discount: 0,
+            clinica: connector.clinica,
+            client: connector.client._id,
+            connector: connector._id,
+        })
     }
 
     const serviceComment = (e, index) => {
@@ -403,6 +421,7 @@ export const OfflineClients = () => {
                 discount: parseInt((totalpayment * disc) / 100),
             })
             setPayment({
+                total: totalpayment,
                 debt: payment.debt,
                 card: 0,
                 cash: 0,
@@ -412,6 +431,9 @@ export const OfflineClients = () => {
                     totalpayment -
                     parseInt((totalpayment * disc) / 100) -
                     parseInt(payment.debt),
+                clinica: connector.clinica,
+                client: connector.client._id,
+                connector: connector._id,
             })
         } else {
             setDiscount({
@@ -420,12 +442,16 @@ export const OfflineClients = () => {
                 discount: disc,
             })
             setPayment({
+                total: totalpayment,
                 debt: payment.debt,
                 card: 0,
                 cash: 0,
                 transfer: 0,
                 type: '',
                 payment: totalpayment - parseInt(disc) - parseInt(payment.debt),
+                clinica: connector.clinica,
+                client: connector.client._id,
+                connector: connector._id,
             })
         }
     }
@@ -452,6 +478,7 @@ export const OfflineClients = () => {
             })
         }
         setPayment({
+            total: totalpayment,
             card: 0,
             cash: 0,
             transfer: 0,
@@ -459,6 +486,9 @@ export const OfflineClients = () => {
             debt: parseInt(e.target.value),
             payment:
                 totalpayment - parseInt(e.target.value) - parseInt(discount.discount),
+            clinica: connector.clinica,
+            client: connector.client._id,
+            connector: connector._id,
         })
     }
 
@@ -521,11 +551,10 @@ export const OfflineClients = () => {
     // CreatePayment
 
     const checkPayment = () => {
-        if (checkData(totalpayment, payment, discount)) {
-            return toast(checkData(totalpayment, payment, discount))
-        } else {
-            return alert('Xatosiz')
+        if (checkData(totalpayment, payment, discount, services, products)) {
+            return toast(checkData(totalpayment, payment, discount, services, products))
         }
+        setModal(true)
     }
 
     const createHandler = useCallback(async () => {
@@ -536,8 +565,8 @@ export const OfflineClients = () => {
                 {
                     payment: {...payment},
                     discount: {...discount},
-                    services: {...services},
-                    products: {...products},
+                    services: [...services],
+                    products: [...products],
                 },
                 {
                     Authorization: `Bearer ${auth.token}`,
@@ -665,13 +694,65 @@ export const OfflineClients = () => {
         setModal={setModal1}
       /> */}
 
-            {/* <Modal
-        modal={modal}
-        text={"ma'lumotlar to'g'ri kiritilganligini tasdiqlaysizmi?"}
-        setModal={setModal}
-        handler={client._id ? addHandler : createHandler}
-        basic={client.lastname + " " + client.firstname}
-      /> */}
+            <Modal
+                modal={modal}
+                text={<div className="card">
+                    <div className="card-header">
+                        <div className="card-title">
+                            Hisobot
+                        </div>
+                    </div>
+                    <div className="card-body">
+                        <table className="table table-sm">
+                            <tfoot>
+                            <tr>
+                                <th className="text-right" colSpan={2}>
+                                    Jami to'lov:
+                                </th>
+                                <th className="text-left" colSpan={4}>
+                                    {totalpayment}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th className="text-right" colSpan={2}>
+                                    Chegirma:
+                                </th>
+                                <th className="text-left" colSpan={4}>
+                                    {discounts + discount.discount}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th className="text-right" colSpan={2}>
+                                    To'langan:
+                                </th>
+                                <th className="text-left" colSpan={4}>
+                                    {payments}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th className="text-right" colSpan={2}>
+                                    Qarz:
+                                </th>
+                                <th className="text-left" colSpan={4}>
+                                    {payment.debt}
+                                </th>
+                            </tr>
+                            <tr>
+                                <th className="text-right" colSpan={2}>
+                                    To'lanayotgan:
+                                </th>
+                                <th className="text-left" colSpan={4}>
+                                    {payment.payment}
+                                </th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>}
+                setModal={setModal}
+                handler={createHandler}
+                basic={"Mijoz " + client.lastname + " " + client.firstname}
+            />
         </div>
     )
 }

@@ -5,24 +5,26 @@ const {OfflineProduct} = require("../../models/OfflineClient/OfflineProduct");
 const {ProductConnector} = require("../../models/Warehouse/ProductConnector");
 const {Product} = require("../../models/Warehouse/Product");
 const {OfflineConnector} = require("../../models/OfflineClient/OfflineConnector");
-const {OfflineDiscount} = require("../../models/Cashier/OfflineDiscount");
+const {OfflineDiscount, validateDiscount} = require("../../models/Cashier/OfflineDiscount");
 const {Clinica} = require("../../models/DirectorAndClinica/Clinica");
 //Payment
 module.exports.payment = async (req, res) => {
     try {
-
         const {payment, discount, services, products} = req.body
+
         // CheckPayment
         const checkPayment = validatePayment(payment).error
         if (checkPayment) {
+            console.log(checkPayment)
             return res.status(400).json({
                 error: error.message,
             })
         }
 
         // CheckDiscount
-        const checkDiscount = validatePayment(payment).error
+        const checkDiscount = validateDiscount(discount).error
         if (checkDiscount) {
+            console.log(checkDiscount)
             return res.status(400).json({
                 error: error.message,
             })
@@ -33,16 +35,18 @@ module.exports.payment = async (req, res) => {
             const update = await OfflineService.findByIdAndUpdate(service._id, service)
 
             //=========================================================
-            // Product increment
+            // Product decrement
             const productconnectors = await ProductConnector.find({
                 clinica: service.clinica,
                 service: service.serviceid,
             })
 
-            for (const productconnector of productconnectors) {
-                const product = await Product.findById(productconnector.product)
-                product.total = product.total + productconnector.pieces * service.pieces
-                await product.save()
+            if (service.refuse) {
+                for (const productconnector of productconnectors) {
+                    const product = await Product.findById(productconnector.product)
+                    product.total = product.total + productconnector.pieces * service.pieces
+                    await product.save()
+                }
             }
 
         })
@@ -51,10 +55,12 @@ module.exports.payment = async (req, res) => {
             const update = await OfflineProduct.findByIdAndUpdate(product._id, product)
 
             //=========================================================
-            // Product increment
-            const produc = await Product.findById(product.productid)
-            produc.total = produc.total + product.pieces
-            await produc.save()
+            // Product decrement
+            if (product.refuse) {
+                const produc = await Product.findById(product.productid)
+                produc.total = produc.total + product.pieces
+                await produc.save()
+            }
         })
 
         // CreatePayment
@@ -81,6 +87,7 @@ module.exports.payment = async (req, res) => {
 
         res.status(201).send(newpayment)
     } catch (error) {
+        console.log(error)
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
     }
 }
@@ -89,7 +96,6 @@ module.exports.payment = async (req, res) => {
 module.exports.getAll = async (req, res) => {
     try {
         const {clinica, beginDay, endDay} = req.body
-
         const clinic = await Clinica.findById(clinica)
 
         if (!clinic) {

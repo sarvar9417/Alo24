@@ -34,7 +34,7 @@ function validatePayment(payment) {
         connector: Joi.string().required(),
         client: Joi.string().required(),
         discount: Joi.string(),
-        debt: Joi.number,
+        debt: Joi.number(),
         comment: Joi.string()
     })
 

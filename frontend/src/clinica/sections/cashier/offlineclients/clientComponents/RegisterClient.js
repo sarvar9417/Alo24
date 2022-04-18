@@ -325,7 +325,7 @@ export const RegisterClient = ({
                                             />
                                         </div>
                                     </div>
-                                    <div className="form-group m-0">
+                                    <div className="form-group m-0 mb-3">
                                         <div className="input-group input-group-sm">
                                             <div className="input-group-prepend w-25">
                                                 <span
@@ -344,7 +344,7 @@ export const RegisterClient = ({
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-md-6">
+                                <div className="col-md-6 ">
                                     <div className="btn-group mb-3 w-100" role="group" aria-label="Basic example">
                                         <button
                                             onClick={() => {
