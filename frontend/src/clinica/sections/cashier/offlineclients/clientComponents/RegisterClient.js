@@ -3,6 +3,8 @@ import React from "react";
 import "react-datepicker/dist/react-datepicker.css";
 
 export const RegisterClient = ({
+                                   inputPayment,
+                                   totalpayment,
                                    checkPayment,
                                    debtComment,
                                    changeDebt,
@@ -14,7 +16,6 @@ export const RegisterClient = ({
                                    setPayment,
                                    changeProduct,
                                    changeService,
-                                   allprice,
                                    discounts,
                                    payments,
                                    payment,
@@ -206,7 +207,7 @@ export const RegisterClient = ({
                                         Jami to'lov:
                                     </th>
                                     <th className="text-left" colSpan={4}>
-                                        {allprice}
+                                        {totalpayment}
                                     </th>
                                 </tr>
                                 <tr>
@@ -266,12 +267,21 @@ export const RegisterClient = ({
                                                     Chegirma
                                                 </span>
                                             </div>
-                                            <input
-                                                onChange={changeDiscount}
-                                                type="number"
-                                                className="form-control"
-                                                placeholder="Chegirma foizi yoki summasini kiriting"
-                                            />
+                                            {
+                                                discount.procient ?
+                                                    <input
+                                                        onChange={changeDiscount}
+                                                        type="number"
+                                                        className="form-control"
+                                                        placeholder="Chegirma foizi yoki summasini kiriting"
+                                                        defaultValue={discount.discount}
+                                                    /> : <input
+                                                        onChange={changeDiscount}
+                                                        type="number"
+                                                        className="form-control"
+                                                        placeholder="Chegirma foizi yoki summasini kiriting"
+                                                        value={discount.discount || 0}
+                                                    />}
                                         </div>
                                     </div>
                                     <div className="form-group">
@@ -311,7 +321,7 @@ export const RegisterClient = ({
                                                 type="number"
                                                 className="form-control"
                                                 placeholder="Qarz summasini kiriting"
-                                                defaultValue={payment.debt}
+                                                value={payment.debt || 0}
                                             />
                                         </div>
                                     </div>
@@ -341,7 +351,7 @@ export const RegisterClient = ({
                                                 setPayment({
                                                     ...payment,
                                                     type: "cash",
-                                                    cash: payment.payment - payment.debt - discount.discount,
+                                                    cash: payment.payment,
                                                     card: 0,
                                                     transfer: 0
                                                 })
@@ -357,7 +367,7 @@ export const RegisterClient = ({
                                                     ...payment,
                                                     type: "card",
                                                     cash: 0,
-                                                    card: payment.payment - payment.debt - discount.discount,
+                                                    card: payment.payment,
                                                     transfer: 0
                                                 })
                                             }}
@@ -373,7 +383,7 @@ export const RegisterClient = ({
                                                     type: "transfer",
                                                     cash: 0,
                                                     card: 0,
-                                                    transfer: payment.payment - payment.debt - discount.discount
+                                                    transfer: payment.payment
                                                 })
                                             }}
                                             type="button"
@@ -412,7 +422,9 @@ export const RegisterClient = ({
                                                 type="number"
                                                 className="form-control"
                                                 placeholder="Naqt to'lov"
-                                                defaultValue={payment.cash}
+                                                value={payment.cash || 0}
+                                                name="cash"
+                                                onChange={inputPayment}
                                             />
                                         </div>}
                                     {(payment.type === "card" || payment.type === "mixed") &&
@@ -430,7 +442,9 @@ export const RegisterClient = ({
                                                 type="number"
                                                 className="form-control"
                                                 placeholder="Karta orqali to'lov to'lov"
-                                                defaultValue={payment.card}
+                                                value={payment.card || 0}
+                                                name="card"
+                                                onChange={inputPayment}
                                             />
                                         </div>}
                                     {(payment.type === "transfer" || payment.type === "mixed") &&
@@ -448,7 +462,9 @@ export const RegisterClient = ({
                                                 type="number"
                                                 className="form-control"
                                                 placeholder="O'tkazma to'lov"
-                                                defaultValue={payment.transfer}
+                                                value={payment.transfer || 0}
+                                                name="transfer"
+                                                onChange={inputPayment}
                                             />
                                         </div>}
 
