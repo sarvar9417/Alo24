@@ -543,6 +543,34 @@ export const OfflineClients = () => {
             setPayment({...payment, transfer: parseInt(e.target.value)})
         }
     }
+
+    const setAll = useCallback(() => {
+        setServices([])
+        setProducts([])
+        setPayment({
+            payment: 0,
+            card: 0,
+            cash: 0,
+            transfer: 0,
+            debt: 0,
+            type: '',
+        })
+        setDiscount({
+            discount: 0,
+        })
+        setIndex()
+        setPayments(0)
+        setDiscounts(0)
+        setClient({
+            clinica: auth.clinica && auth.clinica._id,
+            reseption: auth.user && auth.user._id,
+        })
+        setConnector({
+            clinica: auth.clinica && auth.clinica._id,
+            probirka: 0,
+        })
+        setTotalPayment(0)
+    }, [auth])
     //====================================================================
     //====================================================================
 
@@ -572,12 +600,15 @@ export const OfflineClients = () => {
                     Authorization: `Bearer ${auth.token}`,
                 },
             )
-            console.log(data)
+            localStorage.setItem("data", data)
+            setModal(false)
+            setVisible(false)
             notify({
                 title: "To'lov muvaffaqqiyatli amalga oshirildi.",
                 description: '',
                 status: 'success',
             })
+            setAll()
         } catch (error) {
             notify({
                 title: error,
@@ -585,7 +616,7 @@ export const OfflineClients = () => {
                 status: 'error',
             })
         }
-    }, [auth, payment, discount, request, services, products, notify])
+    }, [auth, payment, discount, request, services, products, notify, setAll])
 
     //====================================================================
     //====================================================================
