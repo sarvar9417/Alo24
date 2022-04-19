@@ -52,7 +52,7 @@ export const SamplesToTable = ({
               <th className="border py-1 text-center">
                 <button
                   className="btn btn-success py-0"
-                  // onClick={() => changeProperty()}
+                  onClick={() => changeProperty()}
                 >
                   <FontAwesomeIcon icon={faPrint} />
                 </button>
