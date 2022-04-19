@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { faPenAlt, faPrint } from "@fortawesome/free-solid-svg-icons";
+import React from "react";
+import { faPrint } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const SamplesToTable = ({

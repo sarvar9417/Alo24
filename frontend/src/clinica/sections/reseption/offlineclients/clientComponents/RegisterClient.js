@@ -1,9 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { DatePickers } from './DatePickers'
-import 'react-datepicker/dist/react-datepicker.css'
-import Select from 'react-select'
-import makeAnimated from 'react-select/animated'
-const animatedComponents = makeAnimated()
+import React, { useCallback, useEffect, useState } from "react";
+import { DatePickers } from "./DatePickers";
+import "react-datepicker/dist/react-datepicker.css";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
+const animatedComponents = makeAnimated();
 
 export const RegisterClient = ({
   selectedServices,
@@ -28,11 +28,11 @@ export const RegisterClient = ({
   products,
   loading,
 }) => {
-  const [services, setServices] = useState([])
+  const [services, setServices] = useState([]);
   const getServices = useCallback(
     (e) => {
-      var s = []
-      if (e === 'all') {
+      var s = [];
+      if (e === "all") {
         departments.map((department) => {
           return department.services.map((service) => {
             return s.push({
@@ -40,9 +40,9 @@ export const RegisterClient = ({
               value: service._id,
               service: service,
               department: department,
-            })
-          })
-        })
+            });
+          });
+        });
       } else {
         departments.map((department) => {
           if (e === department._id) {
@@ -52,23 +52,23 @@ export const RegisterClient = ({
                 value: service._id,
                 service: service,
                 department: department,
-              })
-              return ''
-            })
-          } 
-          return ''
-        })
+              });
+              return "";
+            });
+          }
+          return "";
+        });
       }
-      setServices(s)
+      setServices(s);
     },
-    [departments],
-  )
+    [departments]
+  );
 
   useEffect(() => {
     if (departments) {
-      getServices('all')
+      getServices("all");
     }
-  }, [departments, getServices])
+  }, [departments, getServices]);
   return (
     <>
       {/* Row start */}
@@ -84,7 +84,7 @@ export const RegisterClient = ({
                   <div className="form-group">
                     <label htmlFor="fullName">Familiyasi</label>
                     <input
-                      value={client.lastname}
+                      defaultValue={client.lastname}
                       onChange={changeClientData}
                       type="text"
                       className="form-control form-control-sm"
@@ -106,7 +106,7 @@ export const RegisterClient = ({
                       name="firstname"
                       placeholder="Ismi"
                     />
-                  </div> 
+                  </div>
                 </div>
                 <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
                   <div className="form-group">
@@ -139,7 +139,7 @@ export const RegisterClient = ({
                         </span>
                       </div>
                       <input
-                        defaultValue={client.phone}
+                        value={client.phone ? client.phone : ""}
                         onChange={changeClientData}
                         type="number"
                         className="form-control"
@@ -155,12 +155,12 @@ export const RegisterClient = ({
                       <div className="custom-control custom-radio custom-control-inline">
                         <input
                           checked={
-                            client.gender && client.gender === 'man'
+                            client.gender && client.gender === "man"
                               ? true
                               : false
                           }
                           onChange={(e) => {
-                            setClient({ ...client, gender: 'man' })
+                            setClient({ ...client, gender: "man" });
                           }}
                           type="radio"
                           id="customRadioInline1"
@@ -177,10 +177,10 @@ export const RegisterClient = ({
                       <div className="custom-control custom-radio custom-control-inline">
                         <input
                           defaultChecked={
-                            client.gender === 'woman' ? true : false
+                            client.gender === "woman" ? true : false
                           }
                           onChange={(e) => {
-                            setClient({ ...client, gender: 'woman' })
+                            setClient({ ...client, gender: "woman" });
                           }}
                           type="radio"
                           id="customRadioInline2"
@@ -201,7 +201,7 @@ export const RegisterClient = ({
                   <div className="form-group">
                     <label htmlFor="biO">Manzili</label>
                     <textarea
-                      defaultValue={client.address}
+                      value={client.address ? client.address : ""}
                       onChange={changeClientData}
                       className="form-control form-control-sm"
                       name="address"
@@ -227,10 +227,10 @@ export const RegisterClient = ({
                             id={counterdoctor.user}
                           >
                             {counterdoctor.lastname +
-                              ' ' +
+                              " " +
                               counterdoctor.firstname}
                           </option>
-                        )
+                        );
                       })}
                     </select>
                   </div>
@@ -249,7 +249,7 @@ export const RegisterClient = ({
                           <option key={index} value={adver._id}>
                             {adver.name}
                           </option>
-                        )
+                        );
                       })}
                     </select>
                   </div>
@@ -268,7 +268,7 @@ export const RegisterClient = ({
                     )}
                   </div>
                 ) : (
-                  ''
+                  ""
                 )}
               </div>
             </div>
@@ -295,7 +295,7 @@ export const RegisterClient = ({
                           <option key={index} value={department._id}>
                             {department.name}
                           </option>
-                        )
+                        );
                       })}
                     </select>
                   </div>
@@ -368,17 +368,17 @@ export const RegisterClient = ({
                                           ...newservices[index],
                                           pieces: e.target.value,
                                         },
-                                      }),
+                                      })
                                     )
                                   }
                                   className="text-right outline-none"
-                                  style={{ maxWidth: '50px', outline: 'none' }}
+                                  style={{ maxWidth: "50px", outline: "none" }}
                                   defaultValue={service.pieces}
                                   type="number"
                                 />
                               </td>
                             </tr>
-                          )
+                          );
                         })}
                       <tr className="border"></tr>
                       {newproducts &&
@@ -400,17 +400,17 @@ export const RegisterClient = ({
                                           ...newproducts[index],
                                           pieces: e.target.value,
                                         },
-                                      }),
+                                      })
                                     )
                                   }
                                   className="text-right outline-none"
-                                  style={{ maxWidth: '50px', outline: 'none' }}
+                                  style={{ maxWidth: "50px", outline: "none" }}
                                   defaultValue={product.pieces}
                                   type="number"
                                 />
                               </td>
                             </tr>
-                          )
+                          );
                         })}
                     </tbody>
                     <tfoot>
@@ -423,13 +423,13 @@ export const RegisterClient = ({
                             return (
                               summa +
                               service.service.price * parseInt(service.pieces)
-                            )
+                            );
                           }, 0) +
                             newproducts.reduce((summa, product) => {
                               return (
                                 summa +
                                 product.product.price * parseInt(product.pieces)
-                              )
+                              );
                             }, 0)}
                         </th>
                       </tr>
@@ -457,5 +457,5 @@ export const RegisterClient = ({
       </div>
       {/* Row end */}
     </>
-  )
-}
+  );
+};
