@@ -91,7 +91,7 @@ const CheckStatsionarClient = ({connector, qr}) => {
                             </tr>
                             <tr className="bg-white text-dark">
                                 <td className='w-25 p-1 text-left px-3 py-1 border font-weight-bold'>Ketgan vaqti</td>
-                                <td className='w-75 p-1 px-3 py-1 border'>{connector.client && new Date(connector.room.endday).toLocaleDateString()} </td>
+                                <td className='w-75 p-1 px-3 py-1 border'>{connector.client && connector.room.endday && new Date(connector.room.endday).toLocaleDateString()} </td>
                             </tr>
                             <tr className="bg-white text-dark">
                                 <td className='w-25 p-1 text-left px-3 py-1 border font-weight-bold'>Oldindan to'lov
@@ -150,7 +150,7 @@ const CheckStatsionarClient = ({connector, qr}) => {
                             <tr>
                                 <td className="border py-1 text-bold">Xona</td>
                                 <td className="text-left border px-2 py-1 text-bold font-weight-bold">{connector.room && connector.room.room.type}</td>
-                                <td className="text-right border py-1 text-bold">Kuni</td>
+                                <td className="text-right border py-1 text-bold">{}</td>
                                 <td className="text-right border py-1 text-bold">{connector.room && connector.room.room.price}</td>
                                 <td className="text-right border py-1">Umumiy narxi</td>
                                 <td className="text-right border py-1 text-bold">{connector.room && new Date(connector.room.beginday).toLocaleDateString()}</td>

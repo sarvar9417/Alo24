@@ -22,6 +22,8 @@ const {
     OfflineCounteragent,
 } = require('../../models/OfflineClient/OfflineCounteragent')
 const {OfflineAdver} = require('../../models/OfflineClient/OfflineAdver')
+const {StatsionarRoom} = require("../../models/StatsionarClient/StatsionarRoom");
+const {Room} = require("../../models/Rooms/Room");
 
 // Register
 module.exports.register = async (req, res) => {
@@ -161,7 +163,7 @@ module.exports.register = async (req, res) => {
 
             await newservice.save()
 
-            totalprice += service.service.price
+            totalprice += service.service.price * service.pieces
 
             newconnector.services.push(newservice._id)
             await newconnector.save()
@@ -507,6 +509,33 @@ module.exports.update = async (req, res) => {
         }
 
         res.status(200).send(update)
+    } catch (error) {
+        res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
+    }
+}
+
+// End statsionar
+module.exports.end = async (req, res) => {
+    try {
+        const {clinica, room} = req.body
+
+        const clinic = await Clinica.findById(clinica)
+
+        if (!clinic) {
+            return res.status(400).json({
+                message: "Diqqat! Klinika ma'lumotlari topilmadi.",
+            })
+        }
+
+        const roomupdate = await StatsionarRoom.findByIdAndUpdate(room.id, {
+            endday: new Date()
+        })
+
+        const roomm = await Room.findById(room.roomid)
+        roomm.position = false
+        roomm.save()
+
+        res.status(200).send({message: "Mijozning davolanish muddati muvaffaqqiyatli yakunlandi."})
     } catch (error) {
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
     }

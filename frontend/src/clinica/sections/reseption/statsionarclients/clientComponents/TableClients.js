@@ -6,6 +6,7 @@ import {Pagination} from '../../components/Pagination'
 import {DatePickers} from './DatePickers'
 
 export const TableClients = ({
+                                 setVisible,
                                  setModal1,
                                  setCheck,
                                  changeStart,
@@ -251,6 +252,7 @@ export const TableClients = ({
                                                         _id: connector._id,
                                                         services: [...connector.services],
                                                     })
+                                                    setVisible(true)
                                                 }}
                                             >
                                                 +

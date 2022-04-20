@@ -315,7 +315,7 @@ export const RegisterClient = ({
                                     <div className="col-12 text-right">
                                         {loading ? (
                                             <button className="btn btn-primary" disabled>
-                                                <span class="spinner-border spinner-border-sm"></span>
+                                                <span className="spinner-border spinner-border-sm"></span>
                                                 Loading...
                                             </button>
                                         ) : (

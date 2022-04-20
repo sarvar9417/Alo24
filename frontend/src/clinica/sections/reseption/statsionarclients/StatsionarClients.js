@@ -6,11 +6,11 @@ import {Modal} from "../components/Modal";
 import {RegisterClient} from "./clientComponents/RegisterClient";
 import {TableClients} from "./clientComponents/TableClients";
 import {
-  checkClientData,
-  checkConnectorData,
-  checkProductsData,
-  checkRoomData,
-  checkServicesData,
+    checkClientData,
+    checkConnectorData,
+    checkProductsData,
+    checkRoomData,
+    checkServicesData,
 } from "./checkData/checkData";
 import {CheckModalStatsionar} from "../components/ModalCheckStatsionar";
 
@@ -33,7 +33,7 @@ export const StatsionarClients = () => {
     //====================================================================
     //====================================================================
     // RegisterPage
-    const [visible, setVisible] = useState(true);
+    const [visible, setVisible] = useState(false);
 
     const changeVisible = () => setVisible(!visible);
 
@@ -506,8 +506,8 @@ export const StatsionarClients = () => {
     //====================================================================
     //====================================================================
     // CLIENT
-
     const [client, setClient] = useState({
+        _id: null,
         clinica: auth.clinica && auth.clinica._id,
         reseption: auth.user && auth.user._id,
     });
@@ -555,20 +555,21 @@ export const StatsionarClients = () => {
         }
 
         if (checkConnectorData(connector, client)) {
-            return notify(checkConnectorData(connector));
+            return notify(checkConnectorData(connector, client));
         }
 
         if (checkRoomData(room, client)) {
-            return notify(checkRoomData(room));
+            return notify(checkRoomData(room, client));
         }
 
         if (checkServicesData(services && services)) {
-            return notify(checkServicesData(services));
+            return notify(checkServicesData(services && services));
         }
 
         if (checkProductsData(newproducts)) {
             return notify(checkProductsData(newproducts));
         }
+
         setModal(true);
     };
     //====================================================================
@@ -607,6 +608,7 @@ export const StatsionarClients = () => {
             setCurrentConnectors(s.slice(indexFirstConnector, indexLastConnector));
             setModal(false);
             clearDatas();
+            setVisible(false)
         } catch (error) {
             notify({
                 title: error,
@@ -659,6 +661,7 @@ export const StatsionarClients = () => {
                 status: "success",
             });
             clearDatas();
+            setVisible(false)
         } catch (error) {
             notify({
                 title: error,
@@ -710,6 +713,7 @@ export const StatsionarClients = () => {
             });
             clearDatas();
             setModal(false);
+            setVisible(false)
         } catch (error) {
             notify({
                 title: error,
@@ -742,7 +746,7 @@ export const StatsionarClients = () => {
     // ChangeDate
 
     const changeStart = (e) => {
-        setBeginDay(new Date(new Date(e).setUTCHours(0, 0, 0, 0)));
+        setBeginDay(e);
         getConnectors(new Date(new Date(e).setUTCHours(0, 0, 0, 0)), endDay);
     };
 
@@ -755,7 +759,6 @@ export const StatsionarClients = () => {
                 0
             )
         );
-
         setEndDay(date);
         getConnectors(beginDay, date);
     };
@@ -774,9 +777,9 @@ export const StatsionarClients = () => {
             getAdvers();
             getProducts();
             getBaseUrl();
-            getRooms();
             getDoctors();
         }
+        getRooms();
     }, [
         getConnectors,
         getAdvers,
@@ -853,6 +856,7 @@ export const StatsionarClients = () => {
                             />
                         </div>
                         <TableClients
+                            setVisible={setVisible}
                             setCheck={setCheck}
                             changeStart={changeStart}
                             changeEnd={changeEnd}

@@ -71,6 +71,8 @@ module.exports.register = async (req, res) => {
 
         const fullname = client.lastname + ' ' + client.firstname
 
+        delete client._id
+
         const newclient = new StatsionarClient({...client, id, fullname})
         await newclient.save()
 
@@ -138,41 +140,41 @@ module.exports.register = async (req, res) => {
 
             //=========================================================
             // TURN
-            var turn = 0
-            const clientservice = await StatsionarService.findOne({
-                clinica: service.clinica,
-                client: newclient._id,
-                department: service.department,
-                createdAt: {
-                    $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-                },
-            })
-
-            if (clientservice) {
-                turn = clientservice.turn
-            } else {
-                let turns = await StatsionarService.find({
-                    clinica: service.clinica,
-                    department: service.department,
-                    createdAt: {
-                        $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-                    },
-                })
-                    .sort({client: 1})
-                    .select('client')
-
-                turns.map((t, i) => {
-                    if (i === 0) {
-                        turn++
-                    } else {
-                        if (turns[i - 1].client.toString() !== t.client.toString()) {
-                            turn++
-                        }
-                    }
-                })
-
-                turn++
-            }
+            // var turn = 0
+            // const clientservice = await StatsionarService.findOne({
+            //     clinica: service.clinica,
+            //     client: newclient._id,
+            //     department: service.department,
+            //     createdAt: {
+            //         $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+            //     },
+            // })
+            //
+            // if (clientservice) {
+            //     turn = clientservice.turn
+            // } else {
+            //     let turns = await StatsionarService.find({
+            //         clinica: service.clinica,
+            //         department: service.department,
+            //         createdAt: {
+            //             $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+            //         },
+            //     })
+            //         .sort({client: 1})
+            //         .select('client')
+            //
+            //     turns.map((t, i) => {
+            //         if (i === 0) {
+            //             turn++
+            //         } else {
+            //             if (turns[i - 1].client.toString() !== t.client.toString()) {
+            //                 turn++
+            //             }
+            //         }
+            //     })
+            //
+            //     turn++
+            // }
 
             //=========================================================
             // Create Service
@@ -180,12 +182,12 @@ module.exports.register = async (req, res) => {
                 ...service,
                 client: newclient._id,
                 connector: newconnector._id,
-                turn,
+                // turn,
             })
 
             await newservice.save()
 
-            totalprice += service.service.price
+            totalprice += service.service.price * service.pieces
 
             newconnector.services.push(newservice._id)
             await newconnector.save()
@@ -291,7 +293,7 @@ module.exports.add = async (req, res) => {
         )
 
         const updateStatsionarConnector = await StatsionarConnector.findById(
-            connector._id,
+            connector._id
         )
 
         //=========================================================
@@ -350,41 +352,41 @@ module.exports.add = async (req, res) => {
 
             //=========================================================
             // TURN
-            var turn = 0
-            const clientservice = await StatsionarService.findOne({
-                clinica: service.clinica,
-                client: client._id,
-                department: service.department,
-                createdAt: {
-                    $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-                },
-            })
+            // var turn = 0
+            // const clientservice = await StatsionarService.findOne({
+            //     clinica: service.clinica,
+            //     client: client._id,
+            //     department: service.department,
+            //     createdAt: {
+            //         $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+            //     },
+            // })
 
-            if (clientservice) {
-                turn = clientservice.turn
-            } else {
-                let turns = await StatsionarService.find({
-                    clinica: service.clinica,
-                    department: service.department,
-                    createdAt: {
-                        $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-                    },
-                })
-                    .sort({client: 1})
-                    .select('client')
-
-                turns.map((t, i) => {
-                    if (i === 0) {
-                        turn++
-                    } else {
-                        if (turns[i - 1].client.toString() !== t.client.toString()) {
-                            turn++
-                        }
-                    }
-                })
-
-                turn++
-            }
+            // if (clientservice) {
+            //     turn = clientservice.turn
+            // } else {
+            //     let turns = await StatsionarService.find({
+            //         clinica: service.clinica,
+            //         department: service.department,
+            //         createdAt: {
+            //             $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
+            //         },
+            //     })
+            //         .sort({client: 1})
+            //         .select('client')
+            //
+            //     turns.map((t, i) => {
+            //         if (i === 0) {
+            //             turn++
+            //         } else {
+            //             if (turns[i - 1].client.toString() !== t.client.toString()) {
+            //                 turn++
+            //             }
+            //         }
+            //     })
+            //
+            //     turn++
+            // }
 
             //=========================================================
             // Create Service
@@ -392,14 +394,14 @@ module.exports.add = async (req, res) => {
                 ...service,
                 client: client._id,
                 connector: updateStatsionarConnector._id,
-                turn: turn,
+                // turn: turn,
             })
 
             await newservice.save()
 
             newdaily.services.push(newservice._id)
 
-            totalprice += service.service.price
+            totalprice += service.service.price * service.pieces
 
             updateStatsionarConnector.services.push(newservice._id)
         }
@@ -439,17 +441,25 @@ module.exports.add = async (req, res) => {
             if (oldcounteragent) {
                 oldcounteragent.counteragent = counteragent.counteragent
                 oldcounteragent.counterdoctor = counteragent.counterdoctor
-                oldcounteragent.services = [...updateStatsionarConnector.services]
+                // oldcounteragent.services = [...updateStatsionarConnector.services]
                 await oldcounteragent.save()
             } else {
                 const newcounteragent = new StatsionarCounteragent({
                     client: client._id.toString(),
                     connector: updateStatsionarConnector._id.toString(),
-                    services: [...updateStatsionarConnector.services],
+                    // services: [...updateStatsionarConnector.services],
                     ...counteragent,
                 })
                 await newcounteragent.save()
             }
+        }
+
+        const counteragen = await StatsionarCounteragent.findOne({
+            connector: connector._id
+        })
+        if (counteragen) {
+            counteragen.services = [...updateStatsionarConnector.services]
+            counteragen.save()
         }
 
         if (adver.adver) {
@@ -490,7 +500,7 @@ module.exports.add = async (req, res) => {
             } else {
                 const newroom = new StatsionarRoom({
                     client: client._id,
-                    connector: oldconnector._id,
+                    connector: updateStatsionarConnector._id,
                     ...room,
                 })
 
@@ -556,7 +566,6 @@ module.exports.getAll = async (req, res) => {
 module.exports.update = async (req, res) => {
     try {
         const {client, connector, counteragent, adver, room} = req.body
-
         if (!client) {
             return res
                 .status(404)
@@ -576,17 +585,26 @@ module.exports.update = async (req, res) => {
             if (oldcounteragent) {
                 oldcounteragent.counteragent = counteragent.counteragent
                 oldcounteragent.counterdoctor = counteragent.counterdoctor
-                oldcounteragent.services = [...oldconnector.services]
+                // oldcounteragent.services = [...oldconnector.services]
                 await oldcounteragent.save()
             } else {
                 const newcounteragent = new StatsionarCounteragent({
                     client: client._id.toString(),
                     connector: connector._id,
-                    services: [...oldconnector.services],
+                    // services: [...oldconnector.services],
                     ...counteragent,
                 })
                 await newcounteragent.save()
             }
+        }
+
+        const counteragen = await StatsionarCounteragent.findOne({
+            connector: connector._id
+        })
+
+        if (counteragen) {
+            counteragen.services = [...oldconnector.services]
+            counteragen.save()
         }
 
         if (adver.adver) {
@@ -636,7 +654,6 @@ module.exports.update = async (req, res) => {
                 await newroom.save()
             }
         }
-
         res.status(200).send(update)
     } catch (error) {
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
