@@ -246,7 +246,15 @@ export const RegisterClient = ({
                                         To'lanayotgan:
                                     </th>
                                     <th className="text-left" colSpan={4}>
-                                        {totalpayment - payments - discounts - discount.discount - payment.debt}
+                                        {payment.payment}
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th className="text-right" colSpan={2}>
+                                        Qoldiq summa:
+                                    </th>
+                                    <th className="text-left" colSpan={4}>
+                                        {totalpayment - discounts - payment.payment}
                                     </th>
                                 </tr>
                                 </tfoot>

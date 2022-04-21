@@ -243,6 +243,9 @@ export const OfflineClients = () => {
         let total = 0
         let servs = JSON.parse(JSON.stringify(connector.services))
         for (const serv of servs) {
+            if (!serv.payment && !serv.refuse) {
+                serv.payment = true
+            }
             if (serv.payment) {
                 total += serv.service.price * serv.pieces
             }
@@ -398,15 +401,24 @@ export const OfflineClients = () => {
     }
 
     const changeDiscount = (e) => {
+        let total = 0
+        let servs = []
+        for (const i in services) {
+            if (services[i].payment && !connector.services[i].payment) {
+                total += services[i].service.price * services[i].pieces
+                servs.push(services[i]._id)
+            }
+        }
+
         let disc = 0
         if (e.target.value !== '')
             disc = parseInt(e.target.value)
 
-        if (disc > totalpayment - payments - discounts - payment.debt - payment.payment) {
+        if (disc > total) {
             e.target.value = parseInt(parseInt(e.target.value) / 10)
             return notify({
                 title:
-                    "Diqqat! Chegirma summasi umumiy to'lov summasidan oshmasligi kerak!",
+                    "Diqqat! Chegirma summasi umumiy xizmatlar summasidan oshmasligi kerak!",
                 description: '',
                 status: 'error',
             })
@@ -416,7 +428,8 @@ export const OfflineClients = () => {
             setDiscount({
                 ...discount,
                 procient: disc,
-                discount: parseInt(((totalpayment - discounts - payments) * disc) / 100),
+                discount: parseInt((total * disc) / 100),
+                services: [...servs]
             })
             setPayment({
                 total: totalpayment,
@@ -435,6 +448,7 @@ export const OfflineClients = () => {
                 ...discount,
                 procient: 0,
                 discount: disc,
+                services: [...servs]
             })
             setPayment({
                 total: totalpayment,

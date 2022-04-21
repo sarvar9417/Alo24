@@ -12,6 +12,7 @@ const offlineDiscount = new Schema(
         connector: {type: Schema.Types.ObjectId, ref: 'Connector', required: true},
         isArchive: {type: Boolean, default: false},
         comment: {type: String, required: true},
+        services: [{type: Schema.Types.ObjectId, ref: 'OfflineService'}]
     },
     {
         timestamps: true,
@@ -28,6 +29,7 @@ function validateDiscount(discount) {
         connector: Joi.string().required(),
         client: Joi.string().required(),
         comment: Joi.string(),
+        services: Joi.array()
     })
     return schema.validate(discount)
 }

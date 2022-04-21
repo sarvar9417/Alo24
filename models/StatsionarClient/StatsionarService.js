@@ -32,7 +32,7 @@ const service = new Schema(
         doctor: {type: Schema.Types.ObjectId, ref: 'User'},
         turn: {type: Number},
         comment: {type: String},
-        payment: {type: Boolean, default: true},
+        payment: {type: Boolean, default: false},
     },
     {
         timestamps: true,
