@@ -19,14 +19,9 @@ const connector = new Schema(
             ref: 'User',
             required: true,
         },
-        services: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'StatsionarService',
-                required: true,
-            },
-        ],
+        services: [{type: Schema.Types.ObjectId, ref: 'StatsionarService'}],
         products: [{type: Schema.Types.ObjectId, ref: 'StatsionarProduct'}],
+        payments: [{type: Schema.Types.ObjectId, ref: 'StatsionarPayment'}],
         accept: {type: Boolean, default: false},
         totalprice: {type: Number},
         dailys: [
@@ -39,7 +34,8 @@ const connector = new Schema(
             type: Schema.Types.ObjectId,
             ref: 'StatsionarRoom',
         },
-        diagnosis: {type: String}
+        diagnosis: {type: String},
+        discounts: [{type: Schema.Types.ObjectId, ref: 'StatsionarDiscount'}],
 
         // payment: { type: Schema.Types.ObjectId, ref: 'StatsionarProduct' } // To'lovlarni qabul qilingan Idsi kiritiladi
     },
@@ -60,7 +56,9 @@ function validateStatsionarConnector(connector) {
         room: Joi.string(),
         probirka: Joi.number(),
         reseption: Joi.string(),
-        diagnosis: Joi.string()
+        diagnosis: Joi.string(),
+        payments: Joi.array(),
+        discounts: Joi.array()
     })
 
     return schema.validate(connector)

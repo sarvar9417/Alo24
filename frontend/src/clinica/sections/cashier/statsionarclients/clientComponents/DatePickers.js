@@ -24,7 +24,7 @@ export const DatePickers = ({ changeDate }) => {
   return (
     <div
       className="form-control form-control-sm"
-      style={{  overflow: 'hidden' }}
+      style={{ maxWidth: '120px', overflow: 'hidden' }}
     >
       <DatePicker
         onSelect={(e) => {

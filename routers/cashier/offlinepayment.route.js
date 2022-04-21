@@ -11,11 +11,10 @@ const {Clinica} = require("../../models/DirectorAndClinica/Clinica");
 module.exports.payment = async (req, res) => {
     try {
         const {payment, discount, services, products} = req.body
-
+        console.log(discount)
         // CheckPayment
         const checkPayment = validatePayment(payment).error
         if (checkPayment) {
-            console.log(checkPayment)
             return res.status(400).json({
                 error: error.message,
             })
@@ -24,7 +23,6 @@ module.exports.payment = async (req, res) => {
         // CheckDiscount
         const checkDiscount = validateDiscount(discount).error
         if (checkDiscount) {
-            console.log(checkDiscount)
             return res.status(400).json({
                 error: error.message,
             })
@@ -70,7 +68,7 @@ module.exports.payment = async (req, res) => {
         const updateConnector = await OfflineConnector.findById(payment.connector)
         updateConnector.payments.push(newpayment._id)
         // CreateDiscount
-        if (discount.discount && discount.comment.length > 5) {
+        if (discount.discount && discount.comment.length > 2) {
             const newdiscount = new OfflineDiscount({
                 ...discount,
                 payment: newpayment._id
@@ -87,7 +85,6 @@ module.exports.payment = async (req, res) => {
 
         res.status(201).send(newpayment)
     } catch (error) {
-        console.log(error)
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
     }
 }
@@ -120,7 +117,6 @@ module.exports.getAll = async (req, res) => {
 
         res.status(200).send(connectors)
     } catch (error) {
-        console.log(error)
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
     }
 }

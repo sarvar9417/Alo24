@@ -1,517 +1,546 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { DatePickers } from './DatePickers'
-import 'react-datepicker/dist/react-datepicker.css'
-import Select from 'react-select'
-import makeAnimated from 'react-select/animated'
-const animatedComponents = makeAnimated()
+import React from "react";
+import "react-datepicker/dist/react-datepicker.css";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faFloppyDisk} from "@fortawesome/free-solid-svg-icons";
 
 export const RegisterClient = ({
-  changeRoom,
-  changeDoctor,
-  selectedServices,
-  selectedProducts,
-  updateData,
-  checkData,
-  setNewServices,
-  setNewProducts,
-  newproducts,
-  newservices,
-  changeProduct,
-  changeService,
-  changeCounterAgent,
-  changeAdver,
-  setClient,
-  client,
-  changeClientData,
-  changeClientBorn,
-  departments,
-  counterdoctors,
-  advers,
-  products,
-  loading,
-  doctors,
-  rooms,
-  room,
-  setRoom,
-  connector,
-  setConnector,
-}) => {
-  const [services, setServices] = useState([])
-  const getServices = useCallback(
-    (e) => {
-      var s = []
-      if (e === 'all') {
-        departments.map((department) => {
-          return department.services.map((service) => {
-            return s.push({
-              label: service.name,
-              value: service._id,
-              service: service,
-              department: department,
-            })
-          })
-        })
-      } else {
-        departments.map((department) => {
-          if (e === department._id) {
-            department.services.map((service) => {
-              s.push({
-                label: service.name,
-                value: service._id,
-                service: service,
-                department: department,
-              })
-              return ''
-            })
-          }
-          return ''
-        })
-      }
-      setServices(s)
-    },
-    [departments],
-  )
+                                   updateServices,
+                                   room,
+                                   inputPayment,
+                                   totalpayment,
+                                   checkPayment,
+                                   debtComment,
+                                   changeDebt,
+                                   serviceComment,
+                                   productComment,
+                                   discountComment,
+                                   discount,
+                                   changeDiscount,
+                                   setPayment,
+                                   changeProduct,
+                                   changeService,
+                                   discounts,
+                                   payments,
+                                   payment,
+                                   client,
+                                   services,
+                                   products,
+                                   loading,
+                                   connector
+                               }) => {
+    return (
+        <>
+            {/* Row start */}
+            <div className="row gutters">
+                <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title">Mijozning shaxsiy ma'lumotlari</div>
+                        </div>
+                        <div className="card-body">
+                            <table className="table">
+                                <thead>
+                                <tr>
+                                    <th scope="col" className="border py-1">
+                                        #
+                                    </th>
+                                    <th scope="col" className="border py-1">
+                                        First
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td className="py-1 border">Familiyasi</td>
+                                    <td className="py-1 border">{client.lastname}</td>
+                                </tr>
+                                <tr>
+                                    <td className="py-1 border">Ismi</td>
+                                    <td className="py-1 border">{client.firstname}</td>
+                                </tr>
+                                <tr>
+                                    <td className="py-1 border">Otasining ismi</td>
+                                    <td className="py-1 border">{client.fathername}</td>
+                                </tr>
+                                <tr>
+                                    <td className="py-1 border">Tugilgan sanasi</td>
+                                    <td className="py-1 border">{client.born && new Date(client.born).toLocaleDateString()}</td>
+                                </tr>
+                                <tr>
+                                    <td className="py-1 border">Telefon raqami</td>
+                                    <td className="py-1 border">+998{client.phone}</td>
+                                </tr>
+                                <tr>
+                                    <td className="py-1 border">ID</td>
+                                    <td className="py-1 border">{client.id}</td>
+                                </tr>
+                                <tr>
+                                    <td className="py-1 border">Probirka</td>
+                                    <td className="py-1 border">{connector.probirka}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div className="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title">
+                                Xizmat va tolovlar bilan ishlash bo'limi
+                            </div>
+                        </div>
+                        <div className="card-body">
+                            <div className="row gutters">
+                                <div className="col-12">
+                                    <table className="table table-sm border-collapse">
+                                        <thead>
+                                        <tr>
+                                            <th className="border py-1">№</th>
+                                            <th className="border py-1">Nomi</th>
+                                            <th className="border py-1">Narxi</th>
+                                            <th className="border py-1">Soni</th>
+                                            <th className="border py-1">To'lov</th>
+                                            <th className="border py-1">Izoh</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {services &&
+                                            services.map((service, index) => {
+                                                return (
+                                                    <tr key={index}>
+                                                        <td className="py-1 border">{index + 1}</td>
+                                                        <td className="py-1 border">{service.service.name}</td>
+                                                        <td className="text-right py-1 border">
+                                                            {service.service.price * service.pieces}
+                                                        </td>
+                                                        <td className="text-right py-1 border">
+                                                            {service.pieces}
+                                                        </td>
+                                                        <td className="text-right py-1 border">
+                                                            <div className="custom-control custom-checkbox text-center">
+                                                                <input
+                                                                    defaultChecked={!service.refuse}
+                                                                    type="checkbox"
+                                                                    className="custom-control-input border border-dager"
+                                                                    id={`service${index}`}
+                                                                    onChange={(e) => changeService(e, index)}
+                                                                />
+                                                                <label className="custom-control-label"
+                                                                       htmlFor={`service${index}`}></label>
+                                                            </div>
+                                                        </td>
+                                                        <td className="text-right py-1 border">
+                                                            {service.refuse && <input
+                                                                onChange={(e) => serviceComment(e, index)}
+                                                                defaultValue={service.comment}
+                                                                type="text"
+                                                                className="form-control form-control-sm"
+                                                                id="comment"
+                                                                name="comment"
+                                                                placeholder="Izoh"
+                                                            />}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        <tr></tr>
+                                        {products &&
+                                            products.map((product, index) => {
+                                                return (
+                                                    <tr key={index}>
+                                                        <td className="py-1 border">{index + 1}</td>
+                                                        <td className="py-1 border">{product.product.name}</td>
+                                                        <td className="text-right py-1 border">
+                                                            {product.product.price * product.pieces}
+                                                        </td>
+                                                        <td className="text-right py-1 border">
+                                                            {product.pieces}
+                                                        </td>
+                                                        <td className="text-right py-1 border">
+                                                            <div className="custom-control custom-checkbox text-center">
+                                                                <input defaultChecked={!product.refuse}
+                                                                       type="checkbox"
+                                                                       className="custom-control-input border border-dager"
+                                                                       id={`product${index}`}
+                                                                       onChange={(e) => changeProduct(e, index)}
+                                                                />
+                                                                <label className="custom-control-label"
+                                                                       htmlFor={`product${index}`}></label>
+                                                            </div>
+                                                        </td>
+                                                        <td className="text-right py-1 border">
+                                                            {product.refuse && <input
+                                                                onChange={(e) => productComment(e, index)}
+                                                                defaultValue={product.comment}
+                                                                type="text"
+                                                                className="form-control form-control-sm"
+                                                                id="comment"
+                                                                name="comment"
+                                                                placeholder="Izoh"
+                                                            />}
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        <tr>
+                                            <td className="border py-1 font-bold"> Xona</td>
+                                            <td className="border py-1 text-emerald-600 font-bold"> {room.type}</td>
+                                            <td className="border py-1 text-right font-bold"> {room.price}</td>
+                                            <td className="border py-1 text-right font-bold"> {room.day} kun
+                                            </td>
+                                            <td className="border font-bold text-right">{room.totalprice}</td>
+                                            <td className="border"></td>
+                                        </tr>
+                                        <tr className="bg-white">
+                                            <td className="border py-1 font-bold text-right text-teal-600 text-sm "
+                                                colSpan={2}> Jami
+                                            </td>
+                                            <td className="border py-1 font-bold  text-teal-600 text-sm"
+                                                colSpan={4}> {totalpayment}</td>
 
-  useEffect(() => {
-    if (departments) {
-      getServices('all')
-    }
-  }, [departments, getServices])
-  return (
-    <>
-      {/* Row start */}
-      <div className="row gutters">
-        <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-          <div className="card">
-            <div className="card-header">
-              <div className="card-title">Mijozning shaxsiy ma'lumotlari</div>
-            </div>
-            <div className="card-body">
-              <div className="row gutters">
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                  <div className="form-group">
-                    <label htmlFor="fullName">Familiyasi</label>
-                    <input
-                      value={client.lastname}
-                      onChange={changeClientData}
-                      type="text"
-                      className="form-control form-control-sm"
-                      id="lastname"
-                      name="lastname"
-                      placeholder="Familiyasi"
-                    />
-                  </div>
-                </div>
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                  <div className="form-group">
-                    <label htmlFor="inputEmail">Ismi</label>
-                    <input
-                      defaultValue={client.firstname}
-                      onChange={changeClientData}
-                      type="text"
-                      className="form-control form-control-sm"
-                      id="firstname"
-                      name="firstname"
-                      placeholder="Ismi"
-                    />
-                  </div>
-                </div>
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                  <div className="form-group">
-                    <label htmlFor="education">Otasining ismi</label>
-                    <input
-                      defaultValue={client.fathername}
-                      onChange={changeClientData}
-                      type="text"
-                      className="form-control form-control-sm"
-                      id="fathername"
-                      name="fathername"
-                      placeholder="Otasining ismi"
-                    />
-                  </div>
-                </div>
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                  <label htmlFor="education">Tug'ilgan sanasi</label>
-                  <DatePickers
-                    changeDate={changeClientBorn}
-                    style={{ maxWidth: '120px' }}
-                  />
-                </div>
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                  <div className="form-group">
-                    <label htmlFor="addreSs">Telefon raqami</label>
-                    <div className="input-group input-group-sm mb-3">
-                      <div className="input-group-prepend">
-                        <span
-                          className="input-group-text"
-                          id="inputGroup-sizing-sm"
-                        >
-                          +998
-                        </span>
-                      </div>
-                      <input
-                        defaultValue={client.phone}
-                        onChange={changeClientData}
-                        type="number"
-                        className="form-control"
-                        name="phone"
-                      />
+                                        </tr>
+                                        </tbody>
+
+                                    </table>
+                                    <div>
+                                        <button
+                                            onClick={updateServices}
+                                            className="bg-teal-500 py-1 px-3 text-white rounded-sm float-right hover:bg-teal-600 d-inline-block">
+                                            <FontAwesomeIcon icon={faFloppyDisk}/>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
                 </div>
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
-                  <div className="form-group">
-                    <label htmlFor="biO">Jinsi</label>
-                    <div>
-                      <div className="custom-control custom-radio custom-control-inline">
-                        <input
-                          checked={
-                            client.gender && client.gender === 'man'
-                              ? true
-                              : false
-                          }
-                          onChange={(e) => {
-                            setClient({ ...client, gender: 'man' })
-                          }}
-                          type="radio"
-                          id="customRadioInline1"
-                          name="gender"
-                          className="custom-control-input"
-                        />
-                        <label
-                          className="custom-control-label"
-                          htmlFor="customRadioInline1"
-                        >
-                          Erkak
-                        </label>
-                      </div>
-                      <div className="custom-control custom-radio custom-control-inline">
-                        <input
-                          defaultChecked={
-                            client.gender === 'woman' ? true : false
-                          }
-                          onChange={(e) => {
-                            setClient({ ...client, gender: 'woman' })
-                          }}
-                          type="radio"
-                          id="customRadioInline2"
-                          name="gender"
-                          className="custom-control-input"
-                        />
-                        <label
-                          className="custom-control-label"
-                          htmlFor="customRadioInline2"
-                        >
-                          Ayol
-                        </label>
-                      </div>
+                <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12">
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title">
+                                Hisobot
+                            </div>
+                        </div>
+                        {connector.room && connector.room.endday ? <div className="card-body">
+                                <table className="table table-sm">
+                                    <tfoot>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            Jami to'lov:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {totalpayment}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            Chegirma:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {discounts + discount.discount}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            To'langan:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {payments}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            Qarz:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {payment.debt}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            To'lanayotgan:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {totalpayment - payments - discounts - discount.discount - payment.debt}
+                                        </th>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div> :
+                            <div className="card-body">
+                                <table className="table table-sm">
+                                    <tfoot>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            Jami to'lov:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {totalpayment}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            Oldindan to'lov:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {payments}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            To'lanayotgan summa:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {payment.payment}
+                                        </th>
+                                    </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }
                     </div>
-                  </div>
                 </div>
-                <div className="col-12">
-                  <div className="form-group">
-                    <label htmlFor="biO">Manzili</label>
-                    <textarea
-                      defaultValue={client.address}
-                      onChange={changeClientData}
-                      className="form-control form-control-sm"
-                      name="address"
-                      rows={1}
-                      placeholder="Navoiy shahar ...."
-                    />
-                  </div>
+                <div className="col-xl-8 col-lg-8 col-md-12 col-sm-12">
+                    <div className="card">
+                        <div className="card-header">
+                            <div className="card-title">
+                                To'lov qabul qilish
+                            </div>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className={connector.room && connector.room.endday ? "col - md - 6" : "d-none"}>
+                                    <div className="form-group">
+                                        <div className="input-group input-group-sm mb-3">
+                                            <div className="input-group-prepend w-25">
+                                                <span
+                                                    className="w-100 input-group-text bg-primary text-white font-weight-bold"
+                                                    id="inputGroup-sizing-sm"
+                                                    style={{fontSize: "9pt"}}>
+                                                    Chegirma
+                                                </span>
+                                            </div>
+                                            {
+                                                discount.procient ?
+                                                    <input
+                                                        onChange={changeDiscount}
+                                                        type="number"
+                                                        className="form-control"
+                                                        placeholder="Chegirma foizi yoki summasini kiriting"
+                                                        defaultValue={discount.discount}
+                                                    /> : <input
+                                                        onChange={changeDiscount}
+                                                        type="number"
+                                                        className="form-control"
+                                                        placeholder="Chegirma foizi yoki summasini kiriting"
+                                                        value={discount.discount || ''}
+                                                    />}
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend w-25">
+                                                <label
+                                                    className="w-100 input-group-text bg-primary text-white font-weight-bold"
+                                                    htmlFor="inputGroupSelect01"
+                                                    style={{fontSize: "9pt"}}
+                                                >
+                                                    Izoh</label>
+                                            </div>
+                                            <select
+                                                onChange={discountComment}
+                                                className="custom-select"
+                                                id="inputGroupSelect01"
+                                            >
+                                                <option value="delete">Tanglang</option>
+                                                <option value="Kam ta'minlangan">Kam ta'minlangan</option>
+                                                <option value="Two">Two</option>
+                                                <option value="Three">Three</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="form-group">
+                                        <div className="input-group input-group-sm mb-3">
+                                            <div className="input-group-prepend w-25">
+                                                <span
+                                                    className="w-100 input-group-text bg-primary text-white font-weight-bold"
+                                                    id="inputGroup-sizing-sm"
+                                                    style={{fontSize: "9pt"}}>
+                                                    Qarz
+                                                </span>
+                                            </div>
+                                            <input
+                                                onChange={changeDebt}
+                                                type="number"
+                                                className="form-control"
+                                                placeholder="Qarz summasini kiriting"
+                                                value={payment.debt || ''}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="form-group m-0 mb-3">
+                                        <div className="input-group input-group-sm">
+                                            <div className="input-group-prepend w-25">
+                                                <span
+                                                    className="w-100 input-group-text bg-primary text-white font-weight-bold"
+                                                    id="inputGroup-sizing-sm"
+                                                    style={{fontSize: "9pt"}}>
+                                                    Izoh
+                                                </span>
+                                            </div>
+                                            <input
+                                                onChange={debtComment}
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Qarz izohini kiriting"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={connector.room && connector.room.endday ? "col-md-6" : "col-12"}>
+                                    <div className="btn-group mb-3 w-100" role="group" aria-label="Basic example">
+                                        <button
+                                            onClick={() => {
+                                                setPayment({
+                                                    ...payment,
+                                                    type: "cash",
+                                                    cash: payment.payment,
+                                                    card: 0,
+                                                    transfer: 0
+                                                })
+                                            }}
+                                            type="button"
+                                            className={`btn btn-sm py-1 text-white  ${payment.type === "cash" ? "bg-amber-500" : "bg-teal-500"}`}
+                                        >
+                                            Naqt
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setPayment({
+                                                    ...payment,
+                                                    type: "card",
+                                                    cash: 0,
+                                                    card: payment.payment,
+                                                    transfer: 0
+                                                })
+                                            }}
+                                            type="button"
+                                            className={`btn btn-sm py-1 text-white ${payment.type === "card" ? "bg-amber-500" : "bg-teal-500"}`}
+                                        >
+                                            Plastik
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setPayment({
+                                                    ...payment,
+                                                    type: "transfer",
+                                                    cash: 0,
+                                                    card: 0,
+                                                    transfer: payment.payment
+                                                })
+                                            }}
+                                            type="button"
+                                            className={`btn btn-sm py-1 text-white ${payment.type === "transfer" ? "bg-amber-500" : "bg-teal-500"}`}
+                                        >
+                                            O'tkazma
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setPayment({
+                                                    ...payment,
+                                                    type: "mixed",
+                                                    cash: 0,
+                                                    card: 0,
+                                                    transfer: 0
+                                                })
+                                            }}
+                                            type="button"
+                                            className={`btn btn-sm py-1 text-white ${payment.type === "mixed" ? "bg-amber-500" : "bg-teal-500"}`}
+                                        >
+                                            Aralash
+                                        </button>
+                                    </div>
+                                    {(payment.type === "cash" || payment.type === "mixed") &&
+                                        <div className="input-group input-group-sm mb-3">
+                                            <div className="input-group-prepend w-25">
+                                                <span
+                                                    className="w-100 input-group-text bg-primary text-white font-weight-bold"
+                                                    id="inputGroup-sizing-sm"
+                                                    style={{fontSize: "9pt"}}>
+                                                    Naqt
+                                                </span>
+                                            </div>
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                placeholder="Naqt to'lov"
+                                                value={payment.cash || ''}
+                                                name="cash"
+                                                onChange={inputPayment}
+                                            />
+                                        </div>}
+                                    {(payment.type === "card" || payment.type === "mixed") &&
+                                        <div className="input-group input-group-sm mb-3">
+                                            <div className="input-group-prepend w-25">
+                                                <span
+                                                    className="w-100 input-group-text bg-primary text-white font-weight-bold"
+                                                    id="inputGroup-sizing-sm"
+                                                    style={{fontSize: "9pt"}}>
+                                                    Plastik
+                                                </span>
+                                            </div>
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                placeholder="Karta orqali to'lov to'lov"
+                                                value={payment.card || ''}
+                                                name="card"
+                                                onChange={inputPayment}
+                                            />
+                                        </div>}
+                                    {(payment.type === "transfer" || payment.type === "mixed") &&
+                                        <div className="input-group input-group-sm mb-3">
+                                            <div className="input-group-prepend w-25">
+                                                <span
+                                                    className="w-100 input-group-text bg-primary text-white font-weight-bold"
+                                                    id="inputGroup-sizing-sm"
+                                                    style={{fontSize: "9pt"}}>
+                                                    O'tkazma
+                                                </span>
+                                            </div>
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                placeholder="O'tkazma to'lov"
+                                                value={payment.transfer || ''}
+                                                name="transfer"
+                                                onChange={inputPayment}
+                                            />
+                                        </div>}
+
+                                </div>
+                            </div>
+
+                        </div>
+                        <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-3">
+                            <div className="text-right">
+                                {loading ? (
+                                    <button className="btn btn-warning" disabled>
+                                        <span className="spinner-border spinner-border-sm"></span>
+                                        Loading...
+                                    </button>
+                                ) : (
+                                    <button onClick={checkPayment} className="btn btn-warning w-100">
+                                        Qabul qilish
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="col-sm-6 col-12">
-                  <div className="form-group">
-                    <label htmlFor="biO">Doctors</label>
-                    <select
-                      className="form-control form-control-sm selectpicker"
-                      placeholder="Doctors"
-                      onChange={changeDoctor}
-                    >
-                      <option value={'delete'}>Doctors</option>
-                      {doctors.map((doctor, index) => (
-                        <option key={index} value={doctor._id}>
-                          {doctor.lastname} {doctor.firstname}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="col-sm-6 col-12">
-                  <div className="form-group">
-                    <label htmlFor="biO">Xonalar</label>
-                    <select
-                      className="form-control form-control-sm selectpicker"
-                      placeholder="Xonalar"
-                      onChange={changeRoom}
-                    >
-                      <option value={'delete'}>Xonalar</option>
-                      {rooms.map((room, index) => (
-                        <option key={index} value={JSON.stringify(room)}>
-                          {room.type +
-                            ' ' +
-                            room.number +
-                            ' xona ' +
-                            room.place +
-                            " o'rin"}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-                <div className="col-sm-12 col-12">
-                  <label>Qabul sanasi</label>
-                  <DatePickers
-                    changeDate={(date) => setRoom({ ...room, beginday: date })}
-                  />
-                </div>
-                <div className="col-sm-6 col-12">
-                  <div className="form-group">
-                    <label htmlFor="biO">Kontragent</label>
-                    <select
-                      onChange={changeCounterAgent}
-                      className="form-control form-control-sm selectpicker"
-                      placeholder="Kontragentlarni tanlash"
-                    >
-                      <option value="delete">Tanlanmagan</option>
-                      {counterdoctors.map((counterdoctor, index) => {
-                        return (
-                          <option
-                            key={index}
-                            value={JSON.stringify(counterdoctor)}
-                            id={counterdoctor.user}
-                          >
-                            {counterdoctor.lastname +
-                              ' ' +
-                              counterdoctor.firstname}
-                          </option>
-                        )
-                      })}
-                    </select>
-                  </div>
-                </div>
-                <div className="col-sm-6 col-12">
-                  <div className="form-group">
-                    <label htmlFor="biO">Reklama</label>
-                    <select
-                      onChange={changeAdver}
-                      className="form-control form-control-sm selectpicker"
-                      placeholder="Reklamalarni tanlash"
-                    >
-                      <option value="delete">Tanlanmagan</option>
-                      {advers.map((adver, index) => {
-                        return (
-                          <option key={index} value={adver._id}>
-                            {adver.name}
-                          </option>
-                        )
-                      })}
-                    </select>
-                  </div>
-                </div>
-                {client._id ? (
-                  <div className="col-12 text-right">
-                    {loading ? (
-                      <button className="btn btn-primary" disabled>
-                        <span class="spinner-border spinner-border-sm"></span>
-                        Loading...
-                      </button>
-                    ) : (
-                      <button onClick={updateData} className="btn btn-primary">
-                        Yangilash
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  ''
-                )}
-              </div>
             </div>
-          </div>
-        </div>
-        <div className="col-xl-6 col-lg-6 col-md-12 col-sm-12">
-          <div className="card">
-            <div className="card-header">
-              <div className="card-title">Xizmatlar bilan ishlash</div>
-            </div>
-            <div className="card-body">
-              <div className="row gutters">
-                <div className="col-12">
-                  <div className="form-group">
-                    <label htmlFor="fullName">Bo'limlar</label>
-                    <select
-                      className="form-control form-control-sm selectpicker"
-                      placeholder="Reklamalarni tanlash"
-                      onChange={(event) => getServices(event.target.value)}
-                    >
-                      <option value="all"> Barcha bo'limlar</option>
-                      {departments.map((department, index) => {
-                        return (
-                          <option key={index} value={department._id}>
-                            {department.name}
-                          </option>
-                        )
-                      })}
-                    </select>
-                  </div>
-                </div>
-                <div className="col-12">
-                  <div className="form-group">
-                    <label htmlFor="inputEmail">Xizmatlar</label>
-                    <Select
-                      value={selectedServices}
-                      onChange={changeService}
-                      closeMenuOnSelect={false}
-                      components={animatedComponents}
-                      options={services}
-                      theme={(theme) => ({
-                        ...theme,
-                        borderRadius: 0,
-                        padding: 0,
-                        height: 0,
-                      })}
-                      isMulti
-                    />
-                  </div>
-                </div>
-                <div className="col-12">
-                  <div className="form-group">
-                    <label htmlFor="inputEmail">Mahsulotlar</label>
-                    <Select
-                      value={selectedProducts}
-                      onChange={changeProduct}
-                      closeMenuOnSelect={false}
-                      components={animatedComponents}
-                      options={products}
-                      theme={(theme) => ({
-                        ...theme,
-                        borderRadius: 0,
-                        padding: 0,
-                        height: 0,
-                      })}
-                      isMulti
-                    />
-                  </div>
-                </div>
-                <div className="col-12">
-                  <table className="table">
-                    <thead>
-                      <tr>
-                        <th className="border py-1">№</th>
-                        <th className="border py-1">Nomi</th>
-                        <th className="border py-1">Narxi</th>
-                        <th className="border py-1">Soni</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {newservices &&
-                        newservices.map((service, index) => {
-                          return (
-                            <tr key={index}>
-                              <td className="py-1">{index + 1}</td>
-                              <td className="py-1">{service.service.name}</td>
-                              <td className="text-right py-1">
-                                {service.service.price * service.pieces}
-                              </td>
-                              <td className="text-right py-1">
-                                <input
-                                  onChange={(e) =>
-                                    setNewServices(
-                                      Object.values({
-                                        ...newservices,
-                                        [index]: {
-                                          ...newservices[index],
-                                          pieces: e.target.value,
-                                        },
-                                      }),
-                                    )
-                                  }
-                                  className="text-right outline-none"
-                                  style={{ maxWidth: '50px', outline: 'none' }}
-                                  defaultValue={service.pieces}
-                                  type="number"
-                                />
-                              </td>
-                            </tr>
-                          )
-                        })}
-                      <tr className="border"></tr>
-                      {newproducts &&
-                        newproducts.map((product, index) => {
-                          return (
-                            <tr key={index}>
-                              <td className="py-1">{index + 1}</td>
-                              <td className="py-1">{product.product.name}</td>
-                              <td className="text-right py-1">
-                                {product.product.price * product.pieces}
-                              </td>
-                              <td className="text-right py-1">
-                                <input
-                                  onChange={(e) =>
-                                    setNewProducts(
-                                      Object.values({
-                                        ...newproducts,
-                                        [index]: {
-                                          ...newproducts[index],
-                                          pieces: e.target.value,
-                                        },
-                                      }),
-                                    )
-                                  }
-                                  className="text-right outline-none"
-                                  style={{ maxWidth: '50px', outline: 'none' }}
-                                  defaultValue={product.pieces}
-                                  type="number"
-                                />
-                              </td>
-                            </tr>
-                          )
-                        })}
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <th className="text-right" colSpan={2}>
-                          Jami:
-                        </th>
-                        <th colSpan={2}>
-                          {newservices.reduce((summa, service) => {
-                            return (
-                              summa +
-                              service.service.price * parseInt(service.pieces)
-                            )
-                          }, 0) +
-                            newproducts.reduce((summa, product) => {
-                              return (
-                                summa +
-                                product.product.price * parseInt(product.pieces)
-                              )
-                            }, 0)}
-                        </th>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-                <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                  <div className="text-right">
-                    {loading ? (
-                      <button className="btn btn-primary" disabled>
-                        <span className="spinner-border spinner-border-sm"></span>
-                        Loading...
-                      </button>
-                    ) : (
-                      <button onClick={checkData} className="btn btn-primary">
-                        Saqlash
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Row end */}
-    </>
-  )
-}
+            {/* Row end */}
+        </>
+    );
+};

@@ -184,6 +184,13 @@ export const RegisterClient = ({
                                                     </tr>
                                                 );
                                             })}
+                                        <tr className="bg-white">
+                                            <td className="border py-1 font-bold text-right text-teal-600 text-sm "
+                                                colSpan={2}> Jami
+                                            </td>
+                                            <td className="border py-1 font-bold  text-teal-600 text-sm"
+                                                colSpan={4}> {totalpayment}</td>
+                                        </tr>
                                         </tbody>
 
                                     </table>
@@ -239,7 +246,7 @@ export const RegisterClient = ({
                                         To'lanayotgan:
                                     </th>
                                     <th className="text-left" colSpan={4}>
-                                        {payment.payment}
+                                        {totalpayment - payments - discounts - discount.discount - payment.debt}
                                     </th>
                                 </tr>
                                 </tfoot>
@@ -280,7 +287,7 @@ export const RegisterClient = ({
                                                         type="number"
                                                         className="form-control"
                                                         placeholder="Chegirma foizi yoki summasini kiriting"
-                                                        value={discount.discount || 0}
+                                                        value={discount.discount || ''}
                                                     />}
                                         </div>
                                     </div>
@@ -301,8 +308,8 @@ export const RegisterClient = ({
                                             >
                                                 <option value="delete">Tanglang</option>
                                                 <option value="Kam ta'minlangan">Kam ta'minlangan</option>
-                                                <option value="2">Two</option>
-                                                <option value="3">Three</option>
+                                                <option value="two">Two</option>
+                                                <option value="three">Three</option>
                                             </select>
                                         </div>
                                     </div>
@@ -321,7 +328,7 @@ export const RegisterClient = ({
                                                 type="number"
                                                 className="form-control"
                                                 placeholder="Qarz summasini kiriting"
-                                                value={payment.debt || 0}
+                                                value={payment.debt || ''}
                                             />
                                         </div>
                                     </div>
@@ -357,7 +364,7 @@ export const RegisterClient = ({
                                                 })
                                             }}
                                             type="button"
-                                            className={`btn btn-sm py-1 ${payment.type === "cash" ? "btn-warning" : "btn-success"}`}
+                                            className={`btn btn-sm py-1 text-white  ${payment.type === "cash" ? "bg-amber-500" : "bg-teal-500"}`}
                                         >
                                             Naqt
                                         </button>
@@ -372,7 +379,7 @@ export const RegisterClient = ({
                                                 })
                                             }}
                                             type="button"
-                                            className={`btn btn-sm py-1 ${payment.type === "card" ? "btn-warning" : "btn-success"}`}
+                                            className={`btn btn-sm py-1 text-white ${payment.type === "card" ? "bg-amber-500" : "bg-teal-500"}`}
                                         >
                                             Plastik
                                         </button>
@@ -387,7 +394,7 @@ export const RegisterClient = ({
                                                 })
                                             }}
                                             type="button"
-                                            className={`btn btn-sm py-1 ${payment.type === "transfer" ? "btn-warning" : "btn-success"}`}
+                                            className={`btn btn-sm py-1 text-white ${payment.type === "transfer" ? "bg-amber-500" : "bg-teal-500"}`}
                                         >
                                             O'tkazma
                                         </button>
@@ -402,7 +409,7 @@ export const RegisterClient = ({
                                                 })
                                             }}
                                             type="button"
-                                            className={`btn btn-sm py-1 ${payment.type === "mixed" ? "btn-warning" : "btn-success"}`}
+                                            className={`btn btn-sm py-1 text-white ${payment.type === "mixed" ? "bg-amber-500" : "bg-teal-500"}`}
                                         >
                                             Aralash
                                         </button>
@@ -418,11 +425,10 @@ export const RegisterClient = ({
                                                 </span>
                                             </div>
                                             <input
-                                                disabled={payment.type === "cash"}
                                                 type="number"
                                                 className="form-control"
                                                 placeholder="Naqt to'lov"
-                                                value={payment.cash || 0}
+                                                value={payment.cash || ''}
                                                 name="cash"
                                                 onChange={inputPayment}
                                             />
@@ -438,11 +444,10 @@ export const RegisterClient = ({
                                                 </span>
                                             </div>
                                             <input
-                                                disabled={payment.type === "card"}
                                                 type="number"
                                                 className="form-control"
                                                 placeholder="Karta orqali to'lov to'lov"
-                                                value={payment.card || 0}
+                                                value={payment.card || ''}
                                                 name="card"
                                                 onChange={inputPayment}
                                             />
@@ -458,11 +463,10 @@ export const RegisterClient = ({
                                                 </span>
                                             </div>
                                             <input
-                                                disabled={payment.type === "transfer"}
                                                 type="number"
                                                 className="form-control"
                                                 placeholder="O'tkazma to'lov"
-                                                value={payment.transfer || 0}
+                                                value={payment.transfer || ''}
                                                 name="transfer"
                                                 onChange={inputPayment}
                                             />
@@ -470,7 +474,6 @@ export const RegisterClient = ({
 
                                 </div>
                             </div>
-
                         </div>
                         <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 mb-3">
                             <div className="text-right">

@@ -1,98 +1,119 @@
-export const checkClientData = (client) => {
-    if (!client.firstname) {
-        return {
-            title: 'Diqqat! Mijoz ismi kiritilmagan.',
-            description: 'Iltimos foydalanuvchi ismini kiriting.',
-            status: 'error',
-        }
-    }
+export const checkData = (totalpayment, payment, discount, services, products) => {
 
-    if (!client.lastname) {
-        return {
-            title: 'Diqqat! Mijoz familiyasi kiritilmagan.',
-            description: 'Iltimos foydalanuvchi familiyasini kiriting.',
-            status: 'error',
-        }
-    }
-
-    if (!client.born) {
-        return {
-            title: "Diqqat! Mijozning tug'ilgan sanasi kiritilmagan.",
-            description: "Iltimos mijozning tug'ilgan sanasini kiriting.",
-            status: 'error',
-        }
-    }
-
-    if (client.phone && client.phone.length !== 9) {
-        return {
-            title: "Diqqat! Mijoz telefon raqami 9 raqamdan iborat bo'lishi kerak.",
-            description: "Iltimos foydalanuvchi telefon raqamini to'g'ri kiriting.",
-            status: 'error',
-        }
-    }
-
-    if (!client.gender) {
-        return {
-            title: 'Diqqat! Mijozning jinsi tanlanmagan.',
-            description: 'Iltimos mijozning jinsini tanlang.',
-            status: 'error',
-        }
-    }
-
-    return false
-}
-
-export const checkServicesData = (services) => {
     for (const service of services) {
-        if (service.pieces === '0') {
+        if (service.refuse && !service.comment) {
             return {
-                title: `Diqqat! ${service.service.name} xizmati soni 0 ko'rsatilgan.`,
-                description: `Iltimos xizmat ko'rsatilmasa uni ro'yxatdan o'chiring yoki xizmat sonini kiriting.`,
+                title: `Diqqat! Xizmat rad etilgani sababini ko'rsating.`,
+                description: ".",
+                status: 'error',
+            }
+        }
+
+        if (service.refuse && service.comment.length < 5) {
+            return {
+                title: "Diqqat! Xizmat rad etilgani sababi kamida belgidan iborat bo'lishi lozim.",
+                description: ".",
                 status: 'error',
             }
         }
     }
-    return false
-}
 
-export const checkProductsData = (products) => {
     for (const product of products) {
-        if (product.pieces === '0') {
+        if (product.refuse && !product.comment) {
             return {
-                title: `Diqqat! ${product.product.name} mahsuloti soni 0 ko'rsatilgan.`,
-                description: `Iltimos mahsulot qo'shilmasa uni ro'yxatdan o'chiring yoki mahsulot sonini kiriting.`,
+                title: "Diqqat! Mahsulot rad etilgani sababini ko'rsating.",
+                description: "",
+                status: 'error',
+            }
+        }
+
+        if (product.refuse && product.comment.length < 5) {
+            return {
+                title: "Diqqat! Mahsulot rad etilgani sababi kamida belgidan iborat bo'lishi lozim.",
+                description: ".",
                 status: 'error',
             }
         }
     }
-    return false
-}
 
-export const checkConnectorData = (connector, client) => {
-    if (!connector.doctor && !client._id) {
+    if (discount.discount > 0 && !discount.comment) {
         return {
-            title: 'Diqqat! Mijozga shifokor biriktirilmagan.',
-            description: 'Iltimos mijozga shifokor biriktiring.',
-            status: 'error',
-        }
-    }
-    return false
-}
-
-export const checkRoomData = (room, client) => {
-    if (!room.roomid && !client._id) {
-        return {
-            title: 'Diqqat! Mijozga xona biriktirilmagan.',
-            description: 'Iltimos mijozga xona biriktiring.',
+            title: "Diqqat! Chegirma uchun izohni belgilang.",
+            description: "",
             status: 'error',
         }
     }
 
-    if (!room.beginday && !client._id) {
+    if (payment.debt > 0 && !payment.comment) {
         return {
-            title: 'Diqqat! Mijozning kelgan kuni kiritilmagan.',
-            description: 'Iltimos mijozning kelgan kunini kiriting.',
+            title: "Diqqat! Qarz uchun izohni kiriting.",
+            description: "",
             status: 'error',
+        }
+    }
+
+    if (payment.debt > 0 && payment.comment.length < 5) {
+        return {
+            title: "Diqqat! Qarz uchun izoh ka,oda 5 belgidan iborat bo'lishi kerak.",
+            description: "",
+            status: 'error',
+        }
+    }
+
+    if (payment.type === '' || !payment.type) {
+        return {
+            title: "Diqqat! Iltimos to'lov turini ko'rsating.",
+            description: "",
+            status: 'error',
+        }
+    }
+
+    if (parseInt(payment.payment) !== parseInt(payment.cash) + parseInt(payment.card) + parseInt(payment.transfer)
+    ) {
+        return {
+            title: "Diqqat! To'lov summasida xatolik yuz berdi.",
+            description: "Iltimos to'lov summalarini qayta ko'rib chiqing.",
+            status: 'error',
+        }
+    }
+
+    return false
+}
+
+export const checkServices = (services, products) => {
+    for (const service of services) {
+        if (service.refuse && !service.comment) {
+            return {
+                title: `Diqqat! Xizmat rad etilgani sababini ko'rsating.`,
+                description: ".",
+                status: 'error',
+            }
+        }
+
+        if (service.refuse && service.comment.length < 5) {
+            return {
+                title: "Diqqat! Xizmat rad etilgani sababi kamida belgidan iborat bo'lishi lozim.",
+                description: ".",
+                status: 'error',
+            }
+        }
+    }
+
+    for (const product of products) {
+        if (product.refuse && !product.comment) {
+            return {
+                title: "Diqqat! Mahsulot rad etilgani sababini ko'rsating.",
+                description: "",
+                status: 'error',
+            }
+        }
+
+        if (product.refuse && product.comment.length < 5) {
+            return {
+                title: "Diqqat! Mahsulot rad etilgani sababi kamida belgidan iborat bo'lishi lozim.",
+                description: ".",
+                status: 'error',
+            }
         }
     }
     return false
