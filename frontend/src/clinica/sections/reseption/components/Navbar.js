@@ -101,12 +101,12 @@ export const Navbar = () => {
                             <li className="nav-item">
                                 <Link
                                     className={`nav-link ${
-                                        activePage === "/alo24" ? "active-page" : ""
+                                        activePage === "/alo24" || activePage === "/" ? "active-page" : ""
                                     }`}
                                     onClick={() => {
                                         setActivePage('/alo24')
                                     }}
-                                    to="/"
+                                    to="/alo24"
                                 >
                                     <i className="icon-devices_other nav-icon"/>
                                     Kunduzgi
@@ -115,12 +115,12 @@ export const Navbar = () => {
                             <li className="nav-item">
                                 <Link
                                     className={`nav-link ${
-                                        window.location.pathname === "/alo24/statsionar"
+                                        activePage === "/alo24/statsionar"
                                             ? "active-page"
                                             : ""
                                     }`}
                                     onClick={() => {
-                                        setActivePage('/alo24/statsiona')
+                                        setActivePage('/alo24/statsionar')
                                     }}
                                     to="/alo24/statsionar"
                                 >
@@ -131,7 +131,7 @@ export const Navbar = () => {
                             <li className="nav-item">
                                 <Link
                                     className={`nav-link ${
-                                        window.location.pathname === "/alo24/online"
+                                        activePage === "/alo24/online"
                                             ? "active-page"
                                             : ""
                                     }`}

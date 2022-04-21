@@ -262,7 +262,6 @@ export const StatsionarClients = () => {
         setServices(servs)
         setProducts(prods)
         setClient(JSON.parse(JSON.stringify(connector.client)))
-        console.log(connector.discounts)
         setConnector({...connector})
         let payments = connector.payments.reduce((summa, payment) => {
             return summa + payment.payment

@@ -24,7 +24,7 @@ const product = new Schema(
         pieces: {type: Number, required: true},
         refuse: {type: Boolean, default: false},
         reseption: {type: Schema.Types.ObjectId, ref: 'User', required: true},
-        payment: {type: Boolean, default: false},
+        payment: {type: Boolean, default: true},
         comment: {type: String}
     },
     {

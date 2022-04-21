@@ -355,8 +355,8 @@ export const RegisterClient = ({
                                             >
                                                 <option value="delete">Tanglang</option>
                                                 <option value="Kam ta'minlangan">Kam ta'minlangan</option>
-                                                <option value="2">Two</option>
-                                                <option value="3">Three</option>
+                                                <option value="Two">Two</option>
+                                                <option value="Three">Three</option>
                                             </select>
                                         </div>
                                     </div>
