@@ -23,7 +23,7 @@ const {
 } = require('../../models/OnlineClient/OnlineCounteragent')
 const {OnlineAdver} = require('../../models/OnlineClient/OnlineAdver')
 
-// Register
+// register
 module.exports.register = async (req, res) => {
     try {
         const {

@@ -25,7 +25,7 @@ const {OfflineAdver} = require('../../models/OfflineClient/OfflineAdver')
 const {StatsionarRoom} = require("../../models/StatsionarClient/StatsionarRoom");
 const {Room} = require("../../models/Rooms/Room");
 
-// Register
+// register
 module.exports.register = async (req, res) => {
     try {
         const {

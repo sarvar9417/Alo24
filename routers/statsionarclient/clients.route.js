@@ -32,7 +32,7 @@ const {
     StatsionarDaily,
 } = require('../../models/StatsionarClient/StatsionarDaily')
 
-// Register
+// register
 module.exports.register = async (req, res) => {
     try {
         const {
@@ -61,7 +61,6 @@ module.exports.register = async (req, res) => {
                 error: error.message,
             })
         }
-
         //=========================================================
         // CreateClient
         const id =
@@ -258,7 +257,6 @@ module.exports.register = async (req, res) => {
             newconnector.room = newroom._id
             await newconnector.save()
         }
-
         newdaily.services = [...newconnector.services]
         newdaily.products = [...newconnector.products]
         await newdaily.save()

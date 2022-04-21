@@ -6,7 +6,7 @@ export const Sort = ({ property, data, setData }) => {
   return (
     <div className="btn-group-vertical ml-2">
       <FontAwesomeIcon
-        onClick={() => 
+        onClick={() =>
           setData(
             [...data].sort((a, b) => (a[property] > b[property] ? 1 : -1))
           )

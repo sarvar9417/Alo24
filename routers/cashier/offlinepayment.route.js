@@ -15,7 +15,6 @@ module.exports.payment = async (req, res) => {
         // CheckPayment
         const checkPayment = validatePayment(payment).error
         if (checkPayment) {
-            console.log(checkPayment)
             return res.status(400).json({
                 error: error.message,
             })
@@ -24,7 +23,6 @@ module.exports.payment = async (req, res) => {
         // CheckDiscount
         const checkDiscount = validateDiscount(discount).error
         if (checkDiscount) {
-            console.log(checkDiscount)
             return res.status(400).json({
                 error: error.message,
             })
@@ -87,7 +85,6 @@ module.exports.payment = async (req, res) => {
 
         res.status(201).send(newpayment)
     } catch (error) {
-        console.log(error)
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
     }
 }
@@ -120,7 +117,6 @@ module.exports.getAll = async (req, res) => {
 
         res.status(200).send(connectors)
     } catch (error) {
-        console.log(error)
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
     }
 }
