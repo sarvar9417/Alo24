@@ -22,7 +22,7 @@ const connector = new Schema(
         accept: {type: Boolean, default: false},
         totalprice: {type: Number},
         payments: [{type: Schema.Types.ObjectId, ref: 'OfflinePayment'}],
-        discounts: [{type: Schema.Types.ObjectId, ref: 'OfflineDiscount'}],
+        discount: {type: Schema.Types.ObjectId, ref: 'OfflineDiscount'},
     },
     {
         timestamps: true,

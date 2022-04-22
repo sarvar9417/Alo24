@@ -224,7 +224,6 @@ export const OfflineClients = () => {
     const [index, setIndex] = useState()
 
     const [payments, setPayments] = useState(0)
-    const [discounts, setDiscounts] = useState(0)
     const [totalpayment, setTotalPayment] = useState(0)
     const [payment, setPayment] = useState({
         payment: 0,
@@ -241,9 +240,12 @@ export const OfflineClients = () => {
     const changeClient = useCallback((connector, index) => {
         setIndex(index)
         let total = 0
+        let services = []
+        let products = []
         let servs = JSON.parse(JSON.stringify(connector.services))
         for (const serv of servs) {
             if (!serv.payment && !serv.refuse) {
+                services.push(serv._id)
                 serv.payment = true
             }
             if (serv.payment) {
@@ -252,6 +254,10 @@ export const OfflineClients = () => {
         }
         let prods = JSON.parse(JSON.stringify(connector.products))
         for (const prod of prods) {
+            if (!prod.payment && !prod.refuse) {
+                products.push(prod._id)
+                prod.payment = true
+            }
             if (prod.payment) {
                 total += prod.product.price * prod.pieces
             }
@@ -266,12 +272,8 @@ export const OfflineClients = () => {
         let payments = connector.payments.reduce((summa, payment) => {
             return summa + payment.payment
         }, 0)
-        let discounts = connector.discounts.reduce((summa, discount) => {
-            return summa + discount.discount
-        }, 0)
 
         setPayments(payments)
-        setDiscounts(discounts)
 
         setPayment({
             total: total,
@@ -283,17 +285,23 @@ export const OfflineClients = () => {
             cash: 0,
             transfer: 0,
             debt: 0,
+            services:[...services],
+            products:[...products]
         })
         setTotalPayment(total)
+
+        if(connector.discount){
+            setDiscount(connector.discount)
+        }else{
         setDiscount({
             total: total,
             discount: 0,
             clinica: connector.clinica,
             client: connector.client._id,
             connector: connector._id,
-        })
+        })}
     }, [])
-
+    
     const changeService = (e, index) => {
         let servs = [...services]
         let prods = [...products]
@@ -307,14 +315,23 @@ export const OfflineClients = () => {
         }
 
         let total = 0
-        for (const serv of servs) {
-            if (serv.payment) {
-                total += serv.service.price * serv.pieces
+        let servicess = []
+        let productss = []
+        for (const i in servs) {
+            if (!connector.services[i].payment && servs[i].payment) {
+                servicess.push(servs[i]._id)
+            }
+            if (servs[i].payment) {
+                total += servs[i].service.price * servs[i].pieces
             }
         }
-        for (const prod of prods) {
-            if (prod.payment) {
-                total += prod.product.price * prod.pieces
+
+        for (const i in prods) {
+            if (!connector.products[i].payment && prods[i].payment) {
+                productss.push(prods[i]._id)
+            }
+            if (prods[i].payment) {
+                total += prods[i].product.price * prods[i].pieces
             }
         }
 
@@ -330,19 +347,22 @@ export const OfflineClients = () => {
             clinica: connector.clinica,
             client: connector.client._id,
             connector: connector._id,
+            services:[...servicess],
+            products:[...productss]
         })
+
         setTotalPayment(total)
         setDiscount({
             total: total,
             discount: 0,
+            procient:0,
             clinica: connector.clinica,
             client: connector.client._id,
-            connector: connector._id,
+            connector: connector._id
         })
     }
 
     const changeProduct = (e, index) => {
-
         let servs = [...services]
         let prods = [...products]
         if (e.target.checked) {
@@ -355,14 +375,23 @@ export const OfflineClients = () => {
         }
 
         let total = 0
-        for (const serv of servs) {
-            if (serv.payment) {
-                total += serv.service.price * serv.pieces
+        let servicess = []
+        let productss = []
+        for (const i in servs) {
+            if (!connector.services[i].payment && servs[i].payment) {
+                servicess.push(servs[i]._id)
+            }
+            if (servs[i].payment) {
+                total += servs[i].service.price * servs[i].pieces
             }
         }
-        for (const prod of prods) {
-            if (prod.payment) {
-                total += prod.product.price * prod.pieces
+
+        for (const i in prods) {
+            if (!connector.products[i].payment && prods[i].payment) {
+                productss.push(prods[i]._id)
+            }
+            if (prods[i].payment) {
+                total += prods[i].product.price * prods[i].pieces
             }
         }
 
@@ -378,14 +407,18 @@ export const OfflineClients = () => {
             clinica: connector.clinica,
             client: connector.client._id,
             connector: connector._id,
+            services:[...servicess],
+            products:[...productss]
         })
+
         setTotalPayment(total)
         setDiscount({
             total: total,
             discount: 0,
+            procient:0,
             clinica: connector.clinica,
             client: connector.client._id,
-            connector: connector._id,
+            connector: connector._id
         })
     }
 
@@ -404,7 +437,7 @@ export const OfflineClients = () => {
         let total = 0
         let servs = []
         for (const i in services) {
-            if (services[i].payment && !connector.services[i].payment) {
+            if (services[i].payment) {
                 total += services[i].service.price * services[i].pieces
                 servs.push(services[i]._id)
             }
@@ -428,29 +461,28 @@ export const OfflineClients = () => {
             setDiscount({
                 ...discount,
                 procient: disc,
+                total,
                 discount: parseInt((total * disc) / 100),
                 services: [...servs]
             })
-            setPayment({
+            setPayment({...payment,
                 total: totalpayment,
                 debt: 0,
                 card: 0,
                 cash: 0,
                 transfer: 0,
                 type: '',
-                payment: 0,
-                clinica: connector.clinica,
-                client: connector.client._id,
-                connector: connector._id,
+                payment: 0
             })
         } else {
             setDiscount({
                 ...discount,
                 procient: 0,
                 discount: disc,
+                total,
                 services: [...servs]
             })
-            setPayment({
+            setPayment({...payment,
                 total: totalpayment,
                 debt: 0,
                 card: 0,
@@ -458,9 +490,6 @@ export const OfflineClients = () => {
                 transfer: 0,
                 type: '',
                 payment: 0,
-                clinica: connector.clinica,
-                client: connector.client._id,
-                connector: connector._id,
             })
         }
     }
@@ -480,7 +509,7 @@ export const OfflineClients = () => {
         if (e.target.value !== '')
             debt = parseInt(e.target.value)
 
-        if (debt > totalpayment - discount.discount - payments - discounts) {
+        if (debt > totalpayment - discount.discount - payments) {
             e.target.value = parseInt(parseInt(e.target.value) / 10)
             return notify({
                 title:
@@ -489,17 +518,14 @@ export const OfflineClients = () => {
                 status: 'error',
             })
         }
-        setPayment({
+        setPayment({...payment,
             total: totalpayment,
             card: 0,
             cash: 0,
             transfer: 0,
             type: '',
             debt: debt,
-            payment: totalpayment - payments - discounts - discount.discount - debt,
-            clinica: connector.clinica,
-            client: connector.client._id,
-            connector: connector._id,
+            payment: totalpayment - payments - discount.discount - debt,
         })
     }
 
@@ -509,13 +535,12 @@ export const OfflineClients = () => {
             comment: e.target.value,
         })
     }
-
     const inputPayment = (e) => {
         let m = e.target.value === '' ? 0 : parseInt(e.target.value)
 
         switch (e.target.name) {
             case 'cash':
-                if (totalpayment - payments - discounts < m + payment.card + payment.transfer + discount.discount
+                if (totalpayment - payments < m + payment.card + payment.transfer + discount.discount
                     && m > 0) {
                     return notify({
                         title:
@@ -528,10 +553,10 @@ export const OfflineClients = () => {
                     ...payment,
                     [e.target.name]: m,
                     payment: m + payment.card + payment.transfer,
-                    debt: totalpayment - (payments + discounts + discount.discount + m + payment.card + payment.transfer)
+                    debt: totalpayment - (payments + discount.discount + m + payment.card + payment.transfer)
                 })
             case 'card':
-                if (totalpayment - payments - discounts < m + payment.cash + payment.transfer + discount.discount && m > 0) {
+                if (totalpayment - payments < m + payment.cash + payment.transfer + discount.discount && m > 0) {
                     return notify({
                         title:
                             "Diqqat! to'lov summasi umumiy to'lov summasidan oshmasligi kerak!",
@@ -543,10 +568,10 @@ export const OfflineClients = () => {
                     ...payment,
                     [e.target.name]: m,
                     payment: m + payment.cash + payment.transfer,
-                    debt: totalpayment - (payments + discounts + discount.discount + m + payment.cash + payment.transfer)
+                    debt: totalpayment - (payments  + discount.discount + m + payment.cash + payment.transfer)
                 })
             case 'transfer':
-                if (totalpayment - payments - discounts < m + payment.card + payment.cash + discount.discount
+                if (totalpayment - payments  < m + payment.card + payment.cash + discount.discount
                     && m > 0) {
                     return notify({
                         title:
@@ -559,7 +584,7 @@ export const OfflineClients = () => {
                     ...payment,
                     [e.target.name]: m,
                     payment: m + payment.card + payment.cash,
-                    debt: totalpayment - (payments + discounts + discount.discount + m + payment.card + payment.cash)
+                    debt: totalpayment - (payments  + discount.discount + m + payment.card + payment.cash)
                 })
             default:
         }
@@ -582,7 +607,6 @@ export const OfflineClients = () => {
         })
         setIndex()
         setPayments(0)
-        setDiscounts(0)
         setClient({
             clinica: auth.clinica && auth.clinica._id,
             reseption: auth.user && auth.user._id,
@@ -698,7 +722,6 @@ export const OfflineClients = () => {
                                 setPayment={setPayment}
                                 changeProduct={changeProduct}
                                 changeService={changeService}
-                                discounts={discounts}
                                 payments={payments}
                                 payment={payment}
                                 client={client}
@@ -771,7 +794,7 @@ export const OfflineClients = () => {
                                     Chegirma:
                                 </th>
                                 <th className="text-left" colSpan={4}>
-                                    {discounts + discount.discount}
+                                    { discount.discount}
                                 </th>
                             </tr>
                             <tr>

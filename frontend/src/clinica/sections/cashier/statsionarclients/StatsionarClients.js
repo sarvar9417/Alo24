@@ -224,7 +224,6 @@ export const StatsionarClients = () => {
     const [index, setIndex] = useState()
 
     const [payments, setPayments] = useState(0)
-    const [discounts, setDiscounts] = useState(0)
     const [totalpayment, setTotalPayment] = useState(0)
     const [payment, setPayment] = useState({
         payment: 0,
@@ -253,24 +252,25 @@ export const StatsionarClients = () => {
                 total += serv.service.price * serv.pieces
             }
         }
+
         let prods = JSON.parse(JSON.stringify(connector.products))
         for (const prod of prods) {
             if (prod.payment) {
                 total += prod.product.price * prod.pieces
             }
         }
+
         setServices(servs)
         setProducts(prods)
+
         setClient(JSON.parse(JSON.stringify(connector.client)))
         setConnector({...connector})
+
         let payments = connector.payments.reduce((summa, payment) => {
             return summa + payment.payment
         }, 0)
-        let discounts = connector.discounts.reduce((summa, discount) => {
-            return summa + discount.discount
-        }, 0)
+        
         setPayments(payments)
-        setDiscounts(discounts)
 
         let roomprice = 0
         if (connector.room.endday) {
@@ -322,13 +322,16 @@ export const StatsionarClients = () => {
             debt: 0,
         })
         setTotalPayment(total)
+        if(connector.discount){
+            setDiscount(connector.discount)
+        }else{
         setDiscount({
             total: total,
             discount: 0,
             clinica: connector.clinica,
             client: connector.client._id,
             connector: connector._id,
-        })
+        })}
     }, [])
 
     const changeService = (e, index) => {
@@ -443,7 +446,7 @@ export const StatsionarClients = () => {
         if (e.target.value !== '')
             disc = parseInt(e.target.value)
 
-        if (disc > totalpayment - payments - discounts - payment.debt - payment.payment) {
+        if (disc > totalpayment -  payment.debt - payment.payment) {
             e.target.value = parseInt(parseInt(e.target.value) / 10)
             return notify({
                 title:
@@ -457,7 +460,7 @@ export const StatsionarClients = () => {
             setDiscount({
                 ...discount,
                 procient: disc,
-                discount: parseInt(((totalpayment - discounts - payments) * disc) / 100),
+                discount: parseInt(((totalpayment) * disc) / 100),
             })
             setPayment({
                 total: totalpayment,
@@ -507,7 +510,7 @@ export const StatsionarClients = () => {
         if (e.target.value !== '')
             debt = parseInt(e.target.value)
 
-        if (debt > totalpayment - discount.discount - payments - discounts) {
+        if (debt > totalpayment - discount.discount - payments ) {
             e.target.value = parseInt(parseInt(e.target.value) / 10)
             return notify({
                 title:
@@ -523,7 +526,7 @@ export const StatsionarClients = () => {
             transfer: 0,
             type: '',
             debt: debt,
-            payment: totalpayment - payments - discounts - discount.discount - debt,
+            payment: totalpayment - payments- discount.discount - debt,
             clinica: connector.clinica,
             client: connector.client._id,
             connector: connector._id,
@@ -542,7 +545,7 @@ export const StatsionarClients = () => {
 
         switch (e.target.name) {
             case 'cash':
-                if (totalpayment - payments - discounts < m + payment.card + payment.transfer + discount.discount
+                if (totalpayment - payments   < m + payment.card + payment.transfer + discount.discount
                     &&
                     connector.room.endday && m > 0) {
                     return notify({
@@ -556,10 +559,10 @@ export const StatsionarClients = () => {
                     ...payment,
                     [e.target.name]: m,
                     payment: m + payment.card + payment.transfer,
-                    debt: totalpayment - (payments + discounts + discount.discount + m + payment.card + payment.transfer)
+                    debt: totalpayment - (payments  + discount.discount + m + payment.card + payment.transfer)
                 })
             case 'card':
-                if (totalpayment - payments - discounts < m + payment.cash + payment.transfer + discount.discount
+                if (totalpayment - payments  < m + payment.cash + payment.transfer + discount.discount
                     &&
                     connector.room.endday && m > 0) {
                     return notify({
@@ -573,10 +576,10 @@ export const StatsionarClients = () => {
                     ...payment,
                     [e.target.name]: m,
                     payment: m + payment.cash + payment.transfer,
-                    debt: totalpayment - (payments + discounts + discount.discount + m + payment.cash + payment.transfer)
+                    debt: totalpayment - (payments + discount.discount + m + payment.cash + payment.transfer)
                 })
             case 'transfer':
-                if (totalpayment - payments - discounts < m + payment.card + payment.cash + discount.discount
+                if (totalpayment - payments  < m + payment.card + payment.cash + discount.discount
                     &&
                     connector.room.endday && m > 0) {
                     return notify({
@@ -590,7 +593,7 @@ export const StatsionarClients = () => {
                     ...payment,
                     [e.target.name]: m,
                     payment: m + payment.card + payment.cash,
-                    debt: totalpayment - (payments + discounts + discount.discount + m + payment.card + payment.cash)
+                    debt: totalpayment - (payments + discount.discount + m + payment.card + payment.cash)
                 })
             default:
         }
@@ -613,7 +616,6 @@ export const StatsionarClients = () => {
         })
         setIndex()
         setPayments(0)
-        setDiscounts(0)
         setClient({
             clinica: auth.clinica && auth.clinica._id,
             reseption: auth.user && auth.user._id,
@@ -682,7 +684,6 @@ export const StatsionarClients = () => {
                 'POST',
                 {
                     payment: {...payment},
-                    discount: {...discount},
                     services: [...services],
                     products: [...products],
                 },
@@ -707,7 +708,7 @@ export const StatsionarClients = () => {
                 status: 'error',
             })
         }
-    }, [beginDay, endDay, getConnectors, auth, payment, discount, request, services, products, notify, setAll])
+    }, [beginDay, endDay, toast,getConnectors, auth, payment,  request, services, products, notify, setAll])
 
     const updateServices = useCallback(async () => {
         try {
@@ -803,7 +804,6 @@ export const StatsionarClients = () => {
                                 setPayment={setPayment}
                                 changeProduct={changeProduct}
                                 changeService={changeService}
-                                discounts={discounts}
                                 payments={payments}
                                 payment={payment}
                                 client={client}
@@ -876,7 +876,7 @@ export const StatsionarClients = () => {
                                     Chegirma:
                                 </th>
                                 <th className="text-left">
-                                    {discounts + discount.discount}
+                                    { discount.discount}
                                 </th>
                             </tr>
                             <tr>

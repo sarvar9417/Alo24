@@ -21,6 +21,7 @@ const offlineDiscount = new Schema(
 
 function validateDiscount(discount) {
     const schema = Joi.object({
+        _id: Joi.string(),
         total: Joi.number().required(),
         discount: Joi.number(),
         procient: Joi.number(),

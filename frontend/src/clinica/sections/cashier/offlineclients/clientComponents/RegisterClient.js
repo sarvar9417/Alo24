@@ -16,7 +16,6 @@ export const RegisterClient = ({
                                    setPayment,
                                    changeProduct,
                                    changeService,
-                                   discounts,
                                    payments,
                                    payment,
                                    client,
@@ -222,7 +221,7 @@ export const RegisterClient = ({
                                         Chegirma:
                                     </th>
                                     <th className="text-left" colSpan={4}>
-                                        {discounts + discount.discount}
+                                        { discount.discount}
                                     </th>
                                 </tr>
                                 <tr>
@@ -246,17 +245,9 @@ export const RegisterClient = ({
                                         To'lanayotgan:
                                     </th>
                                     <th className="text-left" colSpan={4}>
-                                        {payment.payment}
+                                        {totalpayment- payments- discount.discount- payment.debt}
                                     </th>
-                                </tr>
-                                <tr>
-                                    <th className="text-right" colSpan={2}>
-                                        Qoldiq summa:
-                                    </th>
-                                    <th className="text-left" colSpan={4}>
-                                        {totalpayment - discounts - payment.payment}
-                                    </th>
-                                </tr>
+                                </tr>                                
                                 </tfoot>
                             </table>
                         </div>
