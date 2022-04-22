@@ -3,30 +3,30 @@ import React from "react";
 import "react-datepicker/dist/react-datepicker.css";
 
 export const RegisterClient = ({
-                                   inputPayment,
-                                   totalpayment,
-                                   checkPayment,
-                                   debtComment,
-                                   changeDebt,
-                                   serviceComment,
-                                   productComment,
-                                   discountComment,
-                                   discount,
-                                   changeDiscount,
-                                   setPayment,
-                                   changeProduct,
-                                   changeService,
-                                   payments,
-                                   payment,
-                                   client,
-                                   index,
-                                   services,
-                                   products,
-                                   setSetvices,
-                                   setProducts,
-                                   loading,
-                                   connector
-                               }) => {
+    inputPayment,
+    totalpayment,
+    checkPayment,
+    debtComment,
+    changeDebt,
+    serviceComment,
+    productComment,
+    discountComment,
+    discount,
+    changeDiscount,
+    setPayment,
+    changeProduct,
+    changeService,
+    payments,
+    payment,
+    client,
+    index,
+    services,
+    products,
+    setSetvices,
+    setProducts,
+    loading,
+    connector
+}) => {
 
     return (
         <>
@@ -40,44 +40,44 @@ export const RegisterClient = ({
                         <div className="card-body">
                             <table className="table">
                                 <thead>
-                                <tr>
-                                    <th scope="col" className="border py-1">
-                                        #
-                                    </th>
-                                    <th scope="col" className="border py-1">
-                                        First
-                                    </th>
-                                </tr>
+                                    <tr>
+                                        <th scope="col" className="border py-1">
+                                            #
+                                        </th>
+                                        <th scope="col" className="border py-1">
+                                            First
+                                        </th>
+                                    </tr>
                                 </thead>
                                 <tbody>
-                                <tr>
-                                    <td className="py-1 border">Familiyasi</td>
-                                    <td className="py-1 border">{client.lastname}</td>
-                                </tr>
-                                <tr>
-                                    <td className="py-1 border">Ismi</td>
-                                    <td className="py-1 border">{client.firstname}</td>
-                                </tr>
-                                <tr>
-                                    <td className="py-1 border">Otasining ismi</td>
-                                    <td className="py-1 border">{client.fathername}</td>
-                                </tr>
-                                <tr>
-                                    <td className="py-1 border">Tugilgan sanasi</td>
-                                    <td className="py-1 border">{client.born && new Date(client.born).toLocaleDateString()}</td>
-                                </tr>
-                                <tr>
-                                    <td className="py-1 border">Telefon raqami</td>
-                                    <td className="py-1 border">+998{client.phone}</td>
-                                </tr>
-                                <tr>
-                                    <td className="py-1 border">ID</td>
-                                    <td className="py-1 border">{client.id}</td>
-                                </tr>
-                                <tr>
-                                    <td className="py-1 border">Probirka</td>
-                                    <td className="py-1 border">{connector.probirka}</td>
-                                </tr>
+                                    <tr>
+                                        <td className="py-1 border">Familiyasi</td>
+                                        <td className="py-1 border">{client.lastname}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-1 border">Ismi</td>
+                                        <td className="py-1 border">{client.firstname}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-1 border">Otasining ismi</td>
+                                        <td className="py-1 border">{client.fathername}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-1 border">Tugilgan sanasi</td>
+                                        <td className="py-1 border">{client.born && new Date(client.born).toLocaleDateString()}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-1 border">Telefon raqami</td>
+                                        <td className="py-1 border">+998{client.phone}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-1 border">ID</td>
+                                        <td className="py-1 border">{client.id}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-1 border">Probirka</td>
+                                        <td className="py-1 border">{connector.probirka}</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -95,101 +95,101 @@ export const RegisterClient = ({
                                 <div className="col-12">
                                     <table className="table table-sm">
                                         <thead>
-                                        <tr>
-                                            <th className="border py-1">№</th>
-                                            <th className="border py-1">Nomi</th>
-                                            <th className="border py-1">Narxi</th>
-                                            <th className="border py-1">Soni</th>
-                                            <th className="border py-1">To'lov</th>
-                                            <th className="border py-1">Izoh</th>
-                                        </tr>
+                                            <tr>
+                                                <th className="border py-1">№</th>
+                                                <th className="border py-1">Nomi</th>
+                                                <th className="border py-1">Narxi</th>
+                                                <th className="border py-1">Soni</th>
+                                                <th className="border py-1">To'lov</th>
+                                                <th className="border py-1">Izoh</th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        {services &&
-                                            services.map((service, index) => {
-                                                return (
-                                                    <tr key={index}>
-                                                        <td className="py-1 border">{index + 1}</td>
-                                                        <td className="py-1 border">{service.service.name}</td>
-                                                        <td className="text-right py-1 border">
-                                                            {service.service.price * service.pieces}
-                                                        </td>
-                                                        <td className="text-right py-1 border">
-                                                            {service.pieces}
-                                                        </td>
-                                                        <td className="text-right py-1 border">
-                                                            <div className="custom-control custom-checkbox text-center">
-                                                                <input
-                                                                    defaultChecked={!service.refuse}
-                                                                    type="checkbox"
-                                                                    className="custom-control-input border border-dager"
-                                                                    id={`service${index}`}
-                                                                    onChange={(e) => changeService(e, index)}
-                                                                />
-                                                                <label className="custom-control-label"
-                                                                       htmlFor={`service${index}`}></label>
-                                                            </div>
-                                                        </td>
-                                                        <td className="text-right py-1 border">
-                                                            {service.refuse && <input
-                                                                onChange={(e) => serviceComment(e, index)}
-                                                                defaultValue={service.comment}
-                                                                type="text"
-                                                                className="form-control form-control-sm"
-                                                                id="comment"
-                                                                name="comment"
-                                                                placeholder="Izoh"
-                                                            />}
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        <tr></tr>
-                                        {products &&
-                                            products.map((product, index) => {
-                                                return (
-                                                    <tr key={index}>
-                                                        <td className="py-1 border">{index + 1}</td>
-                                                        <td className="py-1 border">{product.product.name}</td>
-                                                        <td className="text-right py-1 border">
-                                                            {product.product.price * product.pieces}
-                                                        </td>
-                                                        <td className="text-right py-1 border">
-                                                            {product.pieces}
-                                                        </td>
-                                                        <td className="text-right py-1 border">
-                                                            <div className="custom-control custom-checkbox text-center">
-                                                                <input defaultChecked={!product.refuse}
-                                                                       type="checkbox"
-                                                                       className="custom-control-input border border-dager"
-                                                                       id={`product${index}`}
-                                                                       onChange={(e) => changeProduct(e, index)}
-                                                                />
-                                                                <label className="custom-control-label"
-                                                                       htmlFor={`product${index}`}></label>
-                                                            </div>
-                                                        </td>
-                                                        <td className="text-right py-1 border">
-                                                            {product.refuse && <input
-                                                                onChange={(e) => productComment(e, index)}
-                                                                defaultValue={product.comment}
-                                                                type="text"
-                                                                className="form-control form-control-sm"
-                                                                id="comment"
-                                                                name="comment"
-                                                                placeholder="Izoh"
-                                                            />}
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })}
-                                        <tr className="bg-white">
-                                            <td className="border py-1 font-bold text-right text-teal-600 text-sm "
-                                                colSpan={2}> Jami
-                                            </td>
-                                            <td className="border py-1 font-bold  text-teal-600 text-sm"
-                                                colSpan={4}> {totalpayment}</td>
-                                        </tr>
+                                            {services &&
+                                                services.map((service, index) => {
+                                                    return (
+                                                        <tr key={index}>
+                                                            <td className="py-1 border">{index + 1}</td>
+                                                            <td className="py-1 border">{service.service.name}</td>
+                                                            <td className="text-right py-1 border">
+                                                                {service.service.price * service.pieces}
+                                                            </td>
+                                                            <td className="text-right py-1 border">
+                                                                {service.pieces}
+                                                            </td>
+                                                            <td className="text-right py-1 border">
+                                                                <div className="custom-control custom-checkbox text-center">
+                                                                    <input
+                                                                        defaultChecked={!service.refuse}
+                                                                        type="checkbox"
+                                                                        className="custom-control-input border border-dager"
+                                                                        id={`service${index}`}
+                                                                        onChange={(e) => changeService(e, index)}
+                                                                    />
+                                                                    <label className="custom-control-label"
+                                                                        htmlFor={`service${index}`}></label>
+                                                                </div>
+                                                            </td>
+                                                            <td className="text-right py-1 border">
+                                                                {service.refuse && <input
+                                                                    onChange={(e) => serviceComment(e, index)}
+                                                                    defaultValue={service.comment}
+                                                                    type="text"
+                                                                    className="form-control form-control-sm"
+                                                                    id="comment"
+                                                                    name="comment"
+                                                                    placeholder="Izoh"
+                                                                />}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            <tr></tr>
+                                            {products &&
+                                                products.map((product, index) => {
+                                                    return (
+                                                        <tr key={index}>
+                                                            <td className="py-1 border">{index + 1}</td>
+                                                            <td className="py-1 border">{product.product.name}</td>
+                                                            <td className="text-right py-1 border">
+                                                                {product.product.price * product.pieces}
+                                                            </td>
+                                                            <td className="text-right py-1 border">
+                                                                {product.pieces}
+                                                            </td>
+                                                            <td className="text-right py-1 border">
+                                                                <div className="custom-control custom-checkbox text-center">
+                                                                    <input defaultChecked={!product.refuse}
+                                                                        type="checkbox"
+                                                                        className="custom-control-input border border-dager"
+                                                                        id={`product${index}`}
+                                                                        onChange={(e) => changeProduct(e, index)}
+                                                                    />
+                                                                    <label className="custom-control-label"
+                                                                        htmlFor={`product${index}`}></label>
+                                                                </div>
+                                                            </td>
+                                                            <td className="text-right py-1 border">
+                                                                {product.refuse && <input
+                                                                    onChange={(e) => productComment(e, index)}
+                                                                    defaultValue={product.comment}
+                                                                    type="text"
+                                                                    className="form-control form-control-sm"
+                                                                    id="comment"
+                                                                    name="comment"
+                                                                    placeholder="Izoh"
+                                                                />}
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            <tr className="bg-white">
+                                                <td className="border py-1 font-bold text-right text-teal-600 text-sm "
+                                                    colSpan={2}> Jami
+                                                </td>
+                                                <td className="border py-1 font-bold  text-teal-600 text-sm"
+                                                    colSpan={4}> {totalpayment}</td>
+                                            </tr>
                                         </tbody>
 
                                     </table>
@@ -208,46 +208,46 @@ export const RegisterClient = ({
                         <div className="card-body">
                             <table className="table table-sm">
                                 <tfoot>
-                                <tr>
-                                    <th className="text-right" colSpan={2}>
-                                        Jami to'lov:
-                                    </th>
-                                    <th className="text-left" colSpan={4}>
-                                        {totalpayment}
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th className="text-right" colSpan={2}>
-                                        Chegirma:
-                                    </th>
-                                    <th className="text-left" colSpan={4}>
-                                        { discount.discount}
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th className="text-right" colSpan={2}>
-                                        To'langan:
-                                    </th>
-                                    <th className="text-left" colSpan={4}>
-                                        {payments}
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th className="text-right" colSpan={2}>
-                                        Qarz:
-                                    </th>
-                                    <th className="text-left" colSpan={4}>
-                                        {payment.debt}
-                                    </th>
-                                </tr>
-                                <tr>
-                                    <th className="text-right" colSpan={2}>
-                                        To'lanayotgan:
-                                    </th>
-                                    <th className="text-left" colSpan={4}>
-                                        {totalpayment- payments- discount.discount- payment.debt}
-                                    </th>
-                                </tr>                                
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            Jami to'lov:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {totalpayment}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            Chegirma:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {discount.discount}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            To'langan:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {payments}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            Qarz:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {payment.debt}
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th className="text-right" colSpan={2}>
+                                            To'lanayotgan:
+                                        </th>
+                                        <th className="text-left" colSpan={4}>
+                                            {totalpayment - payments - discount.discount - payment.debt}
+                                        </th>
+                                    </tr>
                                 </tfoot>
                             </table>
                         </div>
@@ -269,7 +269,7 @@ export const RegisterClient = ({
                                                 <span
                                                     className="w-100 input-group-text bg-primary text-white font-weight-bold"
                                                     id="inputGroup-sizing-sm"
-                                                    style={{fontSize: "9pt"}}>
+                                                    style={{ fontSize: "9pt" }}>
                                                     Chegirma
                                                 </span>
                                             </div>
@@ -296,7 +296,7 @@ export const RegisterClient = ({
                                                 <label
                                                     className="w-100 input-group-text bg-primary text-white font-weight-bold"
                                                     htmlFor="inputGroupSelect01"
-                                                    style={{fontSize: "9pt"}}
+                                                    style={{ fontSize: "9pt" }}
                                                 >
                                                     Izoh</label>
                                             </div>
@@ -318,7 +318,7 @@ export const RegisterClient = ({
                                                 <span
                                                     className="w-100 input-group-text bg-primary text-white font-weight-bold"
                                                     id="inputGroup-sizing-sm"
-                                                    style={{fontSize: "9pt"}}>
+                                                    style={{ fontSize: "9pt" }}>
                                                     Qarz
                                                 </span>
                                             </div>
@@ -337,7 +337,7 @@ export const RegisterClient = ({
                                                 <span
                                                     className="w-100 input-group-text bg-primary text-white font-weight-bold"
                                                     id="inputGroup-sizing-sm"
-                                                    style={{fontSize: "9pt"}}>
+                                                    style={{ fontSize: "9pt" }}>
                                                     Izoh
                                                 </span>
                                             </div>
@@ -357,7 +357,8 @@ export const RegisterClient = ({
                                                 setPayment({
                                                     ...payment,
                                                     type: "cash",
-                                                    cash: payment.payment,
+                                                    payment: totalpayment - payments - discount.discount - payment.debt,
+                                                    cash: totalpayment - payments - discount.discount - payment.debt,
                                                     card: 0,
                                                     transfer: 0
                                                 })
@@ -372,8 +373,9 @@ export const RegisterClient = ({
                                                 setPayment({
                                                     ...payment,
                                                     type: "card",
+                                                    payment: totalpayment - payments - discount.discount - payment.debt,
                                                     cash: 0,
-                                                    card: payment.payment,
+                                                    card: totalpayment - payments - discount.discount - payment.debt,
                                                     transfer: 0
                                                 })
                                             }}
@@ -387,9 +389,10 @@ export const RegisterClient = ({
                                                 setPayment({
                                                     ...payment,
                                                     type: "transfer",
+                                                    payment:totalpayment - payments - discount.discount - payment.debt,
                                                     cash: 0,
                                                     card: 0,
-                                                    transfer: payment.payment
+                                                    transfer: totalpayment - payments - discount.discount - payment.debt
                                                 })
                                             }}
                                             type="button"
@@ -419,7 +422,7 @@ export const RegisterClient = ({
                                                 <span
                                                     className="w-100 input-group-text bg-primary text-white font-weight-bold"
                                                     id="inputGroup-sizing-sm"
-                                                    style={{fontSize: "9pt"}}>
+                                                    style={{ fontSize: "9pt" }}>
                                                     Naqt
                                                 </span>
                                             </div>
@@ -438,7 +441,7 @@ export const RegisterClient = ({
                                                 <span
                                                     className="w-100 input-group-text bg-primary text-white font-weight-bold"
                                                     id="inputGroup-sizing-sm"
-                                                    style={{fontSize: "9pt"}}>
+                                                    style={{ fontSize: "9pt" }}>
                                                     Plastik
                                                 </span>
                                             </div>
@@ -457,7 +460,7 @@ export const RegisterClient = ({
                                                 <span
                                                     className="w-100 input-group-text bg-primary text-white font-weight-bold"
                                                     id="inputGroup-sizing-sm"
-                                                    style={{fontSize: "9pt"}}>
+                                                    style={{ fontSize: "9pt" }}>
                                                     O'tkazma
                                                 </span>
                                             </div>

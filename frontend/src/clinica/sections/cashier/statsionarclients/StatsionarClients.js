@@ -545,9 +545,9 @@ export const StatsionarClients = () => {
 
         switch (e.target.name) {
             case 'cash':
-                if (totalpayment - payments   < m + payment.card + payment.transfer + discount.discount
-                    &&
-                    connector.room.endday && m > 0) {
+                if ((totalpayment - payments < m + payment.card + payment.transfer + discount.discount 
+                    && m > 0) ||(totalpayment - payments > m + payment.card + payment.transfer + discount.discount 
+                        && m < 0)) {
                     return notify({
                         title:
                             "Diqqat! to'lov summasi umumiy to'lov summasidan oshmasligi kerak!",
@@ -559,12 +559,11 @@ export const StatsionarClients = () => {
                     ...payment,
                     [e.target.name]: m,
                     payment: m + payment.card + payment.transfer,
-                    debt: totalpayment - (payments  + discount.discount + m + payment.card + payment.transfer)
+                    debt: totalpayment - (payments + discount.discount + m + payment.card + payment.transfer)
                 })
             case 'card':
-                if (totalpayment - payments  < m + payment.cash + payment.transfer + discount.discount
-                    &&
-                    connector.room.endday && m > 0) {
+                if ((totalpayment - payments < m + payment.cash + payment.transfer + discount.discount && m > 0) ||
+                (totalpayment - payments > m + payment.cash + payment.transfer + discount.discount && m < 0)) {
                     return notify({
                         title:
                             "Diqqat! to'lov summasi umumiy to'lov summasidan oshmasligi kerak!",
@@ -576,12 +575,14 @@ export const StatsionarClients = () => {
                     ...payment,
                     [e.target.name]: m,
                     payment: m + payment.cash + payment.transfer,
-                    debt: totalpayment - (payments + discount.discount + m + payment.cash + payment.transfer)
+                    debt: totalpayment - (payments  + discount.discount + m + payment.cash + payment.transfer)
                 })
             case 'transfer':
-                if (totalpayment - payments  < m + payment.card + payment.cash + discount.discount
-                    &&
-                    connector.room.endday && m > 0) {
+                if ((totalpayment - payments  < m + payment.card + payment.cash + discount.discount
+                    && m > 0)
+                    ||
+                    (totalpayment - payments  > m + payment.card + payment.cash + discount.discount
+                        && m < 0)) {
                     return notify({
                         title:
                             "Diqqat! to'lov summasi umumiy to'lov summasidan oshmasligi kerak!",
@@ -593,7 +594,7 @@ export const StatsionarClients = () => {
                     ...payment,
                     [e.target.name]: m,
                     payment: m + payment.card + payment.cash,
-                    debt: totalpayment - (payments + discount.discount + m + payment.card + payment.cash)
+                    debt: totalpayment - (payments  + discount.discount + m + payment.card + payment.cash)
                 })
             default:
         }
