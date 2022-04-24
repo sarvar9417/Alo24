@@ -67,7 +67,7 @@ export const Samples = () => {
     };
     console.log(tableTamplate);
     return (
-        <div className="container">
+        <div className="container mt-4">
             <div style={{display: `${tableTamplate.serviceid ? "block" : "none"}`}}>
                 <SamplesToTable
                     name={name}
@@ -87,74 +87,72 @@ export const Samples = () => {
                     // changeProperty={changeProperty}
                 />
             </div>
-            <div className="table-container">
-                <div className="table-container">
-                    <div className="table-responsive">
-                        <table className="table m-0">
-                            <thead>
-                            <tr>
-                                <th className="border py-1">№</th>
-                                <th className="border py-1">Bo'limlar</th>
-                                <th className="border py-1">Xizmatlar</th>
-                                <th className="border py-1">Xizmat jadvali</th>
-                                <th className="border py-1">Jadvaldagi o'rni</th>
-                                <th className="border py-1">Jadvalda ko'rinishi</th>
-                                <th className="border py-1">Saqlash</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {services.map((service, index) => {
-                                return (
-                                    <tr key={index}>
-                                        <td
-                                            className="border py-1 font-weight-bold text-right"
-                                            style={{maxWidth: "30px !important"}}
+            <div className="">
+                <div className="table-responsive">
+                    <table className="table m-0">
+                        <thead>
+                        <tr>
+                            <th className="border py-1">№</th>
+                            <th className="border py-1">Bo'limlar</th>
+                            <th className="border py-1">Xizmatlar</th>
+                            <th className="border py-1">Xizmat jadvali</th>
+                            <th className="border py-1">Jadvaldagi o'rni</th>
+                            <th className="border py-1">Jadvalda ko'rinishi</th>
+                            <th className="border py-1">Saqlash</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {services.map((service, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td
+                                        className="border py-1 font-weight-bold text-right"
+                                        style={{maxWidth: "30px !important"}}
+                                    >
+                                        {index + 1}
+                                    </td>
+                                    <td className="border py-1 font-weight-bold text-right">
+                                        {service.department}
+                                    </td>
+                                    <td className="border py-1 text-center">
+                                        {service.name}
+                                    </td>
+                                    <td className="border py-1 text-center">
+                                        <button
+                                            className="btn btn-success py-0"
+                                            onClick={() =>
+                                                setTableTamplate({
+                                                    serviceid: service.serviceid,
+                                                })
+                                            }
                                         >
-                                            {index + 1}
-                                        </td>
-                                        <td className="border py-1 font-weight-bold text-right">
-                                            {service.department}
-                                        </td>
-                                        <td className="border py-1 text-center">
-                                            {service.name}
-                                        </td>
-                                        <td className="border py-1 text-center">
-                                            <button
-                                                className="btn btn-success py-0"
-                                                onClick={() =>
-                                                    setTableTamplate({
-                                                        serviceid: service.serviceid,
-                                                    })
-                                                }
-                                            >
-                                                <FontAwesomeIcon icon={faPenAlt}/>
-                                            </button>
-                                        </td>
-                                        <td className="border py-1 text-center">
-                                            {service.place}
-                                        </td>
-                                        <td className="border py-1 text-center">
-                                            <div className="d-flex justify-content-center align-items-center">
-                                                <input
-                                                    className="form-check-input"
-                                                    type="checkbox"
-                                                    value=""
-                                                    id="defaultCheck1"
-                                                    style={{width: "20px", height: "20px"}}
-                                                />
-                                            </div>
-                                        </td>
-                                        <td className="border py-1 text-center">
-                                            <button className="btn btn-success py-0">
-                                                <FontAwesomeIcon icon={faPrint}/>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                            </tbody>
-                        </table>
-                    </div>
+                                            <FontAwesomeIcon icon={faPenAlt}/>
+                                        </button>
+                                    </td>
+                                    <td className="border py-1 text-center">
+                                        {service.place}
+                                    </td>
+                                    <td className="border py-1 text-center">
+                                        <div className="d-flex justify-content-center align-items-center">
+                                            <input
+                                                className="form-check-input"
+                                                type="checkbox"
+                                                value=""
+                                                id="defaultCheck1"
+                                                style={{width: "20px", height: "20px"}}
+                                            />
+                                        </div>
+                                    </td>
+                                    <td className="border py-1 text-center">
+                                        <button className="btn btn-success py-0">
+                                            <FontAwesomeIcon icon={faPrint}/>
+                                        </button>
+                                    </td>
+                                </tr>
+                            );
+                        })}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

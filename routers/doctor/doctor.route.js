@@ -18,4 +18,12 @@ router.post('/template/delete', auth, (req, res) => {
     require('./templates').delete(req, res)
 })
 
+router.post('/table/column', auth, (req, res) => {
+    require('./tables').column(req, res)
+})
+
+router.post('/table/table', auth, (req, res) => {
+    require('./tables').table(req, res)
+})
+
 module.exports = router
