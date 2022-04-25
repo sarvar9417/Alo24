@@ -4,7 +4,7 @@ import {faPenAlt, faPrint} from "@fortawesome/free-solid-svg-icons";
 import {SamplesToTable} from "./SamplesToTable";
 
 export const Samples = () => {
-    const [services, setServices] = useState([
+    const services = useState([
         {
             department: "Uzi",
             service: "Ekg",
@@ -65,7 +65,6 @@ export const Samples = () => {
         }
 
     };
-    console.log(tableTamplate);
     return (
         <div className="container mt-4">
             <div style={{display: `${tableTamplate.serviceid ? "block" : "none"}`}}>
