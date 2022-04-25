@@ -15,16 +15,16 @@ export const DiscountClients = () => {
   //====================================================================
   // MODAL
   // const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
+
   //====================================================================
   //====================================================================
 
   //====================================================================
   //====================================================================
   // RegisterPage
-  const [visible, setVisible] = useState(false);
+  // const [visible, setVisible] = useState(false);
 
-  const changeVisible = () => setVisible(!visible);
+  // const changeVisible = () => setVisible(!visible);
 
   //====================================================================
   //====================================================================
@@ -64,7 +64,7 @@ export const DiscountClients = () => {
 
   //====================================================================
   //====================================================================
-  const { request, loading } = useHttp();
+  const { request } = useHttp();
   const auth = useContext(AuthContext);
 
   //====================================================================
@@ -75,6 +75,37 @@ export const DiscountClients = () => {
   // getConnectors
   const [connectors, setConnectors] = useState([]);
   const [searchStorage, setSearchStrorage] = useState([]);
+
+  const [commentSelect, setCommentSelect] = useState([]);
+
+  const getDiscountConnectors = (data) => {
+    const discount = data.filter((item) => {
+      if (item.discounts.length > 0) {
+        return item;
+      }
+      return null;
+    });
+    setCurrentConnectors(discount);
+    setConnectors(discount);
+    setSearchStrorage(discount.slice(indexFirstConnector, indexLastConnector));
+  };
+
+  const getComments = (data) => {
+    let arr = [];
+    const discount = data.filter((item) => {
+      if (item.discounts.length > 0) {
+        return item;
+      }
+      return null;
+    });
+    for (let i = 0; i < discount.length; i++) {
+      const el = discount[i];
+      if (!arr.includes(el.discounts[el.discounts.length - 1].comment)) {
+        arr.push(el.discounts[el.discounts.length - 1].comment);
+      }
+    }
+    setCommentSelect(arr);
+  };
 
   const getConnectors = useCallback(
     async (beginDay, endDay) => {
@@ -87,11 +118,8 @@ export const DiscountClients = () => {
             Authorization: `Bearer ${auth.token}`,
           }
         );
-        setConnectors(data);
-        setSearchStrorage(data);
-        setCurrentConnectors(
-          data.slice(indexFirstConnector, indexLastConnector)
-        );
+        getDiscountConnectors(data);
+        getComments(data);
       } catch (error) {
         notify({
           title: error,
@@ -103,8 +131,8 @@ export const DiscountClients = () => {
     [request, auth, notify, indexFirstConnector, indexLastConnector]
   );
   //====================================================================
-  //====================================================================+
-
+  //====================================================================
+  console.log(commentSelect);
   //====================================================================
   //====================================================================
   // SEARCH
@@ -132,27 +160,20 @@ export const DiscountClients = () => {
     [searchStorage, countPage]
   );
 
-  const searchProbirka = useCallback(
-    (e) => {
-      const searching = searchStorage.filter((item) =>
-        item.probirka.toString().includes(e.target.value)
-      );
-      setConnectors(searching);
-      setCurrentConnectors(searching.slice(0, countPage));
-    },
-    [searchStorage, countPage]
-  );
+  const sortComment = (e) => {
+    let sortEl = [];
+    if (e.target.value === "none") {
+      sortEl = [...searchStorage];
+    } else {
+      sortEl = [...searchStorage].filter((item) => {
+        return (
+          item.discounts[item.discounts.length - 1].comment === e.target.value
+        );
+      });
+    }
+    setCurrentConnectors(sortEl.slice(0, countPage));
+  };
 
-  const searchPhone = useCallback(
-    (e) => {
-      const searching = searchStorage.filter((item) =>
-        item.client.phone.toString().includes(e.target.value)
-      );
-      setConnectors(searching);
-      setCurrentConnectors(searching.slice(0, countPage));
-    },
-    [searchStorage, countPage]
-  );
   //====================================================================
   //====================================================================
 
@@ -170,12 +191,12 @@ export const DiscountClients = () => {
   //====================================================================
   //====================================================================
 
-  const [connector, setConnector] = useState({
-    clinica: auth.clinica && auth.clinica._id,
-    probirka: 0,
-  });
+  // const [connector, setConnector] = useState({
+  //   clinica: auth.clinica && auth.clinica._id,
+  //   probirka: 0,
+  // });
 
-  const [services, setServices] = useState([]);
+  // const [services, setServices] = useState([]);
 
   //====================================================================
   //====================================================================
@@ -183,7 +204,7 @@ export const DiscountClients = () => {
   //====================================================================
   //====================================================================
   // PRODUCTS
-  const [products, setProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
 
   //====================================================================
   //====================================================================
@@ -192,10 +213,10 @@ export const DiscountClients = () => {
   //====================================================================
   // CLIENT
 
-  const [client, setClient] = useState({
-    clinica: auth.clinica && auth.clinica._id,
-    reseption: auth.user && auth.user._id,
-  });
+  // const [client, setClient] = useState({
+  //   clinica: auth.clinica && auth.clinica._id,
+  //   reseption: auth.user && auth.user._id,
+  // });
 
   //====================================================================
   //====================================================================
@@ -220,6 +241,43 @@ export const DiscountClients = () => {
     getConnectors(beginDay, date);
   };
 
+  //===================================================================
+  //===================================================================
+  //CreateHandler
+
+  // const createHandler = useCallback(async () => {
+  //   try {
+  //     const data = await request(
+  //       `/api/cashier/offline/payment`,
+  //       "POST",
+  //       {
+  //         payment: { ...payment, payment: payCount },
+  //       },
+  //       {
+  //         Authorization: `Bearer ${auth.token}`,
+  //       }
+  //     );
+  //     localStorage.setItem("data", data);
+  //     setModal(false);
+  //     setVisible(false);
+  //     setPayCount("");
+  //     notify({
+  //       title: "To'lov muvaffaqqiyatli amalga oshirildi.",
+  //       description: "",
+  //       status: "success",
+  //     });
+  //   } catch (error) {
+  //     notify({
+  //       title: error,
+  //       description: "",
+  //       status: "error",
+  //     });
+  //   }
+  // }, [auth, payment, request, notify]);
+
+  //===================================================================
+  //===================================================================
+  console.log(currentConnectors);
   //====================================================================
   //====================================================================
   // useEffect
@@ -249,37 +307,24 @@ export const DiscountClients = () => {
     endDay,
   ]);
 
-  //====================================================================
-  //====================================================================
   return (
     <div>
       <div className="content-wrapper px-lg-5 px-3">
         <div className="row gutters">
           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
             <TableClients
-              setVisible={setVisible}
-              modal1={modal1}
-              setModal1={setModal1}
-              changeStart={changeStart}
-              changeEnd={changeEnd}
-              searchPhone={searchPhone}
-              setClient={setClient}
-              setConnector={setConnector}
-              searchFullname={searchFullname}
-              searchId={searchId}
-              connectors={connectors}
-              searchProbirka={searchProbirka}
-              setConnectors={setConnectors}
-              setCurrentPage={setCurrentPage}
-              countPage={countPage}
-              setCountPage={setCountPage}
               currentConnectors={currentConnectors}
               setCurrentConnectors={setCurrentConnectors}
-              currentPage={currentPage}
+              searchFullname={searchFullname}
+              searchId={searchId}
               setPageSize={setPageSize}
-              loading={loading}
-              setServices={setServices}
-              setProducts={setProducts}
+              setCurrentPage={setCurrentPage}
+              countPage={countPage}
+              changeStart={changeStart}
+              changeEnd={changeEnd}
+              currentPage={currentPage}
+              sortComment={sortComment}
+              commentSelect={commentSelect}
             />
           </div>
         </div>
