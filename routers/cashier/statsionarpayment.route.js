@@ -8,6 +8,7 @@ const {StatsionarConnector} = require("../../models/StatsionarClient/StatsionarC
 const {StatsionarDiscount, validateDiscount} = require("../../models/Cashier/StatsionarDiscount");
 const {StatsionarRoom} = require("../../models/StatsionarClient/StatsionarRoom");
 const {Clinica} = require("../../models/DirectorAndClinica/Clinica");
+const {OfflinePayment} = require("../../models/Cashier/OfflinePayment");
 //Payment
 module.exports.payment = async (req, res) => {
     try {
@@ -62,28 +63,36 @@ module.exports.payment = async (req, res) => {
             }
         })
 
+        // Delete Debets
+        const debts = await StatsionarPayment.find({connector: payment.connector})
+        for (const debt of debts) {
+            const update = await StatsionarPayment.findByIdAndUpdate(debt._id, {
+                debt: 0
+            })
+        }
+
         // CreatePayment
         const newpayment = new StatsionarPayment({...payment})
         await newpayment.save()
 
         const updateConnector = await StatsionarConnector.findById(payment.connector)
         updateConnector.payments.push(newpayment._id)
-         // CreateDiscount
-         if (updateConnector.discount) {
-             await StatsionarDiscount.findByIdAndUpdate(updateConnector.discount, discount)
-        } else
-            if (discount.discount && discount.comment.length > 2) {
-                const newdiscount = new StatsionarDiscount({
-                    ...discount,
-                    payment: newpayment._id
-                })
-                await newdiscount.save()
 
-                newpayment.discount = newdiscount._id
-                await newpayment.save()
+        // CreateDiscount
+        if (updateConnector.discount) {
+            await StatsionarDiscount.findByIdAndUpdate(updateConnector.discount, discount)
+        } else if (discount.discount && discount.comment.length > 2) {
+            const newdiscount = new StatsionarDiscount({
+                ...discount,
+                payment: newpayment._id
+            })
+            await newdiscount.save()
 
-                updateConnector.discount = newdiscount._id
-            }
+            newpayment.discount = newdiscount._id
+            await newpayment.save()
+
+            updateConnector.discount = newdiscount._id
+        }
 
 
         await updateConnector.save()
@@ -146,7 +155,7 @@ module.exports.prepayment = async (req, res) => {
 
         const updateConnector = await StatsionarConnector.findById(payment.connector)
         updateConnector.payments.push(newpayment._id)
-        
+
         await updateConnector.save()
 
         res.status(201).send(newpayment)

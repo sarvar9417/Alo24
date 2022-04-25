@@ -6,10 +6,10 @@ const offlineDiscount = new Schema(
         total: {type: Number, required: true},
         discount: {type: Number, required: true},
         procient: {type: Number, max: 100},
-        payment: {type: Schema.Types.ObjectId, ref: 'Payment', required: true},
+        payment: {type: Schema.Types.ObjectId, ref: 'OfflinePayment', required: true},
         clinica: {type: Schema.Types.ObjectId, ref: 'Clinica', required: true},
-        client: {type: Schema.Types.ObjectId, ref: 'Client', required: true},
-        connector: {type: Schema.Types.ObjectId, ref: 'Connector', required: true},
+        client: {type: Schema.Types.ObjectId, ref: 'OfflineClient', required: true},
+        connector: {type: Schema.Types.ObjectId, ref: 'OfflineConnector', required: true},
         isArchive: {type: Boolean, default: false},
         comment: {type: String, required: true},
         services: [{type: Schema.Types.ObjectId, ref: 'OfflineService'}]

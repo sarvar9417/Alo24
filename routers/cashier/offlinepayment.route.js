@@ -63,6 +63,14 @@ module.exports.payment = async (req, res) => {
             }
         })
 
+        // Delete Debets
+        const debts = await OfflinePayment.find({connector: payment.connector})
+        for (const debt of debts) {
+            const update = await OfflinePayment.findByIdAndUpdate(debt._id, {
+                debt: 0
+            })
+        }
+
         // CreatePayment
         const newpayment = new OfflinePayment({...payment})
         await newpayment.save()

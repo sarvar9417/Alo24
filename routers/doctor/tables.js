@@ -28,7 +28,6 @@ module.exports.table = async (req, res) => {
     try {
         const {table} = req.body
         if (table._id) {
-            console.log(table)
             const update = await ServiceTable.findByIdAndUpdate(table._id, {...table})
             return res.status(200).send(update)
         } else {
