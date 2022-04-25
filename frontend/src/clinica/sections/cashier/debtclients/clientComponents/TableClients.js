@@ -11,20 +11,11 @@ import { Pagination } from "../../components/Pagination";
 import { DatePickers } from "./DatePickers";
 
 export const TableClients = ({
-  baseUrl,
-  setVisible,
-  setCheck,
-  setModal1,
-  modal,
   changeStart,
   changeEnd,
-  searchPhone,
-  setClient,
   searchId,
   searchFullname,
-  searchProbirka,
   connectors,
-  setConnector,
   setCurrentPage,
   countPage,
   currentConnectors,
@@ -32,8 +23,13 @@ export const TableClients = ({
   currentPage,
   setPageSize,
   loading,
-  setServices,
-  setProducts,
+  client,
+  setClient,
+  // setDebt,
+  // changeVisible,
+  setVisible,
+  payment,
+  setPayment,
 }) => {
   return (
     <div className="table-container">
@@ -66,15 +62,6 @@ export const TableClients = ({
                 </th>
                 <th>
                   <input
-                    onChange={searchPhone}
-                    style={{ maxWidth: "100px", minWidth: "100px" }}
-                    type="search"
-                    className="w-100 form-control form-control-sm selectpicker"
-                    placeholder="Tel"
-                  />
-                </th>
-                <th>
-                  <input
                     onChange={searchId}
                     style={{ maxWidth: "60px" }}
                     type="search"
@@ -82,16 +69,7 @@ export const TableClients = ({
                     placeholder="ID"
                   />
                 </th>
-                <th>
-                  <input
-                    onChange={searchProbirka}
-                    style={{ maxWidth: "50px" }}
-                    type="search"
-                    className="form-control form-control-sm selectpicker"
-                    placeholder="Probirka"
-                  />
-                </th>
-                <th className="text-center" colSpan={3}>
+                <th className="text-center">
                   <Pagination
                     setCurrentDatas={setCurrentConnectors}
                     datas={connectors}
@@ -144,7 +122,6 @@ export const TableClients = ({
                     />
                   </div>
                 </th>
-                <th>Tel</th>
                 <th className="border py-1">
                   ID
                   <div className="btn-group-vertical ml-2">
@@ -171,14 +148,6 @@ export const TableClients = ({
                       }
                     />
                   </div>
-                </th>
-                <th className="border py-1">
-                  Probirka
-                  <Sort
-                    data={currentConnectors}
-                    setData={setCurrentConnectors}
-                    property={"probirka"}
-                  />
                 </th>
                 <th className="border py-1">
                   Summa
@@ -216,25 +185,15 @@ export const TableClients = ({
                   </div>
                 </th>
                 <th className="border py-1">
-                  Chegirma
+                  Qarz summasi
                   <Sort
                     data={currentConnectors}
                     setData={setCurrentConnectors}
-                    property={"createdAt"}
+                    property={"connector"}
                   />
                 </th>
                 <th className="border py-1">
-                  Qabul ailish
-                  <div className="btn-group-vertical ml-2">
-                    <Sort
-                      data={currentConnectors}
-                      setData={setCurrentConnectors}
-                      property={"counterAgentProcient"}
-                    />
-                  </div>
-                </th>
-                <th className="border py-1">
-                  Check
+                  Qabul
                   <div className="btn-group-vertical ml-2">
                     <Sort
                       data={currentConnectors}
@@ -247,83 +206,63 @@ export const TableClients = ({
             </thead>
             <tbody>
               {currentConnectors.map((connector, key) => {
-                return (
-                  <tr key={key}>
-                    <td
-                      className="border py-1 font-weight-bold text-right"
-                      style={{ maxWidth: "30px !important" }}
-                    >
-                      {currentPage * countPage + key + 1}
-                    </td>
-                    <td className="border py-1 font-weight-bold">
-                      {connector.client.lastname +
-                        " " +
-                        connector.client.firstname}
-                    </td>
-                    <td className="border py-1 text-right">
-                      +998{connector.client.phone}
-                    </td>
-                    <td className="border py-1 text-right">
-                      {connector.client.id}
-                    </td>
-                    <td className="border py-1 text-right">
-                      {connector.probirka}
-                    </td>
-                    <td className="border py-1 text-right">
-                      {connector.payments}
-                    </td>
-                    <td className="border py-1 text-right">
-                      {connector.discount}
-                    </td>
-                    <td className="border py-1 text-right">
-                      {new Date(connector.createdAt).toLocaleDateString()}
-                      {new Date(connector.createdAt).toLocaleTimeString()}
-                    </td>
-                    <td className="border py-1 text-center">
-                      {loading ? (
-                        <button className="btn btn-success" disabled>
-                          <span className="spinner-border spinner-border-sm"></span>
-                          Loading...
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-success py-0"
-                          onClick={() => {
-                            setClient(connector.client);
-                            setConnector({
-                              ...connector,
-                              _id: connector._id,
-                              services: [...connector.services],
-                            });
-                            setServices(connector.services);
-                            setProducts(connector.products);
-                            setVisible(true);
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faPenAlt} />
-                        </button>
-                      )}
-                    </td>
-                    <td className="border py-1 text-center">
-                      {loading ? (
-                        <button className="btn btn-success" disabled>
-                          <span className="spinner-border spinner-border-sm"></span>
-                          Loading...
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-primary py-0"
-                          onClick={() => {
-                            setCheck(connector);
-                            setModal1(true);
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faPrint} />
-                        </button>
-                      )}
-                    </td>
-                  </tr>
-                );
+                if (connector.payments.length > 0) {
+                  return (
+                    <tr key={key}>
+                      <td
+                        className="border py-1 font-weight-bold text-right"
+                        style={{ maxWidth: "30px !important" }}
+                      >
+                        {currentPage * countPage + key + 1}
+                      </td>
+                      <td className="border py-1 font-weight-bold">
+                        {connector.client.fullname}
+                      </td>
+                      <td className="border py-1 text-right">
+                        {connector.client.id}
+                      </td>
+                      <td className="border py-1 text-right">
+                        {
+                          connector.payments[connector.payments.length - 1]
+                            .total
+                        }
+                      </td>
+                      <td className="border py-1 text-right">
+                        {
+                          connector.payments[connector.payments.length - 1]
+                            .payment
+                        }
+                      </td>
+                      <td className="border py-1 text-right">
+                        {connector.payments[connector.payments.length - 1].debt}
+                      </td>
+                      <td className="border py-1 text-center">
+                        {loading ? (
+                          <button className="btn btn-success" disabled>
+                            <span className="spinner-border spinner-border-sm"></span>
+                            Loading...
+                          </button>
+                        ) : (
+                          <button
+                            className="btn btn-primary py-0"
+                            onClick={() => {
+                              setClient(connector.client);
+                              setPayment(
+                                connector.payments[
+                                  connector.payments.length - 1
+                                ]
+                              );
+                              setVisible(true);
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faPenAlt} />
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                }
+                return;
               })}
             </tbody>
           </table>

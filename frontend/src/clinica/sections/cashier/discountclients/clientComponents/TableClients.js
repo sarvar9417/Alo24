@@ -9,37 +9,27 @@ import {
 import { Sort } from "./Sort";
 import { Pagination } from "../../components/Pagination";
 import { DatePickers } from "./DatePickers";
+import ReactHTMLTableToExcel from "react-html-table-to-excel";
 
 export const TableClients = ({
-  baseUrl,
-  setVisible,
-  setCheck,
-  setModal1,
-  modal,
-  changeStart,
-  changeEnd,
-  searchPhone,
-  setClient,
-  searchId,
-  searchFullname,
-  searchProbirka,
-  connectors,
-  setConnector,
-  setCurrentPage,
-  countPage,
   currentConnectors,
   setCurrentConnectors,
-  currentPage,
+  searchFullname,
+  searchId,
   setPageSize,
-  loading,
-  setServices,
-  setProducts,
+  setCurrentPage,
+  countPage,
+  changeStart,
+  changeEnd,
+  currentPage,
+  commentSelect,
+  sortComment,
 }) => {
   return (
     <div className="table-container">
       <div className="table-container">
         <div className="table-responsive">
-          <table className="table m-0">
+          <table className="table m-0" id="discount-table">
             <thead className="bg-white">
               <tr>
                 <th>
@@ -66,15 +56,6 @@ export const TableClients = ({
                 </th>
                 <th>
                   <input
-                    onChange={searchPhone}
-                    style={{ maxWidth: "100px", minWidth: "100px" }}
-                    type="search"
-                    className="w-100 form-control form-control-sm selectpicker"
-                    placeholder="Tel"
-                  />
-                </th>
-                <th>
-                  <input
                     onChange={searchId}
                     style={{ maxWidth: "60px" }}
                     type="search"
@@ -82,35 +63,45 @@ export const TableClients = ({
                     placeholder="ID"
                   />
                 </th>
-                <th>
-                  <input
-                    onChange={searchProbirka}
-                    style={{ maxWidth: "50px" }}
-                    type="search"
-                    className="form-control form-control-sm selectpicker"
-                    placeholder="Probirka"
-                  />
-                </th>
-                <th className="text-center" colSpan={3}>
+                <th className="text-center">
                   <Pagination
                     setCurrentDatas={setCurrentConnectors}
-                    datas={connectors}
+                    datas={currentConnectors}
                     setCurrentPage={setCurrentPage}
                     countPage={countPage}
-                    totalDatas={connectors.length}
+                    totalDatas={currentConnectors.length}
                   />
                 </th>
                 <th
-                  className="text-center"
-                  style={{ maxWidth: "120px", overflow: "hidden" }}
+                  className="d-flex justify-content-between"
+                  style={{ maxWidth: "200px", overflow: "hidden" }}
                 >
                   <DatePickers changeDate={changeStart} />
-                </th>
-                <th
-                  className="text-center"
-                  style={{ maxWidth: "120px", overflow: "hidden" }}
-                >
                   <DatePickers changeDate={changeEnd} />
+                </th>
+                <th className="text-center">
+                  <button className="btn btn-primary">
+                    <ReactHTMLTableToExcel
+                      table="discount-table"
+                      sheet="Sheet"
+                      buttonText="Export to Excel"
+                      filename="Chegirma"
+                    />
+                  </button>
+                </th>
+
+                <th className="text-center">
+                  <select
+                    className="form-control form-control-sm selectpicker"
+                    onChange={sortComment}
+                  >
+                    <option value="none">hamma</option>
+                    {commentSelect.map((item, index) => (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    ))}
+                  </select>
                 </th>
               </tr>
             </thead>
@@ -144,7 +135,6 @@ export const TableClients = ({
                     />
                   </div>
                 </th>
-                <th>Tel</th>
                 <th className="border py-1">
                   ID
                   <div className="btn-group-vertical ml-2">
@@ -173,15 +163,7 @@ export const TableClients = ({
                   </div>
                 </th>
                 <th className="border py-1">
-                  Probirka
-                  <Sort
-                    data={currentConnectors}
-                    setData={setCurrentConnectors}
-                    property={"probirka"}
-                  />
-                </th>
-                <th className="border py-1">
-                  Summa
+                  Jami to'lov
                   <Sort
                     data={currentConnectors}
                     setData={setCurrentConnectors}
@@ -189,13 +171,13 @@ export const TableClients = ({
                   />
                 </th>
                 <th className="border py-1">
-                  To'langan
+                  Procient
                   <div className="btn-group-vertical ml-2">
                     <FontAwesomeIcon
                       onClick={() =>
                         setCurrentConnectors(
                           [...currentConnectors].sort((a, b) =>
-                            a.services.length > b.services.length ? 1 : -1
+                            a.procient > b.procient ? 1 : -1
                           )
                         )
                       }
@@ -208,7 +190,7 @@ export const TableClients = ({
                       onClick={() =>
                         setCurrentConnectors(
                           [...currentConnectors].sort((a, b) =>
-                            b.services.length > a.services.length ? 1 : -1
+                            b.procient > a.procient ? 1 : -1
                           )
                         )
                       }
@@ -216,33 +198,14 @@ export const TableClients = ({
                   </div>
                 </th>
                 <th className="border py-1">
-                  Chegirma
+                  Chegirma summasi
                   <Sort
                     data={currentConnectors}
                     setData={setCurrentConnectors}
                     property={"createdAt"}
                   />
                 </th>
-                <th className="border py-1">
-                  Qabul ailish
-                  <div className="btn-group-vertical ml-2">
-                    <Sort
-                      data={currentConnectors}
-                      setData={setCurrentConnectors}
-                      property={"counterAgentProcient"}
-                    />
-                  </div>
-                </th>
-                <th className="border py-1">
-                  Check
-                  <div className="btn-group-vertical ml-2">
-                    <Sort
-                      data={currentConnectors}
-                      setData={setCurrentConnectors}
-                      property={"counterAgentProcient"}
-                    />
-                  </div>
-                </th>
+                <th className="border py-1">Izoh</th>
               </tr>
             </thead>
             <tbody>
@@ -256,75 +219,58 @@ export const TableClients = ({
                       {currentPage * countPage + key + 1}
                     </td>
                     <td className="border py-1 font-weight-bold">
-                      {connector.client.lastname +
-                        " " +
-                        connector.client.firstname}
-                    </td>
-                    <td className="border py-1 text-right">
-                      +998{connector.client.phone}
+                      {connector.client.fullname}
                     </td>
                     <td className="border py-1 text-right">
                       {connector.client.id}
                     </td>
                     <td className="border py-1 text-right">
-                      {connector.probirka}
+                      {
+                        connector.discounts[connector.discounts.length - 1]
+                          .total
+                      }
                     </td>
                     <td className="border py-1 text-right">
-                      {connector.payments}
+                      {
+                        connector.discounts[connector.discounts.length - 1]
+                          .procient
+                      }
                     </td>
                     <td className="border py-1 text-right">
-                      {connector.discount}
+                      {
+                        connector.discounts[connector.discounts.length - 1]
+                          .discount
+                      }
                     </td>
                     <td className="border py-1 text-right">
-                      {new Date(connector.createdAt).toLocaleDateString()}
-                      {new Date(connector.createdAt).toLocaleTimeString()}
-                    </td>
-                    <td className="border py-1 text-center">
-                      {loading ? (
-                        <button className="btn btn-success" disabled>
-                          <span className="spinner-border spinner-border-sm"></span>
-                          Loading...
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-success py-0"
-                          onClick={() => {
-                            setClient(connector.client);
-                            setConnector({
-                              ...connector,
-                              _id: connector._id,
-                              services: [...connector.services],
-                            });
-                            setServices(connector.services);
-                            setProducts(connector.products);
-                            setVisible(true);
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faPenAlt} />
-                        </button>
-                      )}
-                    </td>
-                    <td className="border py-1 text-center">
-                      {loading ? (
-                        <button className="btn btn-success" disabled>
-                          <span className="spinner-border spinner-border-sm"></span>
-                          Loading...
-                        </button>
-                      ) : (
-                        <button
-                          className="btn btn-primary py-0"
-                          onClick={() => {
-                            setCheck(connector);
-                            setModal1(true);
-                          }}
-                        >
-                          <FontAwesomeIcon icon={faPrint} />
-                        </button>
-                      )}
+                      {
+                        connector.discounts[connector.discounts.length - 1]
+                          .comment
+                      }
                     </td>
                   </tr>
                 );
               })}
+            </tbody>
+          </table>
+          <table
+            className="table"
+            style={{ marginLeft: "auto", maxWidth: "300px" }}
+          >
+            <tbody>
+              <tr>
+                <td className="py-1 text-right font-weight-bold" colSpan={2}>
+                  Jami:
+                </td>
+                <td className="py-1 font-weight-bold" colSpan={4}>
+                  {currentConnectors &&
+                    currentConnectors.reduce((total, el) => {
+                      return (
+                        total + el.discounts[el.discounts.length - 1].discount
+                      );
+                    }, 0)}
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

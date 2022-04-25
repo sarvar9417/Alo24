@@ -2,7 +2,9 @@ import { useToast } from "@chakra-ui/react";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../../context/AuthContext";
 import { useHttp } from "../../../hooks/http.hook";
+import { RegisterClient } from "./clientComponents/RegisterClient";
 import { TableClients } from "./clientComponents/TableClients";
+import { Modal } from "../components/Modal";
 
 export const DebtClients = () => {
   const [beginDay, setBeginDay] = useState(
@@ -14,8 +16,8 @@ export const DebtClients = () => {
   //====================================================================
   //====================================================================
   // MODAL
-  // const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
+  const [modal, setModal] = useState(false);
+
   //====================================================================
   //====================================================================
 
@@ -72,6 +74,9 @@ export const DebtClients = () => {
 
   //====================================================================
   //====================================================================
+
+  //====================================================================
+  //====================================================================
   // getConnectors
   const [connectors, setConnectors] = useState([]);
   const [searchStorage, setSearchStrorage] = useState([]);
@@ -103,7 +108,7 @@ export const DebtClients = () => {
     [request, auth, notify, indexFirstConnector, indexLastConnector]
   );
   //====================================================================
-  //====================================================================+
+  //====================================================================
 
   //====================================================================
   //====================================================================
@@ -132,27 +137,6 @@ export const DebtClients = () => {
     [searchStorage, countPage]
   );
 
-  const searchProbirka = useCallback(
-    (e) => {
-      const searching = searchStorage.filter((item) =>
-        item.probirka.toString().includes(e.target.value)
-      );
-      setConnectors(searching);
-      setCurrentConnectors(searching.slice(0, countPage));
-    },
-    [searchStorage, countPage]
-  );
-
-  const searchPhone = useCallback(
-    (e) => {
-      const searching = searchStorage.filter((item) =>
-        item.client.phone.toString().includes(e.target.value)
-      );
-      setConnectors(searching);
-      setCurrentConnectors(searching.slice(0, countPage));
-    },
-    [searchStorage, countPage]
-  );
   //====================================================================
   //====================================================================
 
@@ -170,20 +154,34 @@ export const DebtClients = () => {
   //====================================================================
   //====================================================================
 
-  const [connector, setConnector] = useState({
-    clinica: auth.clinica && auth.clinica._id,
-    probirka: 0,
-  });
+  // const [connector, setConnector] = useState({
+  //   clinica: auth.clinica && auth.clinica._id,
+  //   probirka: 0,
+  // });
 
-  const [services, setServices] = useState([]);
+  // const [services, setServices] = useState([]);
 
   //====================================================================
   //====================================================================
+
+  const [payment, setPayment] = useState({});
+  const [payCount, setPayCount] = useState("");
+
+  const checkPayCount = () => {
+    if (!payCount) {
+      return notify({
+        title: `Diqqat! To'lov kiritilmagan.`,
+        description: `Iltimos to'lovni kirirting.`,
+        status: "error",
+      });
+    }
+    setModal(true);
+  };
 
   //====================================================================
   //====================================================================
   // PRODUCTS
-  const [products, setProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
 
   //====================================================================
   //====================================================================
@@ -219,6 +217,43 @@ export const DebtClients = () => {
     setEndDay(date);
     getConnectors(beginDay, date);
   };
+
+  //===================================================================
+  //===================================================================
+  //CreateHandler
+
+  const createHandler = useCallback(async () => {
+    try {
+      const data = await request(
+        `/api/cashier/offline/payment`,
+        "POST",
+        {
+          payment: { ...payment, payment: payCount },
+        },
+        {
+          Authorization: `Bearer ${auth.token}`,
+        }
+      );
+      localStorage.setItem("data", data);
+      setModal(false);
+      setVisible(false);
+      setPayCount("");
+      notify({
+        title: "To'lov muvaffaqqiyatli amalga oshirildi.",
+        description: "",
+        status: "success",
+      });
+    } catch (error) {
+      notify({
+        title: error,
+        description: "",
+        status: "error",
+      });
+    }
+  }, [auth, payment, request, notify]);
+
+  //===================================================================
+  //===================================================================
 
   //====================================================================
   //====================================================================
@@ -256,20 +291,44 @@ export const DebtClients = () => {
       <div className="content-wrapper px-lg-5 px-3">
         <div className="row gutters">
           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+            <div className="row">
+              <div className="col-12 text-end">
+                <button
+                  className={`btn btn-primary mb-2 w-100 ${
+                    visible ? "d-none" : ""
+                  }`}
+                  onClick={changeVisible}
+                >
+                  Malumot
+                </button>
+                <button
+                  className={`btn btn-primary mb-2 w-100 ${
+                    visible ? "" : "d-none"
+                  }`}
+                  onClick={changeVisible}
+                >
+                  Malumot
+                </button>
+              </div>
+            </div>
+            <div className={` ${visible ? "" : "d-none"}`}>
+              <RegisterClient
+                payment={payment}
+                client={client}
+                payCount={payCount}
+                setPayCount={setPayCount}
+                checkPayCount={checkPayCount}
+                loading={loading}
+              />
+            </div>
             <TableClients
               setVisible={setVisible}
-              modal1={modal1}
-              setModal1={setModal1}
               changeStart={changeStart}
               changeEnd={changeEnd}
-              searchPhone={searchPhone}
+              client={client}
               setClient={setClient}
-              setConnector={setConnector}
               searchFullname={searchFullname}
               searchId={searchId}
-              connectors={connectors}
-              searchProbirka={searchProbirka}
-              setConnectors={setConnectors}
               setCurrentPage={setCurrentPage}
               countPage={countPage}
               setCountPage={setCountPage}
@@ -278,12 +337,20 @@ export const DebtClients = () => {
               currentPage={currentPage}
               setPageSize={setPageSize}
               loading={loading}
-              setServices={setServices}
-              setProducts={setProducts}
+              connectors={connectors}
+              payment={payment}
+              setPayment={setPayment}
             />
           </div>
         </div>
       </div>
+      <Modal
+        modal={modal}
+        setModal={setModal}
+        text={"to'lov qilishini tasdiqlaysizmi"}
+        handler={createHandler}
+        basic={"Mijoz " + client.lastname + " " + client.firstname}
+      />
     </div>
   );
 };
