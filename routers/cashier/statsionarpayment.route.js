@@ -8,6 +8,7 @@ const {StatsionarConnector} = require("../../models/StatsionarClient/StatsionarC
 const {StatsionarDiscount, validateDiscount} = require("../../models/Cashier/StatsionarDiscount");
 const {StatsionarRoom} = require("../../models/StatsionarClient/StatsionarRoom");
 const {Clinica} = require("../../models/DirectorAndClinica/Clinica");
+const {OfflinePayment} = require("../../models/Cashier/OfflinePayment");
 //Payment
 module.exports.payment = async (req, res) => {
     try {
@@ -62,14 +63,25 @@ module.exports.payment = async (req, res) => {
             }
         })
 
+        // Delete Debets
+        const debts = await StatsionarPayment.find({connector: payment.connector})
+        for (const debt of debts) {
+            const update = await StatsionarPayment.findByIdAndUpdate(debt._id, {
+                debt: 0
+            })
+        }
+
         // CreatePayment
         const newpayment = new StatsionarPayment({...payment})
         await newpayment.save()
 
         const updateConnector = await StatsionarConnector.findById(payment.connector)
         updateConnector.payments.push(newpayment._id)
+
         // CreateDiscount
-        if (discount.discount && discount.comment.length > 5) {
+        if (updateConnector.discount) {
+            await StatsionarDiscount.findByIdAndUpdate(updateConnector.discount, discount)
+        } else if (discount.discount && discount.comment.length > 2) {
             const newdiscount = new StatsionarDiscount({
                 ...discount,
                 payment: newpayment._id
@@ -79,8 +91,9 @@ module.exports.payment = async (req, res) => {
             newpayment.discount = newdiscount._id
             await newpayment.save()
 
-            updateConnector.discounts.push(newdiscount._id)
+            updateConnector.discount = newdiscount._id
         }
+
 
         await updateConnector.save()
 
@@ -93,19 +106,11 @@ module.exports.payment = async (req, res) => {
 // PrePayment
 module.exports.prepayment = async (req, res) => {
     try {
-        const {payment, discount, services, products} = req.body
+        const {payment, services, products} = req.body
 
         // CheckPayment
         const checkPayment = validatePayment(payment).error
         if (checkPayment) {
-            return res.status(400).json({
-                error: error.message,
-            })
-        }
-
-        // CheckDiscount
-        const checkDiscount = validateDiscount(discount).error
-        if (checkDiscount) {
             return res.status(400).json({
                 error: error.message,
             })
@@ -150,19 +155,6 @@ module.exports.prepayment = async (req, res) => {
 
         const updateConnector = await StatsionarConnector.findById(payment.connector)
         updateConnector.payments.push(newpayment._id)
-        // CreateDiscount
-        if (discount.discount && discount.comment.length > 5) {
-            const newdiscount = new StatsionarDiscount({
-                ...discount,
-                payment: newpayment._id
-            })
-            await newdiscount.save()
-
-            newpayment.discount = newdiscount._id
-            await newpayment.save()
-
-            updateConnector.discounts.push(newdiscount._id)
-        }
 
         await updateConnector.save()
 
@@ -197,7 +189,7 @@ module.exports.getAll = async (req, res) => {
             .populate('products')
             .populate('room')
             .populate('payments')
-            .populate('discounts')
+            .populate('discount')
             .sort({_id: -1})
 
         res.status(200).send(connectors)
@@ -248,7 +240,6 @@ module.exports.updateservices = async (req, res) => {
 
         res.status(201).send({message: "Xizmatlar muvaffqqiyatli yangilandi!"})
     } catch (error) {
-        console.log(error)
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
     }
 }

@@ -11,7 +11,7 @@ const {Clinica} = require("../../models/DirectorAndClinica/Clinica");
 module.exports.payment = async (req, res) => {
     try {
         const {payment, discount, services, products} = req.body
-        console.log(discount)
+
         // CheckPayment
         const checkPayment = validatePayment(payment).error
         if (checkPayment) {
@@ -21,11 +21,13 @@ module.exports.payment = async (req, res) => {
         }
 
         // CheckDiscount
-        const checkDiscount = validateDiscount(discount).error
-        if (checkDiscount) {
-            return res.status(400).json({
-                error: error.message,
-            })
+        if (!discount._id) {
+            const checkDiscount = validateDiscount(discount).error
+            if (checkDiscount) {
+                return res.status(400).json({
+                    error: error.message,
+                })
+            }
         }
 
         //Update Services and Products
@@ -61,14 +63,25 @@ module.exports.payment = async (req, res) => {
             }
         })
 
+        // Delete Debets
+        const debts = await OfflinePayment.find({connector: payment.connector})
+        for (const debt of debts) {
+            const update = await OfflinePayment.findByIdAndUpdate(debt._id, {
+                debt: 0
+            })
+        }
+
         // CreatePayment
         const newpayment = new OfflinePayment({...payment})
         await newpayment.save()
 
         const updateConnector = await OfflineConnector.findById(payment.connector)
         updateConnector.payments.push(newpayment._id)
+
         // CreateDiscount
-        if (discount.discount && discount.comment.length > 2) {
+        if (updateConnector.discount) {
+            await OfflineDiscount.findByIdAndUpdate(updateConnector.discount, discount)
+        } else if (discount.discount && discount.comment.length > 2) {
             const newdiscount = new OfflineDiscount({
                 ...discount,
                 payment: newpayment._id
@@ -78,7 +91,7 @@ module.exports.payment = async (req, res) => {
             newpayment.discount = newdiscount._id
             await newpayment.save()
 
-            updateConnector.discounts.push(newdiscount._id)
+            updateConnector.discount = newdiscount._id
         }
 
         await updateConnector.save()
@@ -112,7 +125,7 @@ module.exports.getAll = async (req, res) => {
             .populate('services')
             .populate('products')
             .populate("payments")
-            .populate("discounts")
+            .populate("discount")
             .sort({_id: -1})
 
         res.status(200).send(connectors)

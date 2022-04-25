@@ -33,4 +33,8 @@ module.exports.routers = (app) => {
         "/api/cashier",
         require("./cashier/cashier.route")
     );
+    app.use(
+        "/api/doctor",
+        require("./doctor/doctor.route")
+    );
 };

@@ -9,8 +9,8 @@ const statsionarPrePayment = new Schema(
         card: {type: Number},
         transfer: {type: Number},
         clinica: {type: Schema.Types.ObjectId, ref: 'Clinica', required: true},
-        client: {type: Schema.Types.ObjectId, ref: 'Client', required: true},
-        connector: {type: Schema.Types.ObjectId, ref: 'Connector', required: true},
+        client: {type: Schema.Types.ObjectId, ref: 'StatsionarClient', required: true},
+        connector: {type: Schema.Types.ObjectId, ref: 'StatsionarConnector', required: true},
         isArchive: {type: Boolean, default: false},
     },
     {

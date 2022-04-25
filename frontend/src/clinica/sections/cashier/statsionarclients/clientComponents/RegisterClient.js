@@ -19,7 +19,6 @@ export const RegisterClient = ({
                                    setPayment,
                                    changeProduct,
                                    changeService,
-                                   discounts,
                                    payments,
                                    payment,
                                    client,
@@ -238,7 +237,7 @@ export const RegisterClient = ({
                                             Chegirma:
                                         </th>
                                         <th className="text-left" colSpan={4}>
-                                            {discounts + discount.discount}
+                                            { discount.discount}
                                         </th>
                                     </tr>
                                     <tr>
@@ -262,7 +261,7 @@ export const RegisterClient = ({
                                             To'lanayotgan:
                                         </th>
                                         <th className="text-left" colSpan={4}>
-                                            {totalpayment - payments - discounts - discount.discount - payment.debt}
+                                            {totalpayment - payments  - discount.discount - payment.debt}
                                         </th>
                                     </tr>
                                     </tfoot>
@@ -400,12 +399,13 @@ export const RegisterClient = ({
                                 </div>
                                 <div className={connector.room && connector.room.endday ? "col-md-6" : "col-12"}>
                                     <div className="btn-group mb-3 w-100" role="group" aria-label="Basic example">
-                                        <button
+                                    <button
                                             onClick={() => {
                                                 setPayment({
                                                     ...payment,
                                                     type: "cash",
-                                                    cash: payment.payment,
+                                                    payment: totalpayment - payments - discount.discount - payment.debt,
+                                                    cash: totalpayment - payments - discount.discount - payment.debt,
                                                     card: 0,
                                                     transfer: 0
                                                 })
@@ -420,8 +420,9 @@ export const RegisterClient = ({
                                                 setPayment({
                                                     ...payment,
                                                     type: "card",
+                                                    payment: totalpayment - payments - discount.discount - payment.debt,
                                                     cash: 0,
-                                                    card: payment.payment,
+                                                    card: totalpayment - payments - discount.discount - payment.debt,
                                                     transfer: 0
                                                 })
                                             }}
@@ -435,9 +436,10 @@ export const RegisterClient = ({
                                                 setPayment({
                                                     ...payment,
                                                     type: "transfer",
+                                                    payment:totalpayment - payments - discount.discount - payment.debt,
                                                     cash: 0,
                                                     card: 0,
-                                                    transfer: payment.payment
+                                                    transfer: totalpayment - payments - discount.discount - payment.debt
                                                 })
                                             }}
                                             type="button"

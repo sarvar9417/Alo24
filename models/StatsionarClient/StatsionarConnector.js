@@ -35,7 +35,7 @@ const connector = new Schema(
             ref: 'StatsionarRoom',
         },
         diagnosis: {type: String},
-        discounts: [{type: Schema.Types.ObjectId, ref: 'StatsionarDiscount'}],
+        discount: {type: Schema.Types.ObjectId, ref: 'StatsionarDiscount'},
 
         // payment: { type: Schema.Types.ObjectId, ref: 'StatsionarProduct' } // To'lovlarni qabul qilingan Idsi kiritiladi
     },
@@ -58,7 +58,7 @@ function validateStatsionarConnector(connector) {
         reseption: Joi.string(),
         diagnosis: Joi.string(),
         payments: Joi.array(),
-        discounts: Joi.array()
+        discount: Joi.string()
     })
 
     return schema.validate(connector)
