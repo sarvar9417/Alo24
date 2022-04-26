@@ -24,7 +24,7 @@ module.exports.offline = async (req, res) => {
                 $lt: endDay,
             },
         })
-            .select('total debt comment')
+            .select('total debt comment connector')
             .populate('client', 'fullname born phone id')
             .sort({_id: -1})
         res.status(200).send(debts)
