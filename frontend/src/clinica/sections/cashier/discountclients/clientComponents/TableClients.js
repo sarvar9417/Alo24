@@ -1,11 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faAngleUp,
-  faAngleDown,
-  faPenAlt,
-  faPrint,
-} from "@fortawesome/free-solid-svg-icons";
+import { faAngleUp, faAngleDown } from "@fortawesome/free-solid-svg-icons";
 import { Sort } from "./Sort";
 import { Pagination } from "../../components/Pagination";
 import { DatePickers } from "./DatePickers";
@@ -24,6 +19,7 @@ export const TableClients = ({
   currentPage,
   commentSelect,
   sortComment,
+  sortDiscounts,
 }) => {
   return (
     <div className="table-container">
@@ -72,6 +68,17 @@ export const TableClients = ({
                     totalDatas={currentConnectors.length}
                   />
                 </th>
+                <th className="text-center">
+                  <select
+                    className="form-control form-control-sm selectpicker"
+                    onChange={sortDiscounts}
+                  >
+                    <option value="none">hamma</option>
+                    <option value="statsionar">Statsionar</option>
+                    <option value="offline">Kunduzgi</option>
+                  </select>
+                </th>
+                <th></th>
                 <th
                   className="d-flex justify-content-between"
                   style={{ maxWidth: "200px", overflow: "hidden" }}
@@ -82,9 +89,10 @@ export const TableClients = ({
                 <th className="text-center">
                   <button className="btn btn-primary">
                     <ReactHTMLTableToExcel
+                      id="reacthtmltoexcel"
                       table="discount-table"
                       sheet="Sheet"
-                      buttonText="Export to Excel"
+                      buttonText="Excel"
                       filename="Chegirma"
                     />
                   </button>
@@ -163,6 +171,60 @@ export const TableClients = ({
                   </div>
                 </th>
                 <th className="border py-1">
+                  Telefon raqami
+                  <div className="btn-group-vertical ml-2">
+                    <FontAwesomeIcon
+                      onClick={() =>
+                        setCurrentConnectors(
+                          [...currentConnectors].sort((a, b) =>
+                            a.client.phone > b.client.phone ? 1 : -1
+                          )
+                        )
+                      }
+                      icon={faAngleUp}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <FontAwesomeIcon
+                      icon={faAngleDown}
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        setCurrentConnectors(
+                          [...currentConnectors].sort((a, b) =>
+                            b.client.phone > a.client.phone ? 1 : -1
+                          )
+                        )
+                      }
+                    />
+                  </div>
+                </th>
+                <th className="border py-1">
+                  Tugilgan yil
+                  <div className="btn-group-vertical ml-2">
+                    <FontAwesomeIcon
+                      onClick={() =>
+                        setCurrentConnectors(
+                          [...currentConnectors].sort((a, b) =>
+                            a.client.born > b.client.born ? 1 : -1
+                          )
+                        )
+                      }
+                      icon={faAngleUp}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <FontAwesomeIcon
+                      icon={faAngleDown}
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        setCurrentConnectors(
+                          [...currentConnectors].sort((a, b) =>
+                            b.client.born > a.client.born ? 1 : -1
+                          )
+                        )
+                      }
+                    />
+                  </div>
+                </th>
+                <th className="border py-1">
                   Jami to'lov
                   <Sort
                     data={currentConnectors}
@@ -225,28 +287,22 @@ export const TableClients = ({
                       {connector.client.id}
                     </td>
                     <td className="border py-1 text-right">
-                      {
-                        connector.discounts[connector.discounts.length - 1]
-                          .total
-                      }
+                      {connector.client.phone}
                     </td>
                     <td className="border py-1 text-right">
-                      {
-                        connector.discounts[connector.discounts.length - 1]
-                          .procient
-                      }
+                      {new Date(connector.client.born).toLocaleDateString}
                     </td>
                     <td className="border py-1 text-right">
-                      {
-                        connector.discounts[connector.discounts.length - 1]
-                          .discount
-                      }
+                      {connector.total}
                     </td>
                     <td className="border py-1 text-right">
-                      {
-                        connector.discounts[connector.discounts.length - 1]
-                          .comment
-                      }
+                      {connector.procient}
+                    </td>
+                    <td className="border py-1 text-right">
+                      {connector.discount}
+                    </td>
+                    <td className="border py-1 text-right">
+                      {connector.comment}
                     </td>
                   </tr>
                 );
@@ -265,9 +321,7 @@ export const TableClients = ({
                 <td className="py-1 font-weight-bold" colSpan={4}>
                   {currentConnectors &&
                     currentConnectors.reduce((total, el) => {
-                      return (
-                        total + el.discounts[el.discounts.length - 1].discount
-                      );
+                      return total + el.discount;
                     }, 0)}
                 </td>
               </tr>

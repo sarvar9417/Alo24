@@ -1,22 +1,22 @@
-import { useToast } from '@chakra-ui/react'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { AuthContext } from '../../../context/AuthContext'
-import { useHttp } from '../../../hooks/http.hook'
-import { RegisterClient } from './clientComponents/RegisterClient'
-import { TableClients } from './clientComponents/TableClients'
-import { Modal } from '../components/Modal'
+import { useToast } from "@chakra-ui/react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { AuthContext } from "../../../context/AuthContext";
+import { useHttp } from "../../../hooks/http.hook";
+import { PaymentClients } from "./clientComponents/PaymentClients";
+import { TableClients } from "./clientComponents/TableClients";
+import { Modal } from "../components/Modal";
 
 export const DebtClients = () => {
   const [beginDay, setBeginDay] = useState(
-    new Date(new Date().setUTCHours(0, 0, 0, 0)),
-  )
+    new Date(new Date().setUTCHours(0, 0, 0, 0))
+  );
   const [endDay, setEndDay] = useState(
-    new Date(new Date().setDate(new Date().getDate() + 1)),
-  )
+    new Date(new Date().setDate(new Date().getDate() + 1))
+  );
   //====================================================================
   //====================================================================
   // MODAL
-  const [modal, setModal] = useState(false)
+  const [modal, setModal] = useState(false);
 
   //====================================================================
   //====================================================================
@@ -24,9 +24,9 @@ export const DebtClients = () => {
   //====================================================================
   //====================================================================
   // RegisterPage
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(false);
 
-  const changeVisible = () => setVisible(!visible)
+  const changeVisible = () => setVisible(!visible);
 
   //====================================================================
   //====================================================================
@@ -34,19 +34,19 @@ export const DebtClients = () => {
   //====================================================================
   //====================================================================
   // Pagination
-  const [currentPage, setCurrentPage] = useState(0)
-  const [countPage, setCountPage] = useState(10)
+  const [currentPage, setCurrentPage] = useState(0);
+  const [countPage, setCountPage] = useState(10);
 
-  const indexLastConnector = (currentPage + 1) * countPage
-  const indexFirstConnector = indexLastConnector - countPage
-  const [currentConnectors, setCurrentConnectors] = useState([])
-
-  //====================================================================
-  //====================================================================
+  const indexLastConnector = (currentPage + 1) * countPage;
+  const indexFirstConnector = indexLastConnector - countPage;
+  const [currentConnectors, setCurrentConnectors] = useState([]);
 
   //====================================================================
   //====================================================================
-  const toast = useToast()
+
+  //====================================================================
+  //====================================================================
+  const toast = useToast();
 
   const notify = useCallback(
     (data) => {
@@ -56,18 +56,18 @@ export const DebtClients = () => {
         status: data.status && data.status,
         duration: 5000,
         isClosable: true,
-        position: 'top-right',
-      })
+        position: "top-right",
+      });
     },
-    [toast],
-  )
+    [toast]
+  );
   //====================================================================
   //====================================================================
 
   //====================================================================
   //====================================================================
-  const { request, loading } = useHttp()
-  const auth = useContext(AuthContext)
+  const { request, loading } = useHttp();
+  const auth = useContext(AuthContext);
 
   //====================================================================
   //====================================================================
@@ -78,35 +78,71 @@ export const DebtClients = () => {
   //====================================================================
   //====================================================================
   // getConnectors
-  const [connectors, setConnectors] = useState([])
-  const [searchStorage, setSearchStrorage] = useState([])
+  const [connectors, setConnectors] = useState([]);
+  const [searchStorage, setSearchStrorage] = useState([]);
+  const [offlineDebts, setOfflineDebts] = useState([]);
+  const [statsionarDebts, setStatsionarDebts] = useState([]);
+  const [debts, setDebts] = useState([]);
 
-  const getConnectors = useCallback(
+  const getOfflineDebts = useCallback(
     async (beginDay, endDay) => {
       try {
         const data = await request(
-          `/api/cashier/offline/getall`,
-          'POST',
+          `/api/cashier/offline/debts`,
+          "POST",
           { clinica: auth && auth.clinica._id, beginDay, endDay },
           {
             Authorization: `Bearer ${auth.token}`,
-          },
-        )
-        setConnectors(data)
-        setSearchStrorage(data)
-        setCurrentConnectors(
-          data.slice(indexFirstConnector, indexLastConnector),
-        )
+          }
+        );
+        setOfflineDebts(data);
       } catch (error) {
         notify({
           title: error,
-          description: '',
-          status: 'error',
-        })
+          description: "",
+          status: "error",
+        });
       }
     },
-    [request, auth, notify, indexFirstConnector, indexLastConnector],
-  )
+    [request, auth, notify]
+  );
+
+  const getStatsionarDebts = useCallback(
+    async (beginDay, endDay) => {
+      try {
+        const data = await request(
+          `/api/cashier/statsionar/debts`,
+          "POST",
+          { clinica: auth && auth.clinica._id, beginDay, endDay },
+          {
+            Authorization: `Bearer ${auth.token}`,
+          }
+        );
+        setStatsionarDebts(data);
+      } catch (error) {
+        notify({
+          title: error,
+          description: "",
+          status: "error",
+        });
+      }
+    },
+    [request, auth, notify]
+  );
+
+  useEffect(() => {
+    let debts;
+    if (offlineDebts.length > 0 || statsionarDebts.length > 0) {
+      debts = [...offlineDebts, ...statsionarDebts];
+    } else {
+      debts = [];
+    }
+    setDebts(debts);
+    setCurrentConnectors(debts.slice(indexFirstConnector, indexLastConnector));
+    setConnectors(debts);
+    setSearchStrorage(debts);
+  }, [offlineDebts, statsionarDebts, indexFirstConnector, indexLastConnector]);
+
   //====================================================================
   //====================================================================
 
@@ -118,24 +154,37 @@ export const DebtClients = () => {
       const searching = searchStorage.filter((item) =>
         item.client.fullname
           .toLowerCase()
-          .includes(e.target.value.toLowerCase()),
-      )
-      setConnectors(searching)
-      setCurrentConnectors(searching.slice(0, countPage))
+          .includes(e.target.value.toLowerCase())
+      );
+      setConnectors(searching);
+      setCurrentConnectors(searching.slice(0, countPage));
     },
-    [searchStorage, countPage],
-  )
+    [searchStorage, countPage]
+  );
 
   const searchId = useCallback(
     (e) => {
       const searching = searchStorage.filter((item) =>
-        item.client.id.toString().includes(e.target.value),
-      )
-      setConnectors(searching)
-      setCurrentConnectors(searching.slice(0, countPage))
+        item.client.id.toString().includes(e.target.value)
+      );
+      setConnectors(searching);
+      setCurrentConnectors(searching.slice(0, countPage));
     },
-    [searchStorage, countPage],
-  )
+    [searchStorage, countPage]
+  );
+
+  const sortDebts = (e) => {
+    let sortEl = [];
+    if (e.target.value === "none") {
+      sortEl = [...debts];
+    } else if (e.target.value === "statsionar") {
+      sortEl = [...statsionarDebts];
+    } else {
+      sortEl = [...offlineDebts];
+    }
+    setSearchStrorage(sortEl);
+    setCurrentConnectors(sortEl.slice(0, countPage));
+  };
 
   //====================================================================
   //====================================================================
@@ -144,12 +193,12 @@ export const DebtClients = () => {
   //====================================================================
   const setPageSize = useCallback(
     (e) => {
-      setCurrentPage(0)
-      setCountPage(e.target.value)
-      setCurrentConnectors(connectors.slice(0, countPage))
+      setCurrentPage(0);
+      setCountPage(e.target.value);
+      setCurrentConnectors(connectors.slice(0, countPage));
     },
-    [countPage, connectors],
-  )
+    [countPage, connectors]
+  );
 
   //====================================================================
   //====================================================================
@@ -164,20 +213,41 @@ export const DebtClients = () => {
   //====================================================================
   //====================================================================
 
-  const [payment, setPayment] = useState({})
-  const [payCount, setPayCount] = useState('')
+  const [payment, setPayment] = useState({});
+  const [payCount, setPayCount] = useState("");
 
   const checkPayCount = () => {
     if (!payCount) {
       return notify({
         title: `Diqqat! To'lov kiritilmagan.`,
         description: `Iltimos to'lovni kirirting.`,
-        status: 'error',
-      })
+        status: "error",
+      });
     }
-    setModal(true)
-  }
+    if (!payment.client) {
+      return notify({
+        title: `Diqqat! Mijoz aniqlamagan.`,
+        description: `Iltimos Mijoz malumotlarini kirirting.`,
+        status: "error",
+      });
+    }
+    if (+payCount > +payment.debt) {
+      return notify({
+        title: `Diqqat! To'lov summasi qarz dan oshmaslik kerak.`,
+        description: `Iltimos To'lovni tug'ri kiriting.`,
+        status: "error",
+      });
+    }
+    setModal(true);
+  };
 
+  const getPayment = (connector) => {
+    setPayment(connector);
+    setPayCount(connector.debt);
+    setVisible(true);
+  };
+
+  console.log(payment);
   //====================================================================
   //====================================================================
   // PRODUCTS
@@ -193,16 +263,17 @@ export const DebtClients = () => {
   const [client, setClient] = useState({
     clinica: auth.clinica && auth.clinica._id,
     reseption: auth.user && auth.user._id,
-  })
+  });
 
   //====================================================================
   //====================================================================
   // ChangeDate
 
   const changeStart = (e) => {
-    setBeginDay(new Date(new Date(e).setUTCHours(0, 0, 0, 0)))
-    getConnectors(new Date(new Date(e).setUTCHours(0, 0, 0, 0)), endDay)
-  }
+    setBeginDay(new Date(new Date(e).setUTCHours(0, 0, 0, 0)));
+    getOfflineDebts(new Date(new Date(e).setUTCHours(0, 0, 0, 0)), endDay);
+    getStatsionarDebts(new Date(new Date(e).setUTCHours(0, 0, 0, 0)), endDay);
+  };
 
   const changeEnd = (e) => {
     const date = new Date(
@@ -210,47 +281,95 @@ export const DebtClients = () => {
         0,
         0,
         0,
-        0,
-      ),
-    )
+        0
+      )
+    );
 
-    setEndDay(date)
-    getConnectors(beginDay, date)
-  }
+    setEndDay(date);
+    getOfflineDebts(beginDay, date);
+    getStatsionarDebts(beginDay, date);
+  };
 
   //===================================================================
   //===================================================================
   //CreateHandler
 
-  const createHandler = useCallback(async () => {
+  const sortPostPayment = () => {
+    setPayment({ ...payment, debt: +payment.debt - +payCount });
+    if (payment.client.id[0] === "S") {
+      return postStatsionarDebts();
+    } else {
+      return postOfflineDebts();
+    }
+  };
+
+  const postOfflineDebts = useCallback(async () => {
     try {
       const data = await request(
         `/api/cashier/offline/payment`,
-        'POST',
+        "POST",
         {
-          payment: { ...payment, payment: payCount },
+          payment: {
+            ...payment,
+            clinica: auth && auth.clinica._id,
+          },
         },
         {
           Authorization: `Bearer ${auth.token}`,
-        },
-      )
-      localStorage.setItem('data', data)
-      setModal(false)
-      setVisible(false)
-      setPayCount('')
+        }
+      );
+      localStorage.setItem("data", data);
+      setModal(false);
+      setVisible(false);
+      setPayment({});
+      setPayCount("");
       notify({
         title: "To'lov muvaffaqqiyatli amalga oshirildi.",
-        description: '',
-        status: 'success',
-      })
+        description: "",
+        status: "success",
+      });
     } catch (error) {
       notify({
         title: error,
-        description: '',
-        status: 'error',
-      })
+        description: "",
+        status: "error",
+      });
     }
-  }, [auth, payment, request, notify])
+  }, [auth, payment, request, notify]);
+
+  const postStatsionarDebts = useCallback(async () => {
+    try {
+      const data = await request(
+        `/api/cashier/statsionar/payment`,
+        "POST",
+        {
+          payment: {
+            ...payment,
+            clinica: auth && auth.clinica._id,
+          },
+        },
+        {
+          Authorization: `Bearer ${auth.token}`,
+        }
+      );
+      localStorage.setItem("data", data);
+      setModal(false);
+      setVisible(false);
+      setPayment({});
+      setPayCount("");
+      notify({
+        title: "To'lov muvaffaqqiyatli amalga oshirildi.",
+        description: "",
+        status: "success",
+      });
+    } catch (error) {
+      notify({
+        title: error,
+        description: "",
+        status: "error",
+      });
+    }
+  }, [auth, payment, request, notify]);
 
   //===================================================================
   //===================================================================
@@ -259,30 +378,15 @@ export const DebtClients = () => {
   //====================================================================
   // useEffect
 
-  const [t, setT] = useState(0)
+  const [t, setT] = useState(0);
 
   useEffect(() => {
     if (auth.clinica && !t) {
-      setT(1)
-      getConnectors(beginDay, endDay)
-      // getDepartments();
-      // getCounterDoctors();
-      // getAdvers();
-      // getProducts();
-      // getBaseUrl();
+      setT(1);
+      getOfflineDebts(beginDay, endDay);
+      getStatsionarDebts(beginDay, endDay);
     }
-  }, [
-    auth,
-    getConnectors,
-    // getAdvers,
-    t,
-    // getProducts,
-    // getCounterDoctors,
-    // getDepartments,
-    // getBaseUrl,
-    beginDay,
-    endDay,
-  ])
+  }, [auth, getOfflineDebts, getStatsionarDebts, t, beginDay, endDay]);
 
   //====================================================================
   //====================================================================
@@ -295,7 +399,7 @@ export const DebtClients = () => {
               <div className="col-12 text-end">
                 <button
                   className={`btn btn-primary mb-2 w-100 ${
-                    visible ? 'd-none' : ''
+                    visible ? "d-none" : ""
                   }`}
                   onClick={changeVisible}
                 >
@@ -303,7 +407,7 @@ export const DebtClients = () => {
                 </button>
                 <button
                   className={`btn btn-primary mb-2 w-100 ${
-                    visible ? '' : 'd-none'
+                    visible ? "" : "d-none"
                   }`}
                   onClick={changeVisible}
                 >
@@ -311,8 +415,8 @@ export const DebtClients = () => {
                 </button>
               </div>
             </div>
-            <div className={` ${visible ? '' : 'd-none'}`}>
-              <RegisterClient
+            <div className={` ${visible ? "" : "d-none"}`}>
+              <PaymentClients
                 payment={payment}
                 client={client}
                 payCount={payCount}
@@ -340,6 +444,8 @@ export const DebtClients = () => {
               connectors={connectors}
               payment={payment}
               setPayment={setPayment}
+              sortDebts={sortDebts}
+              getPayment={getPayment}
             />
           </div>
         </div>
@@ -348,9 +454,11 @@ export const DebtClients = () => {
         modal={modal}
         setModal={setModal}
         text={"to'lov qilishini tasdiqlaysizmi"}
-        handler={createHandler}
-        basic={'Mijoz ' + client.lastname + ' ' + client.firstname}
+        handler={sortPostPayment}
+        basic={`Mijoz ${payment.client && payment.client.fullname}`}
       />
     </div>
-  )
-}
+  );
+};
+
+// 913385289
