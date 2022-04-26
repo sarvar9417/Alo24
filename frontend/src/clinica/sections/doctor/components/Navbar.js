@@ -23,6 +23,8 @@ export const Navbar = () => {
         },
         [toast]
     );
+
+    const [activePage, setActivePage] = useState(window.location.pathname)
     //====================================================================
     //====================================================================
 
@@ -99,9 +101,12 @@ export const Navbar = () => {
                             <li className="nav-item">
                                 <Link
                                     className={`nav-link ${
-                                        window.location.pathname === "/alo24" ? "active-page" : ""
+                                        activePage === "/alo24" || activePage === "/" ? "active-page" : ""
                                     }`}
-                                    to="/"
+                                    onClick={() => {
+                                        setActivePage('/alo24')
+                                    }}
+                                    to="/alo24"
                                 >
                                     <i className="icon-devices_other nav-icon"/>
                                     Mijozlar
@@ -110,11 +115,12 @@ export const Navbar = () => {
                             <li className="nav-item">
                                 <Link
                                     className={`nav-link ${
-                                        window.location.pathname === "/alo24/samples"
-                                            ? "active-page"
-                                            : ""
+                                        activePage === "/alo24/templates" ? "active-page" : ""
                                     }`}
-                                    to="/alo24/samples"
+                                    onClick={() => {
+                                        setActivePage('/alo24/templates')
+                                    }}
+                                    to="/alo24/templates"
                                 >
                                     <i className="icon-devices_other nav-icon"/>
                                     Shablonlar
@@ -123,11 +129,12 @@ export const Navbar = () => {
                             <li className="nav-item">
                                 <Link
                                     className={`nav-link ${
-                                        window.location.pathname === "/alo24/tables"
-                                            ? "active-page"
-                                            : ""
+                                        activePage === "/alo24/tables" ? "active-page" : ""
                                     }`}
-                                    to="/alo24/template"
+                                    onClick={() => {
+                                        setActivePage('/alo24/tables')
+                                    }}
+                                    to="/alo24/tables"
                                 >
                                     <i className="icon-devices_other nav-icon"/>
                                     Jadvallar
@@ -136,10 +143,11 @@ export const Navbar = () => {
                             <li className="nav-item">
                                 <Link
                                     className={`nav-link ${
-                                        window.location.pathname === "/alo24/conclusion"
-                                            ? "active-page"
-                                            : ""
+                                        activePage === "/alo24/conclusion" ? "active-page" : ""
                                     }`}
+                                    onClick={() => {
+                                        setActivePage('/alo24/conclusion')
+                                    }}
                                     to="/alo24/conclusion"
                                 >
                                     <i className="icon-devices_other nav-icon"/>

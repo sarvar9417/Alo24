@@ -10,7 +10,7 @@ module.exports.update = async (req, res) => {
         const {service} = req.body
         const update = await Service.findByIdAndUpdate(service._id, {...service})
 
-        return res.status(200).send(service)
+        return res.status(200).send(update)
 
     } catch (error) {
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
@@ -22,7 +22,7 @@ module.exports.services = async (req, res) => {
     try {
         const {clinica, doctor} = req.body
         const services = await Service.find({
-            clinica: clinica._id,
+            clinica: clinica,
             department: doctor.specialty
         })
             .select('name visible place')
@@ -30,7 +30,6 @@ module.exports.services = async (req, res) => {
             .populate('column', '-__v -createdAt -updatedAt')
             .populate('department', 'name')
             .populate('servicetype', 'name')
-
         return res.status(200).send(services)
 
     } catch (error) {
