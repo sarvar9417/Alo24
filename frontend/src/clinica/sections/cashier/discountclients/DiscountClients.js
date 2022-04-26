@@ -75,51 +75,50 @@ export const DiscountClients = () => {
   // getConnectors
   const [connectors, setConnectors] = useState([]);
   const [searchStorage, setSearchStrorage] = useState([]);
+  const [offlineDiscounts, setOfflineDiscounts] = useState([]);
+  const [statsionarDiscounts, setStatsionarDiscounts] = useState([]);
+  const [discounts, setDiscounts] = useState([]);
+  const [selectedCommentsDiscounts, setSelectedCommentsDiscounts] = useState(
+    []
+  );
 
   const [commentSelect, setCommentSelect] = useState([]);
 
-  const getDiscountConnectors = (data) => {
-    const discount = data.filter((item) => {
-      if (item.discounts.length > 0) {
-        return item;
-      }
-      return null;
-    });
-    setCurrentConnectors(discount);
-    setConnectors(discount);
-    setSearchStrorage(discount.slice(indexFirstConnector, indexLastConnector));
-  };
+  // const getDiscounts = () => {
+  //   let discounts = [];
+  //   if (offlineDiscounts.length > 0 || statsionarDiscounts.length > 0) {
+  //     discounts = offlineDiscounts.concat(statsionarDiscounts);
+  //   } else {
+  //     discounts = [];
+  //   }
+  //   setCurrentConnectors(discounts);
+  //   setConnectors(discounts);
+  //   setSearchStrorage(discounts.slice(indexFirstConnector, indexLastConnector));
+  // };
 
   const getComments = (data) => {
     let arr = [];
-    const discount = data.filter((item) => {
-      if (item.discounts.length > 0) {
-        return item;
-      }
-      return null;
-    });
-    for (let i = 0; i < discount.length; i++) {
-      const el = discount[i];
-      if (!arr.includes(el.discounts[el.discounts.length - 1].comment)) {
-        arr.push(el.discounts[el.discounts.length - 1].comment);
+    for (let i = 0; i < data.length; i++) {
+      const el = data[i];
+      if (!arr.includes(el.comment)) {
+        arr.push(el.comment);
       }
     }
     setCommentSelect(arr);
   };
 
-  const getConnectors = useCallback(
+  const getOfflineDiscounts = useCallback(
     async (beginDay, endDay) => {
       try {
         const data = await request(
-          `/api/cashier/offline/getall`,
+          ` /api/cashier/offline/discounts`,
           "POST",
           { clinica: auth && auth.clinica._id, beginDay, endDay },
           {
             Authorization: `Bearer ${auth.token}`,
           }
         );
-        getDiscountConnectors(data);
-        getComments(data);
+        setOfflineDiscounts(data);
       } catch (error) {
         notify({
           title: error,
@@ -128,11 +127,58 @@ export const DiscountClients = () => {
         });
       }
     },
-    [request, auth, notify, indexFirstConnector, indexLastConnector]
+    [request, auth, notify]
   );
+
+  const getStatsionarDiscounts = useCallback(
+    async (beginDay, endDay) => {
+      try {
+        const data = await request(
+          ` /api/cashier/statsionar/discounts`,
+          "POST",
+          { clinica: auth && auth.clinica._id, beginDay, endDay },
+          {
+            Authorization: `Bearer ${auth.token}`,
+          }
+        );
+        setStatsionarDiscounts(data);
+      } catch (error) {
+        notify({
+          title: error,
+          description: "",
+          status: "error",
+        });
+      }
+    },
+    [request, auth, notify]
+  );
+
+  useEffect(() => {
+    let discounts;
+    if (offlineDiscounts.length > 0 || statsionarDiscounts.length > 0) {
+      discounts = [...offlineDiscounts, ...statsionarDiscounts];
+    } else {
+      discounts = [];
+    }
+    setCurrentConnectors(
+      discounts.slice(indexFirstConnector, indexLastConnector)
+    );
+    setConnectors(discounts);
+    setSearchStrorage(discounts);
+    setDiscounts(discounts);
+    setSelectedCommentsDiscounts(discounts);
+    getComments(discounts);
+    return () => {};
+  }, [
+    offlineDiscounts,
+    statsionarDiscounts,
+    indexFirstConnector,
+    indexLastConnector,
+  ]);
+
   //====================================================================
   //====================================================================
-  console.log(commentSelect);
+
   //====================================================================
   //====================================================================
   // SEARCH
@@ -163,15 +209,29 @@ export const DiscountClients = () => {
   const sortComment = (e) => {
     let sortEl = [];
     if (e.target.value === "none") {
-      sortEl = [...searchStorage];
+      sortEl = [...selectedCommentsDiscounts];
     } else {
-      sortEl = [...searchStorage].filter((item) => {
-        return (
-          item.discounts[item.discounts.length - 1].comment === e.target.value
-        );
+      sortEl = [...selectedCommentsDiscounts].filter((item) => {
+        return item.comment === e.target.value;
       });
     }
+    setSearchStrorage(sortEl);
     setCurrentConnectors(sortEl.slice(0, countPage));
+  };
+
+  const sortDiscounts = (e) => {
+    let sortEl = [];
+    if (e.target.value === "none") {
+      sortEl = [...discounts];
+    } else if (e.target.value === "statsionar") {
+      sortEl = [...statsionarDiscounts];
+    } else {
+      sortEl = [...offlineDiscounts];
+    }
+    setSelectedCommentsDiscounts(sortEl);
+    setSearchStrorage(sortEl);
+    setCurrentConnectors(sortEl.slice(0, countPage));
+    getComments(sortEl);
   };
 
   //====================================================================
@@ -224,7 +284,11 @@ export const DiscountClients = () => {
 
   const changeStart = (e) => {
     setBeginDay(new Date(new Date(e).setUTCHours(0, 0, 0, 0)));
-    getConnectors(new Date(new Date(e).setUTCHours(0, 0, 0, 0)), endDay);
+    getOfflineDiscounts(new Date(new Date(e).setUTCHours(0, 0, 0, 0)), endDay);
+    getStatsionarDiscounts(
+      new Date(new Date(e).setUTCHours(0, 0, 0, 0)),
+      endDay
+    );
   };
 
   const changeEnd = (e) => {
@@ -238,7 +302,8 @@ export const DiscountClients = () => {
     );
 
     setEndDay(date);
-    getConnectors(beginDay, date);
+    getOfflineDiscounts(beginDay, date);
+    getStatsionarDiscounts(beginDay, date);
   };
 
   //===================================================================
@@ -277,7 +342,7 @@ export const DiscountClients = () => {
 
   //===================================================================
   //===================================================================
-  console.log(currentConnectors);
+
   //====================================================================
   //====================================================================
   // useEffect
@@ -287,16 +352,13 @@ export const DiscountClients = () => {
   useEffect(() => {
     if (auth.clinica && !t) {
       setT(1);
-      getConnectors(beginDay, endDay);
-      // getDepartments();
-      // getCounterDoctors();
-      // getAdvers();
-      // getProducts();
-      // getBaseUrl();
+      getOfflineDiscounts(beginDay, endDay);
+      getStatsionarDiscounts(beginDay, endDay);
     }
   }, [
     auth,
-    getConnectors,
+    getOfflineDiscounts,
+    getStatsionarDiscounts,
     // getAdvers,
     t,
     // getProducts,
@@ -325,6 +387,7 @@ export const DiscountClients = () => {
               currentPage={currentPage}
               sortComment={sortComment}
               commentSelect={commentSelect}
+              sortDiscounts={sortDiscounts}
             />
           </div>
         </div>

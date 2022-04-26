@@ -1,66 +1,13 @@
 import React from "react";
-// import { DatePickers } from "./DatePickers";
 import "react-datepicker/dist/react-datepicker.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenAlt } from "@fortawesome/free-solid-svg-icons";
 
-export const RegisterClient = ({
-  // checkData,
-  // setNewServices,
-  // setNewProducts,
-  newproducts,
-  newservices,
+export const PaymentClients = ({
   payment,
-  client,
   payCount,
   setPayCount,
   checkPayCount,
-  // departments,
   loading,
-  connector,
 }) => {
-  // const [services, setServices] = useState([]);
-  // const getServices = useCallback(
-  //   (e) => {
-  //     var s = [];
-  //     if (e === "all") {
-  //       departments.map((department) => {
-  //         return department.services.map((service) => {
-  //           return s.push({
-  //             label: service.name,
-  //             value: service._id,
-  //             service: service,
-  //             department: department,
-  //           });
-  //         });
-  //       });
-  //     } else {
-  //       departments.map((department) => {
-  //         if (e === department._id) {
-  //           department.services.map((service) => {
-  //             s.push({
-  //               label: service.name,
-  //               value: service._id,
-  //               service: service,
-  //               department: department,
-  //             });
-  //             return "";
-  //           });
-  //         }
-  //         return "";
-  //       });
-  //     }
-  //     setServices(s);
-  //   },
-  //   [departments]
-  // );
-
-  // useEffect(() => {
-  //   if (departments) {
-  //     getServices("all");
-  //   }
-  // }, [departments, getServices]);
-
   return (
     <>
       {/* Row start */}
@@ -86,26 +33,32 @@ export const RegisterClient = ({
                   <tr className="border">
                     <td className="border py-1">F.I.O.</td>
                     <td className="py-1">
-                      {client.fullname && client.fullname}
+                      {payment.client && payment.client.fullname}
                     </td>
                   </tr>
                   <tr className="border">
                     <td className="border py-1">Telefon raqami:</td>
-                    <td className="py-1">{client.phone && client.phone}</td>
+                    <td className="py-1">
+                      +998{payment.client && payment.client.phone}
+                    </td>
+                  </tr>
+                  <tr className="border">
+                    <td className="border py-1">Tugilgan yili</td>
+                    <td className="py-1">
+                      {new Date(
+                        payment.client && payment.client.born
+                      ).toLocaleDateString()}
+                    </td>
                   </tr>
                   <tr className="border">
                     <td className="border py-1">ID:</td>
-                    <td className="py-1">{client.id && client.id}</td>
+                    <td className="py-1">
+                      {payment.client && payment.client.id}
+                    </td>
                   </tr>
                   <tr className="border">
                     <td className="border py-1">Summa:</td>
                     <td className="py-1">{payment.total && payment.total}</td>
-                  </tr>
-                  <tr className="border">
-                    <td className="border py-1">To'langan:</td>
-                    <td className="py-1">
-                      {payment.payment && payment.payment}
-                    </td>
                   </tr>
                   <tr className="border">
                     <td className="border py-1">Qarz summasi:</td>

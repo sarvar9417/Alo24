@@ -4,11 +4,11 @@ import {
   faAngleUp,
   faAngleDown,
   faPenAlt,
-  faPrint,
 } from "@fortawesome/free-solid-svg-icons";
 import { Sort } from "./Sort";
 import { Pagination } from "../../components/Pagination";
 import { DatePickers } from "./DatePickers";
+import ReactHTMLTableToExcel from "react-html-table-to-excel";
 
 export const TableClients = ({
   changeStart,
@@ -23,19 +23,14 @@ export const TableClients = ({
   currentPage,
   setPageSize,
   loading,
-  client,
-  setClient,
-  // setDebt,
-  // changeVisible,
-  setVisible,
-  payment,
-  setPayment,
+  sortDebts,
+  getPayment,
 }) => {
   return (
     <div className="table-container">
       <div className="table-container">
         <div className="table-responsive">
-          <table className="table m-0">
+          <table className="table m-0" id="discount-table">
             <thead className="bg-white">
               <tr>
                 <th>
@@ -70,6 +65,16 @@ export const TableClients = ({
                   />
                 </th>
                 <th className="text-center">
+                  <select
+                    className="form-control form-control-sm selectpicker"
+                    onChange={sortDebts}
+                  >
+                    <option value="none">hamma</option>
+                    <option value="statsionar">Statsionar</option>
+                    <option value="offline">Kunduzgi</option>
+                  </select>
+                </th>
+                <th className="text-center">
                   <Pagination
                     setCurrentDatas={setCurrentConnectors}
                     datas={connectors}
@@ -80,15 +85,26 @@ export const TableClients = ({
                 </th>
                 <th
                   className="text-center"
-                  style={{ maxWidth: "120px", overflow: "hidden" }}
+                  style={{ maxWidth: "200px", overflow: "hidden" }}
                 >
                   <DatePickers changeDate={changeStart} />
                 </th>
                 <th
                   className="text-center"
-                  style={{ maxWidth: "120px", overflow: "hidden" }}
+                  style={{ maxWidth: "200px", overflow: "hidden" }}
                 >
                   <DatePickers changeDate={changeEnd} />
+                </th>
+                <th className="texte-center">
+                  <div className="btn btn-primary">
+                    <ReactHTMLTableToExcel
+                      id="reacthtmltoexcel"
+                      table="discount-table"
+                      sheet="Sheet"
+                      buttonText="Excel"
+                      filename="Chegirma"
+                    />
+                  </div>
                 </th>
               </tr>
             </thead>
@@ -150,21 +166,13 @@ export const TableClients = ({
                   </div>
                 </th>
                 <th className="border py-1">
-                  Summa
-                  <Sort
-                    data={currentConnectors}
-                    setData={setCurrentConnectors}
-                    property={"totalprice"}
-                  />
-                </th>
-                <th className="border py-1">
-                  To'langan
+                  Telefon raqami
                   <div className="btn-group-vertical ml-2">
                     <FontAwesomeIcon
                       onClick={() =>
                         setCurrentConnectors(
                           [...currentConnectors].sort((a, b) =>
-                            a.services.length > b.services.length ? 1 : -1
+                            a.client.phone > b.client.phone ? 1 : -1
                           )
                         )
                       }
@@ -177,7 +185,7 @@ export const TableClients = ({
                       onClick={() =>
                         setCurrentConnectors(
                           [...currentConnectors].sort((a, b) =>
-                            b.services.length > a.services.length ? 1 : -1
+                            b.client.phone > a.client.phone ? 1 : -1
                           )
                         )
                       }
@@ -185,11 +193,46 @@ export const TableClients = ({
                   </div>
                 </th>
                 <th className="border py-1">
+                  Tugilgan yili
+                  <div className="btn-group-vertical ml-2">
+                    <FontAwesomeIcon
+                      onClick={() =>
+                        setCurrentConnectors(
+                          [...currentConnectors].sort((a, b) =>
+                            a.client.born > b.client.born ? 1 : -1
+                          )
+                        )
+                      }
+                      icon={faAngleUp}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <FontAwesomeIcon
+                      icon={faAngleDown}
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        setCurrentConnectors(
+                          [...currentConnectors].sort((a, b) =>
+                            b.client.born > a.client.born ? 1 : -1
+                          )
+                        )
+                      }
+                    />
+                  </div>
+                </th>
+                <th className="border py-1">
+                  Summa
+                  <Sort
+                    data={currentConnectors}
+                    setData={setCurrentConnectors}
+                    property={"total"}
+                  />
+                </th>
+                <th className="border py-1">
                   Qarz summasi
                   <Sort
                     data={currentConnectors}
                     setData={setCurrentConnectors}
-                    property={"connector"}
+                    property={"debt"}
                   />
                 </th>
                 <th className="border py-1">
@@ -206,63 +249,47 @@ export const TableClients = ({
             </thead>
             <tbody>
               {currentConnectors.map((connector, key) => {
-                if (connector.payments.length > 0) {
-                  return (
-                    <tr key={key}>
-                      <td
-                        className="border py-1 font-weight-bold text-right"
-                        style={{ maxWidth: "30px !important" }}
-                      >
-                        {currentPage * countPage + key + 1}
-                      </td>
-                      <td className="border py-1 font-weight-bold">
-                        {connector.client.fullname}
-                      </td>
-                      <td className="border py-1 text-right">
-                        {connector.client.id}
-                      </td>
-                      <td className="border py-1 text-right">
-                        {
-                          connector.payments[connector.payments.length - 1]
-                            .total
-                        }
-                      </td>
-                      <td className="border py-1 text-right">
-                        {
-                          connector.payments[connector.payments.length - 1]
-                            .payment
-                        }
-                      </td>
-                      <td className="border py-1 text-right">
-                        {connector.payments[connector.payments.length - 1].debt}
-                      </td>
-                      <td className="border py-1 text-center">
-                        {loading ? (
-                          <button className="btn btn-success" disabled>
-                            <span className="spinner-border spinner-border-sm"></span>
-                            Loading...
-                          </button>
-                        ) : (
-                          <button
-                            className="btn btn-primary py-0"
-                            onClick={() => {
-                              setClient(connector.client);
-                              setPayment(
-                                connector.payments[
-                                  connector.payments.length - 1
-                                ]
-                              );
-                              setVisible(true);
-                            }}
-                          >
-                            <FontAwesomeIcon icon={faPenAlt} />
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                }
-                return;
+                return (
+                  <tr key={key}>
+                    <td
+                      className="border py-1 font-weight-bold text-right"
+                      style={{ maxWidth: "30px !important" }}
+                    >
+                      {currentPage * countPage + key + 1}
+                    </td>
+                    <td className="border py-1 font-weight-bold">
+                      {connector.client.fullname}
+                    </td>
+                    <td className="border py-1 text-right">
+                      {connector.client.id}
+                    </td>
+                    <td className="border py-1 text-right">
+                      {connector.client.phone}
+                    </td>
+                    <td className="border py-1 text-right">
+                      {new Date(connector.client.born).toLocaleDateString()}
+                    </td>
+                    <td className="border py-1 text-right">
+                      {connector.total}
+                    </td>
+                    <td className="border py-1 text-right">{connector.debt}</td>
+                    <td className="border py-1 text-center">
+                      {loading ? (
+                        <button className="btn btn-success" disabled>
+                          <span className="spinner-border spinner-border-sm"></span>
+                          Loading...
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-primary py-0"
+                          onClick={() => getPayment(connector)}
+                        >
+                          <FontAwesomeIcon icon={faPenAlt} />
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
               })}
             </tbody>
           </table>
