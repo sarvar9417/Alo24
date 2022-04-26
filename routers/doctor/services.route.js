@@ -36,3 +36,24 @@ module.exports.services = async (req, res) => {
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
     }
 }
+
+// GET SERVICES
+module.exports.delete = async (req, res) => {
+    try {
+        const {service} = req.body
+        const deleteColumn = await TableColumn.findByIdAndDelete(service.column._id)
+
+        for (const table of service.tables) {
+            const deleteTable = await ServiceTable.findByIdAndDelete(table._id)
+        }
+
+        const servic = await Service.findById(service._id)
+        delete servic.column
+        servic.tables = []
+        await servic.save()
+        return res.status(200).send(servic)
+
+    } catch (error) {
+        res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
+    }
+}

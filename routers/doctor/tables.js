@@ -5,10 +5,9 @@ const {ObjectId} = require("mongodb");
 module.exports.column = async (req, res) => {
     try {
         const {column} = req.body
-
         if (column._id) {
-            await TableColumn.findByIdAndUpdate(column._id, {...column})
-            return res.status(200).send(update)
+            const update = await TableColumn.findByIdAndUpdate(column._id, {...column})
+            return res.status(200).send(column)
         } else {
             const newColumn = new TableColumn({...column})
             await newColumn.save()
@@ -80,7 +79,7 @@ module.exports.tabledelete = async (req, res) => {
             }
         })
 
-        return res.status(200).send(table)
+        return res.status(200).send(clearService)
 
     } catch (error) {
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})

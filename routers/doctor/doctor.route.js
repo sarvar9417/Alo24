@@ -26,6 +26,10 @@ router.post('/table/serviceupdate', auth, (req, res) => {
     require('./services.route').update(req, res)
 })
 
+router.post('/table/delete', auth, (req, res) => {
+    require('./services.route').delete(req, res)
+})
+
 router.post('/table/column', auth, (req, res) => {
     require('./tables').column(req, res)
 })

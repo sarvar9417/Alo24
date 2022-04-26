@@ -8,7 +8,7 @@ const tableColumn = new Schema(
         col3: {type: String},
         col4: {type: String},
         col5: {type: String},
-        service: {type: Types.ObjectId, ref: 'Service'},
+        service: {type: Types.ObjectId, ref: 'Service', required: true},
         clinica: {type: Schema.Types.ObjectId, ref: "Clinica", required: true},
         doctor: {type: Schema.Types.ObjectId, ref: 'User', required: true},
     },

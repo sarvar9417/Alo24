@@ -101,6 +101,20 @@ const Tables = () => {
 
     //====================================================================
     //====================================================================
+    // New table
+    const [newTable, setNewTable] = useState({})
+
+
+    const changeNewTable = (e, col) => {
+        console.log(newTable)
+        setNewTable({...newTable, [col]: e.target.value})
+    }
+
+    //====================================================================
+    //====================================================================
+
+    //====================================================================
+    //====================================================================
     const [imports, setImports] = useState([])
     const [changeImports, setChangeImports] = useState([])
     const sections = [
@@ -134,37 +148,31 @@ const Tables = () => {
     }
 
     const createHandler = useCallback(async () => {
-        if (!service.name) {
-            return notify({
-                title: "Diqqat! Shablon nomini kiriting.",
-                description: '',
-                status: 'error',
-            })
-        }
-        if (!service.service) {
-            return notify({
-                title: "Diqqat! Shablonni kiriting.",
-                description: '',
-                status: 'error',
-            })
-        }
         try {
             const data = await request(
-                `/api/doctor/service/create`,
+                `/api/doctor/table/table`,
                 'POST',
-                {service: {...service, clinica: auth.clinica._id, doctor: auth.user._id}},
+                {
+                    table: {
+                        ...newTable,
+                        service: service._id,
+                        clinica: auth.clinica._id,
+                        doctor: auth.user._id
+                    }
+                },
                 {
                     Authorization: `Bearer ${auth.token}`,
                 },
             )
             notify({
-                title: `${data.name} shabloni yaratildi!`,
+                title: `Jadval muvaffaqqiyatli saqlandi!`,
                 description: '',
                 status: 'success',
             })
-            getServices()
-            setService({})
-            clearInputs()
+            let tables = [...service.tables]
+            tables.push(data)
+            setService({...service, tables: [...tables]})
+            setNewTable({})
         } catch (error) {
             notify({
                 title: error,
@@ -172,7 +180,31 @@ const Tables = () => {
                 status: 'error',
             })
         }
-    }, [auth, request, getServices, service, notify, clearInputs])
+    }, [auth, request, service, notify, newTable])
+
+    const updateHandler = useCallback(async (index) => {
+        try {
+            const data = await request(
+                `/api/doctor/table/table`,
+                'POST',
+                {table: {...service.tables[index]}},
+                {
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            )
+            notify({
+                title: `Jadval muvaffaqqiyatli saqlandi!`,
+                description: '',
+                status: 'success',
+            })
+        } catch (error) {
+            notify({
+                title: error,
+                description: '',
+                status: 'error',
+            })
+        }
+    }, [auth, request, service, notify])
 
     const createAllHandler = useCallback(async () => {
         try {
@@ -203,25 +235,29 @@ const Tables = () => {
         }
     }, [auth, request, notify, clearInputs, getServices, changeImports])
 
-    const deleteHandler = useCallback(async () => {
+    const createColumn = useCallback(async () => {
         try {
             const data = await request(
-                `/api/doctor/service/delete`,
+                `/api/doctor/table/column`,
                 'POST',
-                {service: {...remove}},
+                {
+                    column: {
+                        ...service.column,
+                        service: service._id,
+                        clinica: auth.clinica._id,
+                        doctor: auth.user._id
+                    }
+                },
                 {
                     Authorization: `Bearer ${auth.token}`,
                 },
             )
             notify({
-                title: `${data.name} shabloni o'chirildi!`,
+                title: `Ustun nomlari saqlandi.`,
                 description: '',
                 status: 'success',
             })
-            getServices()
-            setRemove()
-            clearInputs()
-            setModal(false)
+            setService({...service, column: data})
         } catch (error) {
             notify({
                 title: error,
@@ -229,8 +265,64 @@ const Tables = () => {
                 status: 'error',
             })
         }
-    }, [auth, request, getServices, remove, notify, clearInputs])
+    }, [auth, request, service, notify])
 
+    const deleteTable = useCallback(async () => {
+        try {
+            const data = await request(
+                `/api/doctor/table/delete`,
+                'POST',
+                {
+                    service: {...service}
+                },
+                {
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            )
+            notify({
+                title: `Jadval muvaffaqqiyatli o'chirildi.`,
+                description: '',
+                status: 'success',
+            })
+            setService(data)
+        } catch (error) {
+            notify({
+                title: error,
+                description: '',
+                status: 'error',
+            })
+        }
+    }, [auth, request, service, notify])
+
+    const deleteHandler = useCallback(async (index) => {
+        try {
+            const data = await request(
+                `/api/doctor/table/tabledelete`,
+                'POST',
+                {
+                    table: {...service.tables[index]}
+                },
+                {
+                    Authorization: `Bearer ${auth.token}`,
+                },
+            )
+            notify({
+                title: `Jadval muvaffaqqiyatli o'chirildi.`,
+                description: '',
+                status: 'success',
+            })
+            localStorage.setItem('data', data)
+            let tables = [...service.tables]
+            tables.splice(index, 1)
+            setService({...service, tables: [...tables]})
+        } catch (error) {
+            notify({
+                title: error,
+                description: '',
+                status: 'error',
+            })
+        }
+    }, [auth, request, service, notify])
     //====================================================================
     //====================================================================
 
@@ -322,11 +414,22 @@ const Tables = () => {
 
     return (
         <div className="container">
-            <div className={visible ? 'd-block' : 'd-none'}>
+            <div className={visible ? 'd-block mt-4' : 'd-none'}>
+                <button
+                    onClick={() => setVisible(false)}
+                    className={visible ? "w-full bg-primary hover:bg-teal-900  text-white font-bold py-1" : 'd-none'}>
+                    Oynani yopish
+                </button>
                 <RegisterTables
+                    newTable={newTable}
+                    deleteHandler={deleteHandler}
+                    createHandler={createHandler}
+                    createColumn={createColumn}
                     service={service}
-                    // setService={setService}
-                    // createHandler={createHandler}
+                    setService={setService}
+                    deleteTable={deleteTable}
+                    updateHandler={updateHandler}
+                    changeNewTable={changeNewTable}
                 />
             </div>
 
@@ -369,13 +472,13 @@ const Tables = () => {
                 }
             />
 
-            <Modal
-                modal={modal}
-                setModal={setModal}
-                handler={deleteHandler}
-                text=" shablonini ochirishni tasdiqlaysizmi?"
-                basic={remove && remove.name}
-            />
+            {/*<Modal*/}
+            {/*    modal={modal}*/}
+            {/*    setModal={setModal}*/}
+            {/*    handler={deleteHandler}*/}
+            {/*    text=" shablonini ochirishni tasdiqlaysizmi?"*/}
+            {/*    basic={remove && remove.name}*/}
+            {/*/>*/}
         </div>
     );
 };
