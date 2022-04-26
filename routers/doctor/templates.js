@@ -1,6 +1,6 @@
 //Clients getall
-
 const {validateTemplate, Template} = require("../../models/Templates/Template");
+
 module.exports.createandupdate = async (req, res) => {
     try {
         const {template} = req.body
