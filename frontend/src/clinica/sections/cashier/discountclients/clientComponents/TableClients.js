@@ -87,7 +87,7 @@ export const TableClients = ({
                   <DatePickers changeDate={changeEnd} />
                 </th>
                 <th className="text-center">
-                  <button className="btn btn-primary">
+                  <div className="btn btn-primary">
                     <ReactHTMLTableToExcel
                       id="reacthtmltoexcel"
                       table="discount-table"
@@ -95,7 +95,7 @@ export const TableClients = ({
                       buttonText="Excel"
                       filename="Chegirma"
                     />
-                  </button>
+                  </div>
                 </th>
 
                 <th className="text-center">
@@ -290,7 +290,7 @@ export const TableClients = ({
                       {connector.client.phone}
                     </td>
                     <td className="border py-1 text-right">
-                      {new Date(connector.client.born).toLocaleDateString}
+                      {new Date(connector.client.born).toLocaleDateString()}
                     </td>
                     <td className="border py-1 text-right">
                       {connector.total}
