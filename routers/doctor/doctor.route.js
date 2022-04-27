@@ -46,4 +46,8 @@ router.post('/table/tabledelete', auth, (req, res) => {
     require('./tables').tabledelete(req, res)
 })
 
+router.post('/table/createall', auth, (req, res) => {
+    require('./tables').createall(req, res)
+})
+
 module.exports = router

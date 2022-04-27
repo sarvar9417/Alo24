@@ -85,3 +85,26 @@ module.exports.tabledelete = async (req, res) => {
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
     }
 }
+
+
+module.exports.createall = async (req, res) => {
+    try {
+        const {tables, clinica, doctor, service} = req.body
+        let tabless = []
+        for (const table of tables) {
+            const newTable = new ServiceTable({...table, clinica, doctor, service})
+            await newTable.save()
+            const update = await Service.findByIdAndUpdate(service, {
+                $push: {
+                    tables: new ObjectId(newTable._id),
+                }
+            })
+            tabless.push(newTable)
+        }
+
+        return res.status(200).send(tabless)
+
+    } catch (error) {
+        res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
+    }
+}

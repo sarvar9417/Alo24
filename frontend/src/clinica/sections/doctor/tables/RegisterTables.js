@@ -1,8 +1,12 @@
 import React from 'react';
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faFloppyDisk, faTrashAlt} from "@fortawesome/free-solid-svg-icons";
+import {ExcelUpload} from "./uploadExcel/ExcelUpload";
 
 const RegisterTables = ({
+                            setImports,
+                            setModal2,
+                            loading,
                             newTable,
                             deleteHandler,
                             service,
@@ -160,13 +164,13 @@ const RegisterTables = ({
                     <td className="text-center border">
                         <button
                             onClick={createHandler}
-                            className="bg-teal-500 px-3 text-white font-bold rounded-sm"
+                            className="bg-teal-500 px-3 text-white font-bold rounded-sm py-1"
                         >
                             +
                         </button>
                     </td>
                     <td className="text-center border">
-                        {/*<button className="bg-teal-500 px-3 text-white font-bold rounded-sm">+</button>*/}
+                        <ExcelUpload setData={setImports} setModal={setModal2} loading={loading}/>
                     </td>
                 </tr>
                 {

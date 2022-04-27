@@ -118,8 +118,11 @@ const Tables = () => {
     const [imports, setImports] = useState([])
     const [changeImports, setChangeImports] = useState([])
     const sections = [
-        {name: 'Shablon nomi', value: 'name'},
-        {name: "Shablon", value: 'service'}
+        {name: '1-ustun', value: 'col1'},
+        {name: "2-ustun", value: 'col2'},
+        {name: "3-ustun", value: 'col3'},
+        {name: "4-ustun", value: 'col4'},
+        {name: "5-ustun", value: 'col5'}
     ]
     //====================================================================
     //====================================================================
@@ -140,12 +143,6 @@ const Tables = () => {
     //====================================================================
     //====================================================================
     // Handlers
-
-    const checkUploadData = () => {
-        // if (checkServices(changeImports))
-        //     return notify(checkServices(imports))
-        createAllHandler()
-    }
 
     const createHandler = useCallback(async () => {
         try {
@@ -209,22 +206,26 @@ const Tables = () => {
     const createAllHandler = useCallback(async () => {
         try {
             const data = await request(
-                `/api/doctor/service/createall`,
+                `/api/doctor/table/createall`,
                 'POST',
-                {services: [...changeImports], clinica: auth.clinica._id, doctor: auth.user._id},
+                {
+                    tables: [...changeImports],
+                    clinica: auth.clinica._id,
+                    doctor: auth.user._id,
+                    service: service._id
+                },
                 {
                     Authorization: `Bearer ${auth.token}`,
                 },
             )
-            localStorage.setItem("data", data)
             notify({
                 title: `Shablonlar yaratildi!`,
                 description: '',
                 status: 'success',
             })
-            getServices()
-            setService({})
-            clearInputs()
+            let tables = [...(service.tables)]
+            tables.push(...data)
+            setService({...service, tables: [...tables]})
             setModal2(false)
         } catch (error) {
             notify({
@@ -233,7 +234,7 @@ const Tables = () => {
                 status: 'error',
             })
         }
-    }, [auth, request, notify, clearInputs, getServices, changeImports])
+    }, [auth, request, notify, changeImports, service])
 
     const createColumn = useCallback(async () => {
         try {
@@ -421,6 +422,9 @@ const Tables = () => {
                     Oynani yopish
                 </button>
                 <RegisterTables
+                    setModal2={setModal2}
+                    loading={loading}
+                    setImports={setImports}
                     newTable={newTable}
                     deleteHandler={deleteHandler}
                     createHandler={createHandler}
@@ -445,13 +449,10 @@ const Tables = () => {
                     currentServices={currentServices}
                     setModal={setModal}
                     setCurrentServices={setCurrentServices}
-                    setModal2={setModal2}
                     countPage={countPage}
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
                     setRemove={setRemove}
-                    loading={loading}
-                    setImports={setImports}
                     setPageSize={setPageSize}
                     searchService={searchService}
                 />
@@ -461,7 +462,7 @@ const Tables = () => {
             <Modal
                 modal={modal2}
                 setModal={setModal2}
-                handler={checkUploadData}
+                handler={createAllHandler}
                 text={
                     <ExcelCols
                         createdData={changeImports}
