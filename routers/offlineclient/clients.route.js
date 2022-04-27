@@ -24,6 +24,8 @@ const {
 const {OfflineAdver} = require('../../models/OfflineClient/OfflineAdver')
 const {StatsionarRoom} = require("../../models/StatsionarClient/StatsionarRoom");
 const {Room} = require("../../models/Rooms/Room");
+const {TableColumn} = require("../../models/Services/TableColumn");
+const {ServiceTable} = require("../../models/Services/ServiceTable");
 
 // register
 module.exports.register = async (req, res) => {
@@ -154,11 +156,24 @@ module.exports.register = async (req, res) => {
 
             //=========================================================
             // Create Service
+            const serv = await Service.findById(service.serviceid)
+                .populate('column', 'col1 col2 col3 col4 col5')
+                .populate('tables', 'col1 col2 col3 col4 col5')
             const newservice = new OfflineService({
                 ...service,
+                service: {
+                    name: serv.name,
+                    price: serv.price,
+                    shortname: serv.shortname,
+                    doctorProcient: serv.doctorProcient,
+                    counterAgentProcient: serv.counterAgentProcient,
+                    counterDoctorProcient: serv.counterDoctorProcient
+                },
                 client: newclient._id,
                 connector: newconnector._id,
                 turn,
+                column: {...serv.column},
+                tables: [...JSON.parse(JSON.stringify(serv.tables))]
             })
 
             await newservice.save()
@@ -333,14 +348,27 @@ module.exports.add = async (req, res) => {
             }
 
             //=========================================================
+            //=========================================================
             // Create Service
+            const serv = await Service.findById(service.serviceid)
+                .populate('column', 'col1 col2 col3 col4 col5')
+                .populate('tables', 'col1 col2 col3 col4 col5')
             const newservice = new OfflineService({
                 ...service,
+                service: {
+                    name: serv.name,
+                    price: serv.price,
+                    shortname: serv.shortname,
+                    doctorProcient: serv.doctorProcient,
+                    counterAgentProcient: serv.counterAgentProcient,
+                    counterDoctorProcient: serv.counterDoctorProcient
+                },
                 client: client._id,
                 connector: updateOfflineConnector._id,
-                turn: turn,
+                turn,
+                column: {...serv.column},
+                tables: [...JSON.parse(JSON.stringify(serv.tables))]
             })
-
             await newservice.save()
 
             totalprice += service.service.price
@@ -448,6 +476,37 @@ module.exports.getAll = async (req, res) => {
             .populate('products')
             .sort({_id: -1})
 
+        res.status(200).send(connectors)
+    } catch (error) {
+        res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
+    }
+}
+
+//Clients getall
+module.exports.getAllReseption = async (req, res) => {
+    try {
+        const {clinica, beginDay, endDay} = req.body
+
+        const clinic = await Clinica.findById(clinica)
+
+        if (!clinic) {
+            return res.status(400).json({
+                message: "Diqqat! Klinika ma'lumotlari topilmadi.",
+            })
+        }
+
+        const connectors = await OfflineConnector.find({
+            clinica,
+            createdAt: {
+                $gte: beginDay,
+                $lt: endDay,
+            },
+        })
+            .select('probirka client services products createdAt totalprice')
+            .populate('client', 'fullname firstname lastname phone id gender born address')
+            .populate('services', '_id service turn pieces')
+            .populate('products', '_id product pieces')
+            .sort({_id: -1})
         res.status(200).send(connectors)
     } catch (error) {
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})

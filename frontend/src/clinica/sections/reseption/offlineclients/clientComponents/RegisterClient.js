@@ -29,7 +29,9 @@ export const RegisterClient = ({
                                    products,
                                    loading,
                                }) => {
+    
     const [services, setServices] = useState([])
+
     const getServices = useCallback(
         (e) => {
             var s = []

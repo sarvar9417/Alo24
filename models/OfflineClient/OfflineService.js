@@ -23,7 +23,6 @@ const service = new Schema(
             ref: 'Department',
             required: true,
         },
-        table: {type: String},
         templates: {type: String},
         refuse: {type: Boolean, default: false},
         accept: {type: Boolean, default: false},
@@ -32,7 +31,10 @@ const service = new Schema(
         turn: Number,
         bronday: {type: Date},
         payment: {type: Boolean, default: false},
-        comment: {type: String}
+        comment: {type: String},
+        column: {type: Object},
+        tables: {type: Array}
+
     },
     {
         timestamps: true,
@@ -48,7 +50,6 @@ function validateOfflineService(clientservice) {
         service: Joi.object().required(),
         pieces: Joi.number(),
         department: Joi.string().required(),
-        table: Joi.string(),
         templates: Joi.string(),
         refuse: Joi.boolean(),
         accept: Joi.string(),
@@ -57,7 +58,9 @@ function validateOfflineService(clientservice) {
         turn: Joi.number(),
         bronday: Joi.date(),
         payment: Joi.boolean(),
-        comment: Joi.string()
+        comment: Joi.string(),
+        column: Joi.object(),
+        tables: Joi.array()
     })
 
     return schema.validate(clientservice)

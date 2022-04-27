@@ -25,17 +25,8 @@ const Tables = () => {
 
     //====================================================================
     //====================================================================
-    const [modal, setModal] = useState(false)
     const [modal2, setModal2] = useState(false)
     const [visible, setVisible] = useState(false)
-    const [remove, setRemove] = useState()
-
-    const clearInputs = useCallback(() => {
-        const inputs = document.getElementsByTagName('textarea')
-        for (const input of inputs) {
-            input.value = ''
-        }
-    }, [])
     //====================================================================
     //====================================================================
 
@@ -194,6 +185,7 @@ const Tables = () => {
                 description: '',
                 status: 'success',
             })
+            localStorage.setItem("data", data)
         } catch (error) {
             notify({
                 title: error,
@@ -447,12 +439,10 @@ const Tables = () => {
                     setService={setService}
                     services={services}
                     currentServices={currentServices}
-                    setModal={setModal}
                     setCurrentServices={setCurrentServices}
                     countPage={countPage}
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
-                    setRemove={setRemove}
                     setPageSize={setPageSize}
                     searchService={searchService}
                 />

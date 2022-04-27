@@ -7,7 +7,7 @@ const servicetable = new Schema(
         col2: {type: String},
         col3: {type: String},
         col4: {type: String},
-        col5: {type: String, default: '',},
+        col5: {type: String},
         service: {type: Types.ObjectId, ref: 'Service'},
         clinica: {type: Schema.Types.ObjectId, ref: "Clinica", required: true},
         doctor: {type: Schema.Types.ObjectId, ref: 'User', required: true},

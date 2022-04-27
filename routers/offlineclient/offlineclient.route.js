@@ -14,6 +14,10 @@ router.post('/client/getall', auth, (req, res) => {
     require('./clients.route').getAll(req, res)
 })
 
+router.post('/client/getallreseption', auth, (req, res) => {
+    require('./clients.route').getAllReseption(req, res)
+})
+
 router.put('/client/update', auth, (req, res) => {
     require('./clients.route').update(req, res)
 })

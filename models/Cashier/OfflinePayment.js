@@ -19,8 +19,7 @@ const offlinePayment = new Schema(
         services: [
             {
                 type: Schema.Types.ObjectId,
-                ref: 'OfflineService',
-                required: true,
+                ref: 'OfflineService'
             },
         ],
         products: [{type: Schema.Types.ObjectId, ref: 'OfflineProduct'}],

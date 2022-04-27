@@ -31,7 +31,8 @@ const {
 const {
     StatsionarDaily,
 } = require('../../models/StatsionarClient/StatsionarDaily')
-
+const {TableColumn} = require("../../models/Services/TableColumn");
+const {ServiceTable} = require("../../models/Services/ServiceTable");
 // register
 module.exports.register = async (req, res) => {
     try {
@@ -138,50 +139,24 @@ module.exports.register = async (req, res) => {
             }
 
             //=========================================================
-            // TURN
-            // var turn = 0
-            // const clientservice = await StatsionarService.findOne({
-            //     clinica: service.clinica,
-            //     client: newclient._id,
-            //     department: service.department,
-            //     createdAt: {
-            //         $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-            //     },
-            // })
-            //
-            // if (clientservice) {
-            //     turn = clientservice.turn
-            // } else {
-            //     let turns = await StatsionarService.find({
-            //         clinica: service.clinica,
-            //         department: service.department,
-            //         createdAt: {
-            //             $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-            //         },
-            //     })
-            //         .sort({client: 1})
-            //         .select('client')
-            //
-            //     turns.map((t, i) => {
-            //         if (i === 0) {
-            //             turn++
-            //         } else {
-            //             if (turns[i - 1].client.toString() !== t.client.toString()) {
-            //                 turn++
-            //             }
-            //         }
-            //     })
-            //
-            //     turn++
-            // }
-
-            //=========================================================
             // Create Service
+            const serv = await Service.findById(service.serviceid)
+                .populate('column', 'col1 col2 col3 col4 col5')
+                .populate('tables', 'col1 col2 col3 col4 col5')
             const newservice = new StatsionarService({
                 ...service,
+                service: {
+                    name: serv.name,
+                    price: serv.price,
+                    shortname: serv.shortname,
+                    doctorProcient: serv.doctorProcient,
+                    counterAgentProcient: serv.counterAgentProcient,
+                    counterDoctorProcient: serv.counterDoctorProcient
+                },
                 client: newclient._id,
                 connector: newconnector._id,
-                // turn,
+                column: {...serv.column},
+                tables: [...JSON.parse(JSON.stringify(serv.tables))]
             })
 
             await newservice.save()
@@ -324,6 +299,7 @@ module.exports.add = async (req, res) => {
         await updateStatsionarConnector.save()
 
         //=========================================================
+        //=========================================================
         // CreateServices
         let totalprice = 0
         for (const service of services) {
@@ -349,50 +325,24 @@ module.exports.add = async (req, res) => {
             }
 
             //=========================================================
-            // TURN
-            // var turn = 0
-            // const clientservice = await StatsionarService.findOne({
-            //     clinica: service.clinica,
-            //     client: client._id,
-            //     department: service.department,
-            //     createdAt: {
-            //         $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-            //     },
-            // })
-
-            // if (clientservice) {
-            //     turn = clientservice.turn
-            // } else {
-            //     let turns = await StatsionarService.find({
-            //         clinica: service.clinica,
-            //         department: service.department,
-            //         createdAt: {
-            //             $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)),
-            //         },
-            //     })
-            //         .sort({client: 1})
-            //         .select('client')
-            //
-            //     turns.map((t, i) => {
-            //         if (i === 0) {
-            //             turn++
-            //         } else {
-            //             if (turns[i - 1].client.toString() !== t.client.toString()) {
-            //                 turn++
-            //             }
-            //         }
-            //     })
-            //
-            //     turn++
-            // }
-
-            //=========================================================
             // Create Service
+            const serv = await Service.findById(service.serviceid)
+                .populate('column', 'col1 col2 col3 col4 col5')
+                .populate('tables', 'col1 col2 col3 col4 col5')
             const newservice = new StatsionarService({
                 ...service,
+                service: {
+                    name: serv.name,
+                    price: serv.price,
+                    shortname: serv.shortname,
+                    doctorProcient: serv.doctorProcient,
+                    counterAgentProcient: serv.counterAgentProcient,
+                    counterDoctorProcient: serv.counterDoctorProcient
+                },
                 client: client._id,
                 connector: updateStatsionarConnector._id,
-                // turn: turn,
+                column: {...serv.column},
+                tables: [...JSON.parse(JSON.stringify(serv.tables))]
             })
 
             await newservice.save()
@@ -520,7 +470,6 @@ module.exports.add = async (req, res) => {
 
         res.status(201).send({message: "Xizmatlar ro'yxatga olindi"})
     } catch (error) {
-        console.log(error)
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
     }
 }
@@ -554,6 +503,39 @@ module.exports.getAll = async (req, res) => {
             .populate("room")
             .sort({_id: -1})
 
+        res.status(200).send(connectors)
+    } catch (error) {
+        res.status(501).json({error: 'Serverda xatolik yuz berdi...'})
+    }
+}
+
+//Clients getall
+module.exports.getAllReseption = async (req, res) => {
+    try {
+        const {clinica, beginDay, endDay} = req.body
+
+        const clinic = await Clinica.findById(clinica)
+
+        if (!clinic) {
+            return res.status(400).json({
+                message: "Diqqat! Klinika ma'lumotlari topilmadi.",
+            })
+        }
+
+        const connectors = await StatsionarConnector.find({
+            clinica,
+            createdAt: {
+                $gte: beginDay,
+                $lt: endDay,
+            },
+        })
+            .select('client doctor createdAt services products room diagnosis')
+            .populate('client', 'firstname lastname fullname born phone id address gender')
+            .populate("services", 'service pieces createdAt')
+            .populate("products", 'product pieces createdAt')
+            .populate("doctor", 'firstname lastname')
+            .populate("room", '')
+            .sort({_id: -1})
         res.status(200).send(connectors)
     } catch (error) {
         res.status(501).json({error: 'Serverda xatolik yuz berdi...'})

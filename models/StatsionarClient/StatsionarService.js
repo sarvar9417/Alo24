@@ -24,7 +24,6 @@ const service = new Schema(
             ref: 'Department',
             required: true,
         },
-        table: {type: String},
         templates: {type: String},
         refuse: {type: Boolean, default: false},
         accept: {type: Boolean, default: false},
@@ -33,6 +32,8 @@ const service = new Schema(
         turn: {type: Number},
         comment: {type: String},
         payment: {type: Boolean, default: true},
+        column: Object,
+        tabled: Array
     },
     {
         timestamps: true,
@@ -56,7 +57,9 @@ function validateStatsionarService(clientservice) {
         doctor: Joi.string(),
         turn: Joi.string(),
         comment: Joi.string(),
-        payment: Joi.boolean()
+        payment: Joi.boolean(),
+        column: Joi.object(),
+        tables: Joi.array()
     })
 
     return schema.validate(clientservice)
