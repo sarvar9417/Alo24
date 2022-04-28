@@ -29,7 +29,7 @@ module.exports.payment = async (req, res) => {
     }
 
     // CheckDiscount
-    if (!discount._id) {
+    if (discount && !discount._id) {
       const checkDiscount = validateDiscount(discount).error;
       if (checkDiscount) {
         return res.status(400).json({
@@ -117,6 +117,7 @@ module.exports.payment = async (req, res) => {
 
     res.status(201).send(newpayment);
   } catch (error) {
+    console.log(error);
     res.status(501).json({ error: "Serverda xatolik yuz berdi..." });
   }
 };

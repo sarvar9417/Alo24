@@ -15,11 +15,11 @@ export const TableClients = ({
   changeEnd,
   searchId,
   searchFullname,
-  connectors,
+  debts,
   setCurrentPage,
   countPage,
-  currentConnectors,
-  setCurrentConnectors,
+  currentDebts,
+  setCurrentDebts,
   currentPage,
   setPageSize,
   loading,
@@ -76,11 +76,11 @@ export const TableClients = ({
                 </th>
                 <th className="text-center">
                   <Pagination
-                    setCurrentDatas={setCurrentConnectors}
-                    datas={connectors}
+                    setCurrentDatas={setCurrentDebts}
+                    datas={debts}
                     setCurrentPage={setCurrentPage}
                     countPage={countPage}
-                    totalDatas={connectors.length}
+                    totalDatas={debts.length}
                   />
                 </th>
                 <th
@@ -116,8 +116,8 @@ export const TableClients = ({
                   <div className="btn-group-vertical ml-2">
                     <FontAwesomeIcon
                       onClick={() =>
-                        setCurrentConnectors(
-                          [...currentConnectors].sort((a, b) =>
+                        setCurrentDebts(
+                          [...currentDebts].sort((a, b) =>
                             a.client.fullname > b.client.fullname ? 1 : -1
                           )
                         )
@@ -129,8 +129,8 @@ export const TableClients = ({
                       icon={faAngleDown}
                       style={{ cursor: "pointer" }}
                       onClick={() =>
-                        setCurrentConnectors(
-                          [...currentConnectors].sort((a, b) =>
+                        setCurrentDebts(
+                          [...currentDebts].sort((a, b) =>
                             b.client.fullname > a.client.fullname ? 1 : -1
                           )
                         )
@@ -143,8 +143,8 @@ export const TableClients = ({
                   <div className="btn-group-vertical ml-2">
                     <FontAwesomeIcon
                       onClick={() =>
-                        setCurrentConnectors(
-                          [...currentConnectors].sort((a, b) =>
+                        setCurrentDebts(
+                          [...currentDebts].sort((a, b) =>
                             a.client.id > b.client.id ? 1 : -1
                           )
                         )
@@ -156,8 +156,8 @@ export const TableClients = ({
                       icon={faAngleDown}
                       style={{ cursor: "pointer" }}
                       onClick={() =>
-                        setCurrentConnectors(
-                          [...currentConnectors].sort((a, b) =>
+                        setCurrentDebts(
+                          [...currentDebts].sort((a, b) =>
                             b.client.id > a.client.id ? 1 : -1
                           )
                         )
@@ -170,8 +170,8 @@ export const TableClients = ({
                   <div className="btn-group-vertical ml-2">
                     <FontAwesomeIcon
                       onClick={() =>
-                        setCurrentConnectors(
-                          [...currentConnectors].sort((a, b) =>
+                        setCurrentDebts(
+                          [...currentDebts].sort((a, b) =>
                             a.client.phone > b.client.phone ? 1 : -1
                           )
                         )
@@ -183,8 +183,8 @@ export const TableClients = ({
                       icon={faAngleDown}
                       style={{ cursor: "pointer" }}
                       onClick={() =>
-                        setCurrentConnectors(
-                          [...currentConnectors].sort((a, b) =>
+                        setCurrentDebts(
+                          [...currentDebts].sort((a, b) =>
                             b.client.phone > a.client.phone ? 1 : -1
                           )
                         )
@@ -197,8 +197,8 @@ export const TableClients = ({
                   <div className="btn-group-vertical ml-2">
                     <FontAwesomeIcon
                       onClick={() =>
-                        setCurrentConnectors(
-                          [...currentConnectors].sort((a, b) =>
+                        setCurrentDebts(
+                          [...currentDebts].sort((a, b) =>
                             a.client.born > b.client.born ? 1 : -1
                           )
                         )
@@ -210,8 +210,8 @@ export const TableClients = ({
                       icon={faAngleDown}
                       style={{ cursor: "pointer" }}
                       onClick={() =>
-                        setCurrentConnectors(
-                          [...currentConnectors].sort((a, b) =>
+                        setCurrentDebts(
+                          [...currentDebts].sort((a, b) =>
                             b.client.born > a.client.born ? 1 : -1
                           )
                         )
@@ -220,18 +220,26 @@ export const TableClients = ({
                   </div>
                 </th>
                 <th className="border py-1">
-                  Summa
+                  To'langan
                   <Sort
-                    data={currentConnectors}
-                    setData={setCurrentConnectors}
+                    data={currentDebts}
+                    setData={setCurrentDebts}
+                    property={"total"}
+                  />
+                </th>
+                <th className="border py-1">
+                  Jami to'lov
+                  <Sort
+                    data={currentDebts}
+                    setData={setCurrentDebts}
                     property={"total"}
                   />
                 </th>
                 <th className="border py-1">
                   Qarz summasi
                   <Sort
-                    data={currentConnectors}
-                    setData={setCurrentConnectors}
+                    data={currentDebts}
+                    setData={setCurrentDebts}
                     property={"debt"}
                   />
                 </th>
@@ -239,8 +247,8 @@ export const TableClients = ({
                   Qabul
                   <div className="btn-group-vertical ml-2">
                     <Sort
-                      data={currentConnectors}
-                      setData={setCurrentConnectors}
+                      data={currentDebts}
+                      setData={setCurrentDebts}
                       property={"counterAgentProcient"}
                     />
                   </div>
@@ -248,7 +256,7 @@ export const TableClients = ({
               </tr>
             </thead>
             <tbody>
-              {currentConnectors.map((connector, key) => {
+              {currentDebts.map((debt, key) => {
                 return (
                   <tr key={key}>
                     <td
@@ -258,21 +266,20 @@ export const TableClients = ({
                       {currentPage * countPage + key + 1}
                     </td>
                     <td className="border py-1 font-weight-bold">
-                      {connector.client.fullname}
+                      {debt.client.fullname}
+                    </td>
+                    <td className="border py-1 text-right">{debt.client.id}</td>
+                    <td className="border py-1 text-right">
+                      {debt.client.phone}
                     </td>
                     <td className="border py-1 text-right">
-                      {connector.client.id}
+                      {new Date(debt.client.born).toLocaleDateString()}
                     </td>
                     <td className="border py-1 text-right">
-                      {connector.client.phone}
+                      {debt.total - debt.debt}
                     </td>
-                    <td className="border py-1 text-right">
-                      {new Date(connector.client.born).toLocaleDateString()}
-                    </td>
-                    <td className="border py-1 text-right">
-                      {connector.total}
-                    </td>
-                    <td className="border py-1 text-right">{connector.debt}</td>
+                    <td className="border py-1 text-right">{debt.total}</td>
+                    <td className="border py-1 text-right">{debt.debt}</td>
                     <td className="border py-1 text-center">
                       {loading ? (
                         <button className="btn btn-success" disabled>
@@ -282,7 +289,7 @@ export const TableClients = ({
                       ) : (
                         <button
                           className="btn btn-primary py-0"
-                          onClick={() => getPayment(connector)}
+                          onClick={() => getPayment(debt)}
                         >
                           <FontAwesomeIcon icon={faPenAlt} />
                         </button>

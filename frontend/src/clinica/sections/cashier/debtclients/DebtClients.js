@@ -39,7 +39,6 @@ export const DebtClients = () => {
 
   const indexLastConnector = (currentPage + 1) * countPage;
   const indexFirstConnector = indexLastConnector - countPage;
-  const [currentConnectors, setCurrentConnectors] = useState([]);
 
   //====================================================================
   //====================================================================
@@ -77,12 +76,12 @@ export const DebtClients = () => {
 
   //====================================================================
   //====================================================================
-  // getConnectors
-  const [connectors, setConnectors] = useState([]);
+  // getDebts
   const [searchStorage, setSearchStrorage] = useState([]);
   const [offlineDebts, setOfflineDebts] = useState([]);
   const [statsionarDebts, setStatsionarDebts] = useState([]);
   const [debts, setDebts] = useState([]);
+  const [currentDebts, setCurrentDebts] = useState([]);
 
   const getOfflineDebts = useCallback(
     async (beginDay, endDay) => {
@@ -138,8 +137,7 @@ export const DebtClients = () => {
       debts = [];
     }
     setDebts(debts);
-    setCurrentConnectors(debts.slice(indexFirstConnector, indexLastConnector));
-    setConnectors(debts);
+    setCurrentDebts(debts.slice(indexFirstConnector, indexLastConnector));
     setSearchStrorage(debts);
   }, [offlineDebts, statsionarDebts, indexFirstConnector, indexLastConnector]);
 
@@ -156,8 +154,7 @@ export const DebtClients = () => {
           .toLowerCase()
           .includes(e.target.value.toLowerCase())
       );
-      setConnectors(searching);
-      setCurrentConnectors(searching.slice(0, countPage));
+      setCurrentDebts(searching.slice(0, countPage));
     },
     [searchStorage, countPage]
   );
@@ -167,8 +164,7 @@ export const DebtClients = () => {
       const searching = searchStorage.filter((item) =>
         item.client.id.toString().includes(e.target.value)
       );
-      setConnectors(searching);
-      setCurrentConnectors(searching.slice(0, countPage));
+      setCurrentDebts(searching.slice(0, countPage));
     },
     [searchStorage, countPage]
   );
@@ -183,7 +179,7 @@ export const DebtClients = () => {
       sortEl = [...offlineDebts];
     }
     setSearchStrorage(sortEl);
-    setCurrentConnectors(sortEl.slice(0, countPage));
+    setCurrentDebts(sortEl.slice(0, countPage));
   };
 
   //====================================================================
@@ -195,9 +191,9 @@ export const DebtClients = () => {
     (e) => {
       setCurrentPage(0);
       setCountPage(e.target.value);
-      setCurrentConnectors(connectors.slice(0, countPage));
+      setCurrentDebts(debts.slice(0, countPage));
     },
-    [countPage, connectors]
+    [countPage, debts]
   );
 
   //====================================================================
@@ -213,11 +209,23 @@ export const DebtClients = () => {
   //====================================================================
   //====================================================================
 
-  const [payment, setPayment] = useState({});
-  const [payCount, setPayCount] = useState("");
+  const [payment, setPayment] = useState({
+    payment: 0,
+    card: 0,
+    cash: 0,
+    transfer: 0,
+    debt: 0,
+    type: "",
+    clinica: auth && auth.clinica._id,
+    connector: null,
+    client: null,
+    total: 0,
+    products: [],
+    services: [],
+  });
 
-  const checkPayCount = () => {
-    if (!payCount) {
+  const checkPayment = () => {
+    if (!payment.card && !payment.cash && !payment.transfer) {
       return notify({
         title: `Diqqat! To'lov kiritilmagan.`,
         description: `Iltimos to'lovni kirirting.`,
@@ -231,23 +239,37 @@ export const DebtClients = () => {
         status: "error",
       });
     }
-    if (+payCount > +payment.debt) {
-      return notify({
-        title: `Diqqat! To'lov summasi qarz dan oshmaslik kerak.`,
-        description: `Iltimos To'lovni tug'ri kiriting.`,
-        status: "error",
-      });
-    }
     setModal(true);
   };
 
-  const getPayment = (connector) => {
-    setPayment(connector);
-    setPayCount(connector.debt);
+  const getPayment = (debt) => {
+    setPayment({
+      ...payment,
+      debt: debt.debt,
+      client: debt.client,
+      connector: debt.connector,
+      total: debt.total,
+      comment: debt.comment,
+    });
     setVisible(true);
   };
 
-  console.log(payment);
+  const inputPayment = (e) => {
+    let count = e.target.value === "" ? 0 : parseInt(e.target.value);
+
+    if (count > payment.debt) {
+      return notify({
+        title: "Diqqat! To'lov summasi qarzdan oshmaslik kerak!",
+        description: "",
+        status: "error",
+      });
+    }
+    return setPayment({
+      ...payment,
+      [e.target.name]: count,
+    });
+  };
+
   //====================================================================
   //====================================================================
   // PRODUCTS
@@ -295,7 +317,6 @@ export const DebtClients = () => {
   //CreateHandler
 
   const sortPostPayment = () => {
-    setPayment({ ...payment, debt: +payment.debt - +payCount });
     if (payment.client.id[0] === "S") {
       return postStatsionarDebts();
     } else {
@@ -309,10 +330,7 @@ export const DebtClients = () => {
         `/api/cashier/offline/payment`,
         "POST",
         {
-          payment: {
-            ...payment,
-            clinica: auth && auth.clinica._id,
-          },
+          payment: { ...payment },
         },
         {
           Authorization: `Bearer ${auth.token}`,
@@ -321,8 +339,18 @@ export const DebtClients = () => {
       localStorage.setItem("data", data);
       setModal(false);
       setVisible(false);
-      setPayment({});
-      setPayCount("");
+      setPayment({
+        payment: 0,
+        card: 0,
+        cash: 0,
+        transfer: 0,
+        debt: 0,
+        type: "",
+        clinica: auth && auth.clinica._id,
+        connector: null,
+        client: null,
+        total: 0,
+      });
       notify({
         title: "To'lov muvaffaqqiyatli amalga oshirildi.",
         description: "",
@@ -343,10 +371,7 @@ export const DebtClients = () => {
         `/api/cashier/statsionar/payment`,
         "POST",
         {
-          payment: {
-            ...payment,
-            clinica: auth && auth.clinica._id,
-          },
+          payment: { ...payment },
         },
         {
           Authorization: `Bearer ${auth.token}`,
@@ -355,8 +380,18 @@ export const DebtClients = () => {
       localStorage.setItem("data", data);
       setModal(false);
       setVisible(false);
-      setPayment({});
-      setPayCount("");
+      setPayment({
+        payment: 0,
+        card: 0,
+        cash: 0,
+        transfer: 0,
+        debt: 0,
+        type: "",
+        clinica: auth && auth.clinica._id,
+        connector: null,
+        client: null,
+        total: 0,
+      });
       notify({
         title: "To'lov muvaffaqqiyatli amalga oshirildi.",
         description: "",
@@ -419,10 +454,10 @@ export const DebtClients = () => {
               <PaymentClients
                 payment={payment}
                 client={client}
-                payCount={payCount}
-                setPayCount={setPayCount}
-                checkPayCount={checkPayCount}
+                checkPayment={checkPayment}
                 loading={loading}
+                setPayment={setPayment}
+                inputPayment={inputPayment}
               />
             </div>
             <TableClients
@@ -436,12 +471,12 @@ export const DebtClients = () => {
               setCurrentPage={setCurrentPage}
               countPage={countPage}
               setCountPage={setCountPage}
-              currentConnectors={currentConnectors}
-              setCurrentConnectors={setCurrentConnectors}
+              currentDebts={currentDebts}
+              setCurrentDebts={setCurrentDebts}
               currentPage={currentPage}
               setPageSize={setPageSize}
               loading={loading}
-              connectors={connectors}
+              debts={debts}
               payment={payment}
               setPayment={setPayment}
               sortDebts={sortDebts}
