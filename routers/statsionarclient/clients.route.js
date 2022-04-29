@@ -146,6 +146,7 @@ module.exports.register = async (req, res) => {
             const newservice = new StatsionarService({
                 ...service,
                 service: {
+                    _id: serv._id,
                     name: serv.name,
                     price: serv.price,
                     shortname: serv.shortname,
@@ -332,6 +333,7 @@ module.exports.add = async (req, res) => {
             const newservice = new StatsionarService({
                 ...service,
                 service: {
+                    _id: serv._id,
                     name: serv.name,
                     price: serv.price,
                     shortname: serv.shortname,
